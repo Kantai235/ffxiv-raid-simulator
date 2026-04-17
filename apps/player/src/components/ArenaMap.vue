@@ -39,6 +39,7 @@
 
 import { computed, ref } from 'vue';
 import type {
+  AnchorPoint,
   Arena,
   EnemyEntity,
   Point2D,
@@ -87,10 +88,15 @@ interface Props {
   arenaMask?: number[];
   /**
    * 實體連線（Phase 1 連線機制）。
-   * sourceId / targetId 依「'boss' → enemies → waymarks」順序解析；
+   * sourceId / targetId 依「'boss' → enemies → anchors → waymarks」順序解析；
    * 任一端無法解析則該條連線略過不畫（優雅降級）。
    */
   tethers?: Tether[];
+  /**
+   * 自由錨點（Phase 3.5）- 純座標提供者。
+   * Player 端不渲染任何圖形，只在 resolveEntityPosition 中作為 tether 端點查表。
+   */
+  anchors?: AnchorPoint[];
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -103,6 +109,7 @@ const props = withDefaults(defineProps<Props>(), {
   enemies: () => [],
   arenaMask: () => [],
   tethers: () => [],
+  anchors: () => [],
 });
 
 const emit = defineEmits<{
@@ -319,19 +326,23 @@ function isWaymarkId(id: string): id is WaymarkId {
 
 /**
  * 將實體 ID 解析為場上座標。支援：
- *   - 'boss'         → resolvedBossPosition
- *   - EnemyEntity.id → enemies 陣列中對應 position
- *   - WAYMARK_ID     → waymarks 對應座標
+ *   - 'boss'           → resolvedBossPosition
+ *   - EnemyEntity.id   → enemies 陣列中對應 position
+ *   - AnchorPoint.id   → anchors 陣列中對應 position（Phase 3.5）
+ *   - WAYMARK_ID       → waymarks 對應座標
  *
  * 找不到則回 null（呼叫端應過濾掉該條連線，優雅降級）。
  *
- * Why 按此順序：'boss' 為保留字（優先）；接下來 enemies 與 waymark 本質是獨立
- *   命名空間，但 enemies 為「題目當下動態生成的實體」優先級高於「全攻略共用的 waymark」。
+ * Why 按此順序：'boss' 為保留字（優先）；接下來 enemies 與 anchors 同為
+ *   「題目當下動態實體」（優先級對齊，編輯期可拖曳）；waymark 為攻略級共用
+ *   設定，級別較低排最後。
  */
 function resolveEntityPosition(id: string): Point2D | null {
   if (id === 'boss') return resolvedBossPosition.value;
   const enemy = props.enemies.find((e) => e.id === id);
   if (enemy) return enemy.position;
+  const anchor = props.anchors.find((a) => a.id === id);
+  if (anchor) return anchor.position;
   if (isWaymarkId(id)) {
     const wm = props.waymarks[id];
     if (wm) return wm;

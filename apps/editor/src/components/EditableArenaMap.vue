@@ -56,6 +56,7 @@
 import { computed, onBeforeUnmount, ref, watchEffect } from 'vue';
 import { storeToRefs } from 'pinia';
 import type {
+  AnchorPoint,
   Arena,
   ArenaLine,
   BossState,
@@ -115,6 +116,12 @@ interface Props {
    */
   tethers?: Tether[];
   /**
+   * questions 模式：當前題目的自由錨點（Phase 3.5）。
+   * entity 子模式下渲染為金黃色小圓點供拖曳；其他子模式 pointer-events=none。
+   * Player 端不渲染（純座標提供者）；此 prop 僅 editor 用。
+   */
+  anchors?: AnchorPoint[];
+  /**
    * 背景圖路徑前綴。
    *
    * Why: 當 editor 從 player 發佈版（靜態 GH Pages 模式）載入官方題庫時，
@@ -134,6 +141,7 @@ const props = withDefaults(defineProps<Props>(), {
   enemies: () => [],
   arenaMask: () => [],
   tethers: () => [],
+  anchors: () => [],
   imagePathPrefix: '',
 });
 
@@ -318,6 +326,8 @@ const isGridMaskSubMode = computed(
 /**
  * 啟動實體拖曳。`event.stopPropagation` 阻止外層 onCanvasMouseDown 觸發
  * （否則 entity 子模式下可能被當成「點擊空白」處理）。
+ *
+ * 支援三種實體：'boss' / enemy.id / anchor.id - 以 ID lookup 順序判斷類型。
  */
 function onEntityMouseDown(event: MouseEvent, entityId: string): void {
   if (event.button !== 0) return;
@@ -333,7 +343,12 @@ function onEntityMouseDown(event: MouseEvent, entityId: string): void {
       : { ...props.arena.center };
   } else {
     const enemy = props.enemies.find((e) => e.id === entityId);
-    entityDragPosition.value = enemy ? { ...enemy.position } : null;
+    if (enemy) {
+      entityDragPosition.value = { ...enemy.position };
+    } else {
+      const anchor = props.anchors.find((a) => a.id === entityId);
+      entityDragPosition.value = anchor ? { ...anchor.position } : null;
+    }
   }
   window.addEventListener('mousemove', onEntityMouseMove);
   window.addEventListener('mouseup', onEntityMouseUp);
@@ -355,10 +370,14 @@ function onEntityMouseUp(): void {
   entityDragPosition.value = null;
   if (!id || !finalPos) return;
   // 寫回 store（mouseup 才寫；mousemove 期間僅本地暫態）
+  // 用 lookup 判斷而非 string 前綴 - id 由不同 generator 產生 (enemy-* / anchor-*)，
+  // 但這裡用實際存在於哪個 array 來判斷更穩定（若未來改 id 格式不會悄悄壞）。
   if (id === 'boss') {
     editorStore.updateBossPosition(finalPos);
-  } else {
+  } else if (props.enemies.some((e) => e.id === id)) {
     editorStore.updateEnemy(id, { position: finalPos });
+  } else if (props.anchors.some((a) => a.id === id)) {
+    editorStore.updateAnchor(id, { position: finalPos });
   }
 }
 
@@ -379,6 +398,14 @@ function liveEnemyPosition(enemy: EnemyEntity): Point2D {
     return entityDragPosition.value;
   }
   return enemy.position;
+}
+
+/** 取得錨點的當前顯示座標（拖曳中用暫態，與 liveEnemyPosition 同精神） */
+function liveAnchorPosition(anchor: AnchorPoint): Point2D {
+  if (draggingEntityId.value === anchor.id && entityDragPosition.value) {
+    return entityDragPosition.value;
+  }
+  return anchor.position;
 }
 
 // ----------------------------------------------------------------------
@@ -454,11 +481,12 @@ function isRoleId(id: string): boolean {
 /**
  * 解析連線端點 ID 為場上座標。
  *
- * 解析順序（與 Player ArenaMap 對齊）：
+ * 解析順序（與 Player ArenaMap 對齊；anchor 為 Phase 3.5 新增）：
  *   1. 'boss'       → resolvedBossPosition
- *   2. enemy.id     → enemies 陣列對應 position（用 liveEnemyPosition 確保拖曳中也即時更新）
- *   3. WaymarkId    → waymarks 對應座標
- *   4. RoleId       → arena.center（editor 無法預知玩家站位，給場地中央示意）
+ *   2. enemy.id     → enemies 陣列對應 position（用 liveEnemyPosition 拖曳同步）
+ *   3. anchor.id    → anchors 陣列對應 position（用 liveAnchorPosition 拖曳同步）
+ *   4. WaymarkId    → waymarks 對應座標
+ *   5. RoleId       → arena.center（editor 無法預知玩家站位，給場地中央示意）
  *
  * 找不到任何對應 → 回 null（呼叫端過濾）。
  */
@@ -466,6 +494,8 @@ function resolveEntityPosition(id: string): Point2D | null {
   if (id === 'boss') return resolvedBossPosition.value;
   const enemy = props.enemies.find((e) => e.id === id);
   if (enemy) return liveEnemyPosition(enemy);
+  const anchor = props.anchors.find((a) => a.id === id);
+  if (anchor) return liveAnchorPosition(anchor);
   if (isWaymarkId(id)) {
     const wm = props.waymarks[id];
     if (wm) return wm;
@@ -1499,6 +1529,77 @@ const draftPolygon = computed(() => {
           text-anchor="middle"
           pointer-events="none"
         >({{ Math.round(liveEnemyPosition(enemy).x) }}, {{ Math.round(liveEnemyPosition(enemy).y) }})</text>
+      </g>
+    </g>
+
+    <!-- ===== Layer: 自由錨點（Anchors, Phase 3.5）=====
+         editor only：金黃色小圓點 + 隱形 hitbox 供拖曳。
+         player 完全不渲染（純座標提供者）；其他子模式 pointer-events=none
+         不擋下層互動（拖曳實體 / 點擊網格）。 -->
+    <g
+      data-layer="anchors"
+      :pointer-events="isEntitySubMode ? 'auto' : 'none'"
+      filter="drop-shadow(0 1px 2px rgba(0,0,0,0.6))"
+    >
+      <g
+        v-for="anchor in anchors"
+        :key="anchor.id"
+        :data-anchor-id="anchor.id"
+      >
+        <!-- 視覺圓點（金黃色，r=15 - 比 waymark 小、與場地對比明顯） -->
+        <circle
+          :cx="liveAnchorPosition(anchor).x"
+          :cy="liveAnchorPosition(anchor).y"
+          r="15"
+          fill="#FBBF24"
+          fill-opacity="0.85"
+          stroke="rgba(0, 0, 0, 0.6)"
+          stroke-width="1.5"
+          pointer-events="none"
+        />
+        <!-- 中心小黑點，視覺上像「錨點」-->
+        <circle
+          :cx="liveAnchorPosition(anchor).x"
+          :cy="liveAnchorPosition(anchor).y"
+          r="3"
+          fill="#1F2937"
+          pointer-events="none"
+        />
+        <!-- 名稱標籤（小字，避免遮擋畫布） -->
+        <text
+          :x="liveAnchorPosition(anchor).x"
+          :y="liveAnchorPosition(anchor).y + 28"
+          fill="#FBBF24"
+          font-size="11"
+          font-family="monospace"
+          text-anchor="middle"
+          stroke="rgba(0, 0, 0, 0.6)"
+          stroke-width="2"
+          paint-order="stroke"
+          pointer-events="none"
+        >{{ anchor.name }}</text>
+        <!-- entity 子模式：隱形 hitbox 供拖曳（r=24 比視覺稍大方便點） -->
+        <circle
+          v-if="isEntitySubMode"
+          :cx="liveAnchorPosition(anchor).x"
+          :cy="liveAnchorPosition(anchor).y"
+          r="24"
+          fill="transparent"
+          :class="draggingEntityId === anchor.id ? 'cursor-grabbing' : 'cursor-grab'"
+          :data-anchor-hitbox="anchor.id"
+          @mousedown="onEntityMouseDown($event, anchor.id)"
+        />
+        <!-- 拖曳座標提示 -->
+        <text
+          v-if="draggingEntityId === anchor.id"
+          :x="liveAnchorPosition(anchor).x"
+          :y="liveAnchorPosition(anchor).y - 22"
+          fill="#FBBF24"
+          font-size="11"
+          font-family="monospace"
+          text-anchor="middle"
+          pointer-events="none"
+        >({{ Math.round(liveAnchorPosition(anchor).x) }}, {{ Math.round(liveAnchorPosition(anchor).y) }})</text>
       </g>
     </g>
   </svg>

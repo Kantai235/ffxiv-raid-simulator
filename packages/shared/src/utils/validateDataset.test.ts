@@ -248,6 +248,42 @@ describe('Question.enemies 驗證', () => {
   });
 });
 
+describe('Question.anchors 驗證', () => {
+  it('合法 anchors → 不拋錯', () => {
+    const d = makeDatasetWithQuestion({
+      anchors: [{ id: 'a1', name: '錨點 1', position: { x: 100, y: 200 } }],
+    });
+    expect(() => assertValidInstanceDataset(d)).not.toThrow();
+  });
+
+  it('未被任何 tether 引用的孤兒 anchor → 不拋錯（出題流程允許）', () => {
+    const d = makeDatasetWithQuestion({
+      anchors: [{ id: 'orphan', name: '未連接', position: { x: 0, y: 0 } }],
+      tethers: [],
+    });
+    expect(() => assertValidInstanceDataset(d)).not.toThrow();
+  });
+
+  it('anchors 非陣列 → parse 錯誤', () => {
+    const d = makeDatasetWithQuestion({ anchors: {} });
+    expect(() => assertValidInstanceDataset(d)).toThrow(/anchors/);
+  });
+
+  it('anchor 缺 id → parse 錯誤', () => {
+    const d = makeDatasetWithQuestion({
+      anchors: [{ name: 'x', position: { x: 0, y: 0 } }],
+    });
+    expect(() => assertValidInstanceDataset(d)).toThrow(/id/);
+  });
+
+  it('anchor.position 缺 y → parse 錯誤', () => {
+    const d = makeDatasetWithQuestion({
+      anchors: [{ id: 'a1', name: 'x', position: { x: 0 } }],
+    });
+    expect(() => assertValidInstanceDataset(d)).toThrow(/position/);
+  });
+});
+
 describe('Question.tethers 驗證', () => {
   it('合法 tethers → 不拋錯', () => {
     const d = makeDatasetWithQuestion({

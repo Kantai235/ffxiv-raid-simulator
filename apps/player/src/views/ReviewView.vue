@@ -177,6 +177,7 @@ function backToResults(): void {
         :enemies="item.question.enemies ?? []"
         :arena-mask="item.question.arenaMask ?? []"
         :tethers="item.question.tethers ?? []"
+        :anchors="item.question.anchors ?? []"
       />
     </div>
 

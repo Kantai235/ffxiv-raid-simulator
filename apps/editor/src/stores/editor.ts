@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import type {
+  AnchorPoint,
   Arena,
   ArenaLine,
   ChoiceQuestion,
@@ -1242,6 +1243,64 @@ export const useEditorStore = defineStore('editor', () => {
   }
 
   // ----------------------------------------------------------------------
+  // Actions - Phase 3.5：自由錨點（anchors CRUD）
+  // ----------------------------------------------------------------------
+
+  /**
+   * 為當前題目新增一個自由錨點（Tether 端點專用的無圖示座標）。
+   *
+   * 預設值規則：
+   *   - id      : 自動產生
+   *   - name    : '錨點 N'，N = 現有 anchors.length + 1（給下拉選單辨識用）
+   *   - position: arena.center（出題者通常會立刻拖到目標位置）
+   *
+   * @returns 新錨點的 id（成功）或 null
+   */
+  function addAnchor(): string | null {
+    const q = selectedQuestion.value;
+    if (!q || !dataset.value) return null;
+    const existing = q.anchors ?? [];
+    const newAnchor: AnchorPoint = {
+      id: generateAnchorId(),
+      name: `錨點 ${existing.length + 1}`,
+      position: { ...dataset.value.instance.arena.center },
+    };
+    patchSelectedQuestion({ anchors: [...existing, newAnchor] });
+    return newAnchor.id;
+  }
+
+  /**
+   * 部分更新指定錨點（淺層 merge）。不存在則 no-op。
+   * patch 不允許動 id（與 enemy 同理：穩定引用，改 id 會打斷 tethers）。
+   */
+  function updateAnchor(id: string, updates: Partial<Omit<AnchorPoint, 'id'>>): void {
+    const q = selectedQuestion.value;
+    if (!q) return;
+    const anchors = q.anchors ?? [];
+    const idx = anchors.findIndex((a) => a.id === id);
+    if (idx === -1) return;
+    const next = [...anchors];
+    next[idx] = { ...anchors[idx], ...updates };
+    patchSelectedQuestion({ anchors: next });
+  }
+
+  /**
+   * 移除指定錨點。
+   *
+   * 連動清理（與 removeEnemy 同精神）：清掉 tethers 中引用此 id 的條目，
+   * 避免殘留「線連到不存在的錨點」這種孤兒引用。
+   */
+  function removeAnchor(id: string): void {
+    const q = selectedQuestion.value;
+    if (!q) return;
+    const anchors = q.anchors ?? [];
+    if (!anchors.some((a) => a.id === id)) return;
+    const nextAnchors = anchors.filter((a) => a.id !== id);
+    const nextTethers = (q.tethers ?? []).filter((t) => t.sourceId !== id && t.targetId !== id);
+    patchSelectedQuestion({ anchors: nextAnchors, tethers: nextTethers });
+  }
+
+  // ----------------------------------------------------------------------
   // Actions - Phase 2：場地網格（arena.grid + question.arenaMask）
   // ----------------------------------------------------------------------
 
@@ -1461,6 +1520,9 @@ export const useEditorStore = defineStore('editor', () => {
     addEnemy,
     updateEnemy,
     removeEnemy,
+    addAnchor,
+    updateAnchor,
+    removeAnchor,
     updateArenaGrid,
     clearArenaGrid,
     toggleArenaMask,
@@ -1605,4 +1667,12 @@ function generateOptionId(): string {
  */
 function generateEnemyId(): string {
   return `enemy-${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
+}
+
+/**
+ * 產生 AnchorPoint 的唯一識別碼。
+ * 格式：anchor-{時間戳}-{隨機}。
+ */
+function generateAnchorId(): string {
+  return `anchor-${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
 }

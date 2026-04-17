@@ -202,6 +202,10 @@ const arenaMaskForCanvas = computed(() =>
 const tethersForCanvas = computed(() =>
   mode.value === 'questions' ? selectedQuestion.value?.tethers ?? [] : [],
 );
+// Phase 3.5 - 自由錨點（editor only；player 端不渲染）
+const anchorsForCanvas = computed(() =>
+  mode.value === 'questions' ? selectedQuestion.value?.anchors ?? [] : [],
+);
 
 // ----------------------------------------------------------------------
 // Save / 下載 / 上傳 - 依環境分流
@@ -546,6 +550,7 @@ watch(
             :enemies="enemiesForCanvas"
             :arena-mask="arenaMaskForCanvas"
             :tethers="tethersForCanvas"
+            :anchors="anchorsForCanvas"
             @waymark-drag-end="onWaymarkDragEnd"
             @line-create="onLineCreate"
             @line-select="onLineSelect"

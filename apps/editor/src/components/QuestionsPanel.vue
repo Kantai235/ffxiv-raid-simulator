@@ -178,6 +178,7 @@ function setSubMode(next: QuestionSubMode): void {
 
 // ===== entity 面板 =====
 const enemies = computed(() => selectedQuestion.value?.enemies ?? []);
+const anchors = computed(() => selectedQuestion.value?.anchors ?? []);
 
 function onAddEnemy(): void {
   store.addEnemy();
@@ -195,6 +196,20 @@ function onUpdateEnemyName(id: string, name: string): void {
 function onUpdateEnemyFacing(id: string, raw: number): void {
   if (Number.isNaN(raw)) return;
   store.updateEnemy(id, { facing: raw });
+}
+
+// ===== anchors（自由錨點） =====
+function onAddAnchor(): void {
+  store.addAnchor();
+}
+
+function onRemoveAnchor(id: string): void {
+  if (!window.confirm('刪除此錨點會同時清除所有引用它的連線（tethers），確定？')) return;
+  store.removeAnchor(id);
+}
+
+function onUpdateAnchorName(id: string, name: string): void {
+  store.updateAnchor(id, { name });
 }
 
 // ===== grid-mask 面板 =====
@@ -258,11 +273,15 @@ const TETHER_COLORS: { value: Tether['color']; label: string; preview: string }[
  * 結構為 optgroup 友善的格式：
  *   [{ label: 'Boss', items: [{ value, label }] }, ...]
  *
- * Why 用 computed 而非靜態：enemies 隨題目變動；其他三組（Boss/Roles/Waymarks）
+ * Why 用 computed 而非靜態：enemies / anchors 隨題目變動；其他三組（Boss/Roles/Waymarks）
  *   雖然靜態，放一起方便 template 一次 v-for。
+ *
+ * Anchors 排在分身之後、職能之前 - 與 resolveEntityPosition 的解析優先級對齊
+ * （boss → enemies → anchors → waymarks → role），UI 順序與底層解析一致便於記憶。
  */
 const endpointGroups = computed(() => {
   const enemies = selectedQuestion.value?.enemies ?? [];
+  const anchors = selectedQuestion.value?.anchors ?? [];
   return [
     {
       label: 'Boss',
@@ -271,6 +290,10 @@ const endpointGroups = computed(() => {
     {
       label: '分身',
       items: enemies.map((e) => ({ value: e.id, label: e.name })),
+    },
+    {
+      label: '自由錨點',
+      items: anchors.map((a) => ({ value: a.id, label: a.name })),
     },
     {
       label: '職能',
@@ -663,6 +686,58 @@ function onRemoveTether(idx: number): void {
       >
         + 新增分身
       </button>
+
+      <!-- ===== 自由錨點（Anchors） ===== -->
+      <div class="mt-4 pt-3 border-t border-gray-700">
+        <h4 class="text-xs text-editor-accent font-bold mb-1">自由錨點</h4>
+        <p class="text-xs text-gray-400 leading-relaxed mb-2">
+          場上的「無圖示座標」，給 Tether 端點需要落在空地時使用。
+          Player 端不會渲染圖示，只當作連線端點。
+        </p>
+
+        <div class="space-y-2">
+          <div
+            v-for="(a, idx) in anchors"
+            :key="a.id"
+            :data-anchor-id="a.id"
+            class="p-2 rounded bg-editor-bg/40 border border-gray-700 space-y-1"
+          >
+            <div class="flex items-center justify-between gap-1">
+              <span class="text-xs text-gray-500">錨點 {{ idx + 1 }}</span>
+              <button
+                type="button"
+                :data-anchor-remove="a.id"
+                class="px-1.5 py-0.5 text-xs text-red-400 hover:bg-red-500/20 rounded"
+                @click="onRemoveAnchor(a.id)"
+                title="刪除"
+              >✕</button>
+            </div>
+            <div>
+              <label class="text-xs text-gray-500 block mb-0.5">名稱</label>
+              <input
+                type="text"
+                :value="a.name"
+                :data-anchor-name="a.id"
+                class="w-full bg-editor-bg border border-gray-600 rounded px-2 py-1 text-xs"
+                @change="onUpdateAnchorName(a.id, ($event.target as HTMLInputElement).value)"
+              />
+            </div>
+            <div class="text-xs text-gray-500 font-mono">
+              位置：({{ Math.round(a.position.x) }}, {{ Math.round(a.position.y) }})
+            </div>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          data-testid="add-anchor"
+          class="mt-2 w-full px-2 py-1.5 text-xs bg-editor-bg hover:bg-editor-panel/60
+                 rounded border border-yellow-500/60 text-yellow-400"
+          @click="onAddAnchor"
+        >
+          + 新增錨點
+        </button>
+      </div>
 
       <!-- ===== 連線設定（Tethers） ===== -->
       <div class="mt-4 pt-3 border-t border-gray-700">

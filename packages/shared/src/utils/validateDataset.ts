@@ -264,6 +264,49 @@ function assertValidQuestionExtensions(
     }
   }
 
+  // ----- anchors（Phase 3.5）-----
+  // 與 enemies 結構接近但無 facing 欄位（純座標提供者，不畫圖示）。
+  // 不檢查「孤兒 anchor」（未被任何 tether 引用）：出題者可能先建錨點再連線，
+  // 強制 referenced 會打斷編輯流程。
+  if (q.anchors !== undefined) {
+    if (!Array.isArray(q.anchors)) {
+      throw new DatasetValidationError('parse', `questions[${idx}].anchors 必須為陣列`);
+    }
+    for (let j = 0; j < q.anchors.length; j++) {
+      const a = q.anchors[j];
+      if (!isPlainObject(a)) {
+        throw new DatasetValidationError(
+          'parse',
+          `questions[${idx}].anchors[${j}] 必須為物件`,
+        );
+      }
+      if (typeof a.id !== 'string' || !a.id) {
+        throw new DatasetValidationError(
+          'parse',
+          `questions[${idx}].anchors[${j}].id 必須為非空字串`,
+        );
+      }
+      if (typeof a.name !== 'string') {
+        throw new DatasetValidationError(
+          'parse',
+          `questions[${idx}].anchors[${j}].name 必須為字串`,
+        );
+      }
+      if (!isPlainObject(a.position)) {
+        throw new DatasetValidationError(
+          'parse',
+          `questions[${idx}].anchors[${j}].position 必須為物件`,
+        );
+      }
+      if (typeof a.position.x !== 'number' || typeof a.position.y !== 'number') {
+        throw new DatasetValidationError(
+          'parse',
+          `questions[${idx}].anchors[${j}].position 需含數值 x / y`,
+        );
+      }
+    }
+  }
+
   // ----- arenaMask -----
   //
   // 【Schema 強制契約】

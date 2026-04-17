@@ -270,6 +270,7 @@ const isMapClickQuestion = computed(() => currentQuestion.value?.type === 'map-c
         :enemies="currentQuestion.enemies ?? []"
         :arena-mask="currentQuestion.arenaMask ?? []"
         :tethers="currentQuestion.tethers ?? []"
+        :anchors="currentQuestion.anchors ?? []"
         @click="onArenaClick"
       />
     </div>

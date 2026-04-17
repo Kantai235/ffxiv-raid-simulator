@@ -79,6 +79,31 @@ export interface EnemyEntity {
 }
 
 /**
+ * 自由錨點（AnchorPoint）- Tether 端點專用的「無圖示座標」。
+ *
+ * 用途：很多牽線機制的端點不對應任何實體（例：M1S 傾盆大貓的固定落點、
+ * P3S 標靶位置）。若要強塞給 enemy 會出現「不該畫圖示卻畫了圖示」的視覺錯誤。
+ * Anchor 提供「純座標」抽象，editor 可拖曳調整、player 完全隱形只當座標提供者。
+ *
+ * 【與 EnemyEntity 的差異】
+ *   - EnemyEntity 帶 facing + 視覺圖示（縮小 boss marker），玩家看得到
+ *   - AnchorPoint 只有 position，無 facing；player 端不渲染任何圖形
+ *   - editor 端則畫成小金圓點便於拖曳
+ *
+ * 【為何不複用 EnemyEntity 加 hidden 旗標】
+ *   schema 語意混淆（敵人變成「不可見的敵人」很怪），且 facing 對 anchor
+ *   無意義反而變成資料欄位污染。獨立型別最乾淨。
+ */
+export interface AnchorPoint {
+  /** 唯一識別碼（題內唯一） */
+  id: string;
+  /** 顯示名稱（給 editor 下拉選單辨識），例：'錨點 1'、'落雷點' */
+  name: string;
+  /** 場上位置（邏輯座標，左上原點） */
+  position: Point2D;
+}
+
+/**
  * 視覺連線（Tether）- 實體之間的牽引/點名線。
  *
  * 用途舉例：M1S「傾盆大貓」的連線點名、P8S「靈魂痛擊」的牽線。
@@ -102,12 +127,16 @@ export interface EnemyEntity {
  *   sourceId / targetId 可以是：
  *     1. 字面量 'boss' - 指向 Question.boss
  *     2. enemies[].id  - 指向分身
- *     3. WaymarkId     - 指向 waymark 座標
+ *     3. anchors[].id  - 指向自由錨點（無圖示，純座標提供者）
+ *     4. WaymarkId     - 指向 waymark 座標
  *   前台按此順序解析；任一端找不到對應座標則不渲染該條連線（優雅降級）。
  *
- *   Editor 端額外支援第 4 種：RoleId（'MT' | 'ST' | 'H1' ...），
+ *   Editor 端額外支援第 5 種：RoleId（'MT' | 'ST' | 'H1' ...），
  *   fallback 到 arena.center 並用淡虛線示意（player 端因不知玩家站位
  *   而不解析）。
+ *
+ *   Anchor 排在 enemy 之後、waymark 之前的理由：anchor 與 enemy 同樣是
+ *   「題目當下動態實體」優先級對齊；waymark 是攻略級共用設定，級別較低。
  */
 export interface Tether {
   sourceId: string;
@@ -247,6 +276,15 @@ interface QuestionBase {
    * 樣式略異（縮小 + 灰紅色調），以便玩家辨識主從關係。
    */
   enemies?: EnemyEntity[];
+
+  /**
+   * 自由錨點（選填）- Tether 端點專用的無圖示座標。
+   *
+   * Editor 端可拖曳調整位置；player 端不渲染任何圖形（純座標提供者）。
+   * 允許「孤兒 anchor」存在（未被任何 tether 引用）- 出題者可能先建錨點再連線。
+   * 詳見 AnchorPoint 介面 JSDoc。
+   */
+  anchors?: AnchorPoint[];
 
   /**
    * 破損網格索引（選填，row-major）- 此題中無法站立的網格。

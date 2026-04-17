@@ -1779,3 +1779,86 @@ describe('Tethers - addTether / updateTether / removeTether', () => {
     });
   });
 });
+
+// ========================================================================
+// Phase 3.5 - 自由錨點（anchors）CRUD + 連動清 tethers
+// ========================================================================
+
+describe('Anchors - addAnchor / updateAnchor / removeAnchor', () => {
+  beforeEach(() => {
+    vi.spyOn(api, 'readDataset').mockResolvedValue(makeDatasetWithQuestions());
+  });
+
+  it('addAnchor → 預設 name「錨點 N」、position=arena.center 且設 dirty', async () => {
+    const store = useEditorStore();
+    await store.loadDataset('m1s.json');
+    store.selectQuestion('q0');
+    expect(store.isDirty).toBe(false);
+
+    const id1 = store.addAnchor();
+    expect(id1).toBeTruthy();
+    const a1 = store.selectedQuestion?.anchors?.[0];
+    expect(a1?.name).toBe('錨點 1');
+    expect(a1?.position).toEqual({ x: 500, y: 500 }); // mockArena center
+    expect(store.isDirty).toBe(true);
+
+    const id2 = store.addAnchor();
+    expect(id2).not.toBe(id1);
+    expect(store.selectedQuestion?.anchors?.[1].name).toBe('錨點 2');
+  });
+
+  it('updateAnchor → 更新 name / position（id 不可改）', async () => {
+    const store = useEditorStore();
+    await store.loadDataset('m1s.json');
+    store.selectQuestion('q0');
+    const id = store.addAnchor()!;
+
+    store.updateAnchor(id, { name: '落雷點', position: { x: 100, y: 200 } });
+    const a = store.selectedQuestion?.anchors?.[0];
+    expect(a?.name).toBe('落雷點');
+    expect(a?.position).toEqual({ x: 100, y: 200 });
+    expect(a?.id).toBe(id); // id 應保留
+  });
+
+  it('updateAnchor 對不存在的 id → no-op', async () => {
+    const store = useEditorStore();
+    await store.loadDataset('m1s.json');
+    store.selectQuestion('q0');
+    store.addAnchor();
+    const before = JSON.stringify(store.selectedQuestion?.anchors);
+    store.updateAnchor('does-not-exist', { name: 'x' });
+    expect(JSON.stringify(store.selectedQuestion?.anchors)).toBe(before);
+  });
+
+  it('removeAnchor → 連動清掉 tethers 中引用此 anchor id 的條目（與 removeEnemy 同精神）', async () => {
+    const store = useEditorStore();
+    await store.loadDataset('m1s.json');
+    store.selectQuestion('q0');
+    const anchorId = store.addAnchor()!;
+    // 三條 tether：1 條 boss → anchor、1 條 anchor → boss、1 條無關
+    store.addTether();
+    store.updateTether(0, { sourceId: 'boss', targetId: anchorId });
+    store.addTether();
+    store.updateTether(1, { sourceId: anchorId, targetId: 'boss' });
+    store.addTether();
+    store.updateTether(2, { sourceId: 'boss', targetId: 'A' });
+
+    store.removeAnchor(anchorId);
+    expect(store.selectedQuestion?.anchors).toEqual([]);
+    expect(store.selectedQuestion?.tethers).toHaveLength(1);
+    expect(store.selectedQuestion?.tethers?.[0]).toEqual({
+      sourceId: 'boss',
+      targetId: 'A',
+      color: 'red',
+    });
+  });
+
+  it('孤兒 anchor（未被任何 tether 引用）允許存在，不需 connected referer', async () => {
+    const store = useEditorStore();
+    await store.loadDataset('m1s.json');
+    store.selectQuestion('q0');
+    store.addAnchor();
+    // 不建立任何 tether，僅檢查 anchor 仍可存活
+    expect(store.selectedQuestion?.anchors).toHaveLength(1);
+  });
+});
