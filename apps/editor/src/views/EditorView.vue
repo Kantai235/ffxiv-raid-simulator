@@ -33,6 +33,7 @@ const {
   selectedRoleSolution,
   availableFiles,
   publishedIndex,
+  datasetSource,
   isLoading,
   isLoadingPublished,
   isSaving,
@@ -166,6 +167,18 @@ function onCanvasClick(point: Point2D): void {
   // TODO: 將在此處理 Circle/Rect/Polygon 的繪製邏輯（下一階段）
   void point;
 }
+
+/**
+ * 場地圖路徑前綴 - 解決靜態 GH Pages 模式下 backgroundImage 解析錯誤。
+ *
+ * Why: dataset 內 backgroundImage 是相對 player 根的路徑（'assets/arenas/x.png'）。
+ *      editor 部署於 '/<repo>/editor/'，瀏覽器相對解析會變成
+ *      '/<repo>/editor/assets/arenas/...' → 404。published 來源時加 '../' 跳到
+ *      player 根；其餘來源（local dev / 上傳的本機 JSON）維持原值。
+ */
+const imagePathPrefix = computed(() =>
+  datasetSource.value === 'published' ? '../' : '',
+);
 
 // 給 EditableArenaMap 的 questions 模式 props
 const bossStateForCanvas = computed(() =>
@@ -515,6 +528,7 @@ watch(
             :mode="mode"
             :selected-line-id="selectedLineId"
             :image-cache-token="imageCacheToken"
+            :image-path-prefix="imagePathPrefix"
             :boss-state="bossStateForCanvas"
             :safe-areas="safeAreasForCanvas"
             @waymark-drag-end="onWaymarkDragEnd"

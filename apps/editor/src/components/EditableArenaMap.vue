@@ -72,6 +72,16 @@ interface Props {
    * 提供時以半透明色塊渲染，方便出題者預覽。
    */
   safeAreas?: SafeArea[];
+  /**
+   * 背景圖路徑前綴。
+   *
+   * Why: 當 editor 從 player 發佈版（靜態 GH Pages 模式）載入官方題庫時，
+   *      arena.backgroundImage 是相對 player 根的路徑（如 'assets/arenas/m1s.png'），
+   *      但 editor 部署在 '/<repo>/editor/'，相對 fetch 會解析成
+   *      '/<repo>/editor/assets/arenas/...' → 404。
+   *      傳入 '../' 可往上跳到 player 根；不傳則維持原值（本機 dev / 上傳的本機 JSON）。
+   */
+  imagePathPrefix?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -79,6 +89,7 @@ const props = withDefaults(defineProps<Props>(), {
   imageCacheToken: 0,
   bossState: null,
   safeAreas: () => [],
+  imagePathPrefix: '',
 });
 
 const emit = defineEmits<{
@@ -433,10 +444,13 @@ const renderableWaymarks = computed(() =>
 
 const lines = computed(() => props.arena.lines ?? []);
 
-/** 背景圖 URL - 加 cache bust */
+/** 背景圖 URL - 套 imagePathPrefix 後加 cache bust */
 const backgroundImageUrl = computed(() => {
-  const base = props.arena.backgroundImage;
-  if (!base) return '';
+  const raw = props.arena.backgroundImage;
+  if (!raw) return '';
+  // 若已是絕對 URL（http://、data:、/）則不加前綴 - imagePathPrefix 僅針對相對路徑
+  const isAbsolute = /^(https?:|data:|\/)/i.test(raw);
+  const base = isAbsolute ? raw : `${props.imagePathPrefix}${raw}`;
   if (props.imageCacheToken > 0) {
     const sep = base.includes('?') ? '&' : '?';
     return `${base}${sep}t=${props.imageCacheToken}`;

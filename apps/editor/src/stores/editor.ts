@@ -118,6 +118,19 @@ export const useEditorStore = defineStore('editor', () => {
   const isLoadingPublished = ref(false);
 
   /**
+   * 當前 dataset 的來源（影響 view 層如何解析相對資源路徑）。
+   *
+   *   - 'local'     : 透過 listDatasets/readDataset 從 dev server 載入（本機 dev）
+   *   - 'published' : 透過 fetchPublishedDataset 從 ../assets/data/ 載入（靜態 GH Pages）
+   *   - 'upload'    : 使用者上傳本機 JSON 檔
+   *
+   * Why 影響 view：editor 部署於 /<repo>/editor/，但 dataset 內 backgroundImage
+   *   使用相對 player 根的路徑（如 'assets/arenas/m1s.png'）。published 來源時
+   *   view 必須加 '../' 前綴；其餘來源維持原值。
+   */
+  const datasetSource = ref<'local' | 'published' | 'upload' | null>(null);
+
+  /**
    * 當前編輯模式 - 影響左側 panel 與 EditableArenaMap 的互動行為。
    *
    * - waymarks: 編輯攻略組的 waymark 座標（拖曳）
@@ -254,6 +267,7 @@ export const useEditorStore = defineStore('editor', () => {
 
       dataset.value = raw;
       currentFilename.value = filename;
+      datasetSource.value = 'local';
       // 預設選第一個攻略，方便玩家立刻能拖
       selectedStrategyId.value = dataset.value.strategies[0]?.id ?? null;
       // 預設選第一題，方便切到 questions 模式立即可編輯
@@ -364,6 +378,7 @@ export const useEditorStore = defineStore('editor', () => {
       assertValidInstanceDataset(raw);
       dataset.value = raw;
       currentFilename.value = filename;
+      datasetSource.value = 'upload';
       selectedStrategyId.value = raw.strategies[0]?.id ?? null;
       selectedQuestionId.value = null;
       selectedRoleId.value = 'MT';
@@ -434,6 +449,7 @@ export const useEditorStore = defineStore('editor', () => {
       // 讓 downloadDataset 的預期檔名與原檔對齊
       const filename = entry.dataPath.split('/').pop() ?? `${entry.id}.json`;
       currentFilename.value = filename;
+      datasetSource.value = 'published';
       selectedStrategyId.value = raw.strategies[0]?.id ?? null;
       selectedQuestionId.value = raw.questions[0]?.id ?? null;
       selectedRoleId.value = 'MT';
@@ -532,6 +548,7 @@ export const useEditorStore = defineStore('editor', () => {
     selectedRoleId.value = 'MT';
     availableFiles.value = [];
     publishedIndex.value = null;
+    datasetSource.value = null;
     isLoading.value = false;
     isSaving.value = false;
     isLoadingPublished.value = false;
@@ -1090,6 +1107,7 @@ export const useEditorStore = defineStore('editor', () => {
     selectedRoleId,
     availableFiles,
     publishedIndex,
+    datasetSource,
     isLoading,
     isSaving,
     isLoadingPublished,
