@@ -87,6 +87,22 @@
   - 單選：correctOptionIds 長度 1、玩家選 1 個且相等
   - 多選：集合相等（Set 比對）
   - 排序：陣列逐 index 嚴格相等
+- **動態實體（Phase 1+）**：所有實體位置統一採 `Point2D` 邏輯座標
+  - `Question.boss.position?` 選填，未提供 fallback 至 `arena.center`
+  - `Question.enemies?: EnemyEntity[]` 分身（id / name / position / facing）
+  - 兩者面嚮（degrees）共用 `facingToCssRotation` 轉 SVG 旋轉
+- **連線（Tether）採 ID 引用，不存死座標**：
+  - `Tether.sourceId` / `targetId` 是字串引用：`'boss'` | `EnemyEntity.id` | `WaymarkId`（Player 端解析順序固定）
+  - **Why ID 而非座標**：實體位置是動態的（boss 可被拖、enemy 會被改），ID 引用讓連線在實體移動時自動跟著重繪；存死座標會在資料層產生失同步陷阱
+  - **Editor 特例**：Role ID 端點在 editor 無法預知玩家站位，fallback 至 `arena.center` + 淡虛線（`stroke-dasharray="8 4"`、`opacity=0.5`）作示意
+  - **連動清理**：`removeEnemy` 自動掃 tethers 移除所有引用該 enemy.id 的條目（避免孤兒引用）
+- **動態場地破壞（arena.grid + Question.arenaMask）**：
+  - `Arena.grid?: { rows, cols }` 副本層共用設定
+  - `Question.arenaMask?: number[]` 此題破碎的格 index
+  - **Row-major 索引**：`index = row * cols + col`（左上 0、右下 `rows*cols - 1`）
+  - **Schema 強制規範**：若 `arenaMask` 非空陣列，所屬 `Arena` 必須有 `grid` 定義；validator 在 [`packages/shared/src/utils/validateDataset.ts`](packages/shared/src/utils/validateDataset.ts) 強制檢查越界 index
+  - **跨題清掃契約**：`updateArenaGrid(rows, cols)` 縮小尺寸時必須掃所有題目的 `arenaMask`，移除 `>= rows * cols` 的 index（避免存出 player 拒絕的非法資料），並設 `isDirty = true`
+  - **雙層防線**：validator 已擋越界；ArenaMap 元件層仍 `filter` 一次防硬傷崩潰
 
 ### D. 計時器與生命週期
 
@@ -99,22 +115,29 @@
 
 Player ArenaMap 從底到頂：
 1. background（場地形狀 + 背景圖）
-2. lines（arena.lines 輔助線）
-3. waymarks
-4. safe-areas（僅 review 模式，interactive 模式必須隱藏以防洩漏答案）
-5. boss（面嚮指示器）
-6. user-clicks
+2. arena-mask（破碎格遮罩 - 半透明黑底 + 紅色對角交叉，當 `arenaMask` 非空時）
+3. lines（arena.lines 輔助線）
+4. waymarks
+5. safe-areas（僅 review 模式，interactive 模式必須隱藏以防洩漏答案）
+6. tethers（實體連線，虛線 + drop-shadow）
+7. boss + enemies（同層；enemies 為縮小版 boss marker + 紅色光暈圓框）
+8. user-clicks
 
 Editor EditableArenaMap：
 1. background
-2. lines（依 mode 決定可選/唯讀）
-3. safe-areas（questions 模式 + pointer-events=all 允許點擊選取）
-4. draft-safe-area（繪圖中暫態）
-5. waymarks（依 mode 可拖/唯讀/隱藏）
-6. boss（questions 模式）
+2. arena-mask（與 player 同視覺；恆顯示讓出題者隨時看到當前破壞狀態）
+3. grid-helper（僅 grid-mask 子模式顯示輔助網格虛線，`pointer-events="none"`）
+4. lines（依 mode 決定可選/唯讀）
+5. safe-areas（questions + safe-area 子模式 + `pointer-events=all` 允許點擊選取）
+6. draft-safe-area（繪圖中暫態）
+7. waymarks（依 mode 可拖/唯讀/隱藏）
+8. tethers（與 player 視覺對齊；Role ID 端點以淡虛線示意）
+9. boss（questions 模式；entity 子模式下疊透明 hitbox 接拖曳）
+10. enemies（同 boss 層；entity 子模式下可拖曳）
 
-- **`pointer-events="none"`** 用於「視覺參考但不應擋點擊」的圖層（arena.lines、safeAreas 在 player interactive）
+- **`pointer-events="none"`** 用於「視覺參考但不應擋點擊」的圖層（arena.lines、arena-mask、grid-helper、tethers、safeAreas 在 player interactive）
 - **Waymarks 在 arena 模式必須隱藏**，避免畫線時誤拖到 waymark 命中熱區
+- **Boss / enemies 的 `pointer-events` 動態切換**：entity 子模式 `auto`（接拖曳），其他子模式 `none`（不擋 grid-mask click 等下層互動）
 
 ### F. Editor 拖曳與繪圖互動
 
@@ -124,9 +147,35 @@ Editor EditableArenaMap：
   - Circle: 點 1 = 圓心 / 點 2 = 圓周
   - Rect: 點 1 = 一角 / 點 2 = 對角（`normalizeRect` 處理 4 象限）
   - Polygon: 連續點 + 磁吸閉合（3+ 點 + 距起點 ≤ 15 單位）
-- **暫態用本地 ref，commit 走 store**：`dragPosition` / `draftLine` / `draftCircle` 等不污染 store reactivity
+- **暫態用本地 ref，commit 走 store**：`dragPosition` / `draftLine` / `draftCircle` / `entityDragPosition` 等不污染 store reactivity
 - **連續繪製 UX**：commit 後保留工具、清 drawingPoints
 - **clamp 統一策略**：方形場地軸對齊 clamp、圓形場地沿向徑投影回圓周
+
+#### F.1 Editor questions 子模式狀態機（Phase 2+）
+
+進入 `mode='questions'` 後再分三個子模式（`store.questionSubMode`），畫布事件嚴格分流：
+
+- **`safe-area`（預設）**：既有 SafeArea 繪圖狀態機（mousedown 分派 circle / rect / polygon）
+- **`entity`**：拖曳 boss / 分身改變 `position`
+  - mousedown on hitbox → `window.mousemove`（暫態 `entityDragPosition`）→ `mouseup` 才呼叫 `updateBossPosition` / `updateEnemy`
+  - hitbox 是疊在 boss/enemy 圖示上的透明 `<circle>`（boss r=65、enemy r=44）
+  - cursor: `grab` / `grabbing`
+- **`grid-mask`**：點擊網格切換破碎/完好
+  - 用 SVG `@click`（非 `mousedown`），避免被誤判為拖曳開始
+  - 邊界防呆：座標超出 `[0, arena.width / height]` 直接忽略
+  - `Math.min(col, cols-1)` 防右/下邊界 `floor` 溢位
+
+**自動重置契約**：
+- 切題（`selectQuestion`）→ 子模式回 `safe-area`
+- 離開 `questions` 主模式（`setMode('arena' | 'waymarks')`）→ 回 `safe-area`
+- `setQuestionSubMode` 切換時統一 `cancelDrawing()` + 清 `selectedSafeAreaId` + 清 `activeDrawingTool`，避免半成品 SafeArea 卡在 entity / grid-mask 子模式
+- **雙保險**：`isDrawing` computed 強制要求 `sub-mode === 'safe-area'`，即使 store 殘留工具也不觸發 mousemove 監聽
+
+#### F.2 動態網格修改與全副本清掃
+
+- `updateArenaGrid(rows, cols)` 在縮小尺寸時必須掃 *所有題目* 的 `arenaMask` 過濾越界 index（不只當前題）
+- UI 端在 `applyGrid` 套用前對「縮小且現有題目有破碎格」彈出 `window.confirm` 警告
+- `clearArenaGrid` 為獨立 action，避免出題者誤打 0 觸發災難性清空
 
 ### G. 上傳與檔案安全（Editor localFileApi）
 
@@ -150,4 +199,49 @@ Editor EditableArenaMap：
 - 繁體中文（台灣用語）：介面 / 專案 / Callback / 模組 / 記憶體 / 資料庫
 - FFXIV 術語：機制、滅團、巨集、站位、詠唱條、散開、分擔、坦克分擔
 - 職能命名：MT / ST / H1 / H2 / D1~D4（社群慣例）
+
+### J. 動態場地與多實體系統 - 開發鐵律（Phase 1-3）
+
+本節列出「未來 AI 修改 codebase 時不可違反」的硬性契約。違反任何一條都會破壞已驗證的測試或讓 player 無法載入既有題庫。
+
+**J.1 實體位置採 Point2D，連線採 ID 引用**
+- `Question.boss.position?` 與 `EnemyEntity.position` 一律 `Point2D`（左上原點邏輯座標），未提供 boss.position 時 fallback 至 `arena.center`
+- `Tether.sourceId` / `targetId` **必須**是 ID 引用（`'boss'` | `enemy.id` | `WaymarkId`），**禁止**改成存死座標
+- 理由：實體拖曳後連線端點要能自動跟著動，存座標會在資料層失同步
+- Editor 端 RoleId 端點 fallback 規則：解析至 `arena.center` + `stroke-dasharray="8 4"` + `opacity=0.5` 淡虛線，明確告知出題者「練習時才定位玩家」
+
+**J.2 arenaMask 採 1D row-major index，且 schema 強制 grid 必備**
+- 索引公式（**全專案唯一真實來源在 [`packages/shared/src/types/question.ts`](./packages/shared/src/types/question.ts) 的 `arenaMask` 註解**）：
+  - 正向：`index = row * cols + col`
+  - 反向：`row = Math.floor(index / cols)`、`col = index % cols`
+- 採 1D `number[]` 而非 2D `boolean[][]`：稀疏資料下 JSON 體積小、toggle 邏輯直接
+- **Schema 契約**：非空 `arenaMask` → `Arena.grid` 必須存在；validator 在 [`packages/shared/src/utils/validateDataset.ts`](./packages/shared/src/utils/validateDataset.ts) 強制檢查越界 index，禁止繞過
+- 邊界 floor 溢位防護：`Math.min(col, cols - 1)`（畫布點擊命中右/下邊界時 floor 會給出 cols 而非 cols-1，必須 clamp）
+
+**J.3 跨題清掃契約 - updateArenaGrid 縮小時的全副本掃描**
+- `updateArenaGrid(rows, cols)` **必須**掃 *全部 questions* 的 `arenaMask`，過濾 `>= rows * cols` 的越界 index
+- 不只清當前題：grid 是 Instance 全副本共用設定，縮小尺寸後所有題目都可能有越界 mask；任何只清當前題的實作都會讓非法資料潛伏到下次 save，被 player validator 拒絕
+- 套用後 `isDirty = true`（即使沒任何題被清也算），讓使用者明確知道 schema 已變動
+- UI 端必須在縮小且現有題目有破碎格時 `window.confirm` 警告，不可靜默清掃
+
+**J.4 孤兒資料防護 - removeEnemy 連動清 tethers**
+- `removeEnemy(id)` **必須**同時 filter 掉 `q.tethers` 中 `sourceId === id || targetId === id` 的條目
+- 理由：保留孤兒 tether 雖然 player 端會優雅降級不渲染（`resolveEntityPosition` 回 null），但會殘留在 JSON 裡讓未來修改困惑
+- 同精神：`removeQuestionOption` 也清各職能 `correctOptionIds` 中對該 option 的引用
+
+**J.5 questions 子模式事件嚴格隔離**
+- `questionSubMode: 'safe-area' | 'entity' | 'grid-mask'`，預設 `'safe-area'`
+- 自動重置：切題（`selectQuestion`）/ 離開 questions 主模式（`setMode`）/ `reset` → 一律回 `'safe-area'`
+- 切換子模式時 `setQuestionSubMode` **必須**清 `drawingPoints` / `selectedSafeAreaId` / `activeDrawingTool`
+- 畫布事件分流：safe-area 走 `mousedown`、entity 走實體 hitbox 自身 `mousedown` + `stopPropagation`、grid-mask 走 SVG `@click`（非 mousedown，避免被拖曳手勢截走）
+- 雙保險：`isDrawing` computed 強制 `sub-mode === 'safe-area'`
+
+**J.6 Tether v-for 必須用複合 key**
+- Tether schema 沒 id 欄位（同 source/target 可能合法重複），**禁止**用 `:key="idx"`
+- 標準寫法：``:key="`${t.sourceId}-${t.targetId}-${idx}`"``
+- 違反會在刪中段條目時 Vue in-place patch 把後續 select.value 推給上一個 DOM 節點，造成下拉錯位
+
+**J.7 拖曳期間用本地 transient state，mouseup 才寫 store**
+- 適用範圍：waymark 拖曳（`dragPosition`）、entity 拖曳（`entityDragPosition`）、arena 畫線（`draftLine`）
+- 違反會：每幀寫 store → 觸發整個 reactive 鏈（panel 重渲染）→ 拖曳卡頓；dirty flag 也會跳很多次
 

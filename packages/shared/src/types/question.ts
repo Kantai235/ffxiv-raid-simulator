@@ -83,12 +83,31 @@ export interface EnemyEntity {
  *
  * 用途舉例：M1S「傾盆大貓」的連線點名、P8S「靈魂痛擊」的牽線。
  *
- * 【ID 解析順序】
+ * ============================================================
+ * 【為何採 ID 引用而非絕對座標 - 架構緣由】
+ * ============================================================
+ * Boss 與 Enemy 的位置在 editor 端是動態的（出題者隨時可拖曳），
+ * 在 player 端未來也可能擴充為「機制中途移動」。若 Tether 存死座標：
+ *   1. 拖曳 Boss 後連線端點不會跟著動 → 出現「線指向空地」的鬼影
+ *   2. 編輯期需手動同步「Tether 座標 = Boss 座標」否則永遠失同步
+ *   3. 任何位置變動都得跨 Question 物件搜索更新，違反單一來源原則
+ *
+ * 改用 ID 引用後：
+ *   - 連線端點 = 「指向某實體」的宣告，渲染期才解析座標
+ *   - 任意實體拖曳後下一幀連線自動跟著重繪，零維護成本
+ *   - schema 變得平面化：Tether 只認 ID，不重複實體位置
+ * ============================================================
+ *
+ * 【ID 解析順序】（player 與 editor 共同遵守）
  *   sourceId / targetId 可以是：
  *     1. 字面量 'boss' - 指向 Question.boss
  *     2. enemies[].id  - 指向分身
  *     3. WaymarkId     - 指向 waymark 座標
  *   前台按此順序解析；任一端找不到對應座標則不渲染該條連線（優雅降級）。
+ *
+ *   Editor 端額外支援第 4 種：RoleId（'MT' | 'ST' | 'H1' ...），
+ *   fallback 到 arena.center 並用淡虛線示意（player 端因不知玩家站位
+ *   而不解析）。
  */
 export interface Tether {
   sourceId: string;
@@ -232,10 +251,29 @@ interface QuestionBase {
   /**
    * 破損網格索引（選填，row-major）- 此題中無法站立的網格。
    *
-   * 【索引規則】
-   *   index = row * cols + col，0-based，左上到右下。
-   *   值必須 0 ≤ index < arena.grid.rows * arena.grid.cols；
-   *   若使用此欄位，其所屬 Instance.arena 必須設定 grid（validator 強制）。
+   * 【索引規則 - 全專案唯一真實來源】
+   *   正向：index = row * cols + col   （0-based，左上到右下）
+   *   反向：row = Math.floor(index / cols)、col = index % cols
+   *   範圍：0 ≤ index < arena.grid.rows * arena.grid.cols
+   *
+   * 範例（4×4 grid，cols=4）：
+   *   ┌────┬────┬────┬────┐
+   *   │  0 │  1 │  2 │  3 │   row 0
+   *   ├────┼────┼────┼────┤
+   *   │  4 │  5 │  6 │  7 │   row 1
+   *   ├────┼────┼────┼────┤
+   *   │  8 │  9 │ 10 │ 11 │   row 2
+   *   ├────┼────┼────┼────┤
+   *   │ 12 │ 13 │ 14 │ 15 │   row 3
+   *   └────┴────┴────┴────┘
+   *
+   * 【Schema 強制】
+   *   若使用此欄位（非空陣列），其所屬 Instance.arena 必須設定 grid，
+   *   否則 validator 拒絕載入 - 避免 player 端 row/col 反推時除以 undefined。
+   *
+   * 【1D 陣列而非 2D bitmap 的取捨】
+   *   typical use case 是「16 格中破 2~3 格」這類稀疏資料，1D index 陣列
+   *   比 boolean[16] 省 JSON 體積，且 toggleArenaMask 邏輯更直接（O(n) include / filter）。
    *
    * 【向下相容】
    *   未使用此欄位（undefined 或空陣列）的題目 = 場地完整，與舊資料行為相同。

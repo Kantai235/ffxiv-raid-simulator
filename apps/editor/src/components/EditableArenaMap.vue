@@ -4,13 +4,32 @@
  * <EditableArenaMap /> - Editor 專屬可編輯場地（SVG）
  * ========================================================================
  *
- * 雙模式互動：
- *   - mode='waymarks': 拖曳 waymark 調整座標
- *   - mode='arena'   : 在背景上拖曳繪製輔助線；點擊現有線可選取
- *
- * 兩種模式互斥（不會同時拖標記又畫線），由 props.mode 控制。
+ * 三層模式互動（props.mode + store.questionSubMode）：
+ *   - mode='waymarks'    : 拖曳 waymark 調整座標
+ *   - mode='arena'       : 在背景上拖曳繪製輔助線；點擊現有線可選取
+ *   - mode='questions'   : 進入題目編輯，再依子模式分流（見下方）
  *
  * ============================================================
+ * 【questions 子模式事件隔離 - 避免狀態機競態】
+ * ============================================================
+ * questions 主模式下三個子模式的畫布互動「絕對不能交疊」，否則會產生
+ * 致命的競態（例：拖實體時誤觸發 SafeArea 繪圖頂點、grid-mask 點擊
+ * 被當成 SafeArea 起點）。隔離策略：
+ *
+ *   1. safe-area  → mousedown 走 handleQuestionsModeMouseDown
+ *                   （既有 SafeArea 繪圖狀態機）
+ *   2. entity     → mousedown 由實體 hitbox 自身吸收 + stopPropagation；
+ *                   外層 onCanvasMouseDown 偵測到 sub-mode 不是 safe-area 即不動作
+ *   3. grid-mask  → 用 SVG @click（非 mousedown），避免被任何拖曳手勢
+ *                   截走；外層 onCanvasMouseDown 同樣略過
+ *
+ * 雙保險：isDrawing computed 強制 sub-mode === 'safe-area'，即使 store
+ *   殘留 activeDrawingTool 也不會觸發 mousemove 監聽 → draft layer 不渲染。
+ *
+ * 切換子模式時 setQuestionSubMode 會 cancelDrawing + 清 selectedSafeAreaId
+ * + 清 activeDrawingTool，保證進新子模式時無孤兒暫態。
+ * ============================================================
+ *
  * 【座標換算 - 螢幕像素 ↔ SVG 邏輯座標】
  * ============================================================
  * 採用 SVG 原生 API：getScreenCTM().inverse() 變換。CTM 是瀏覽器原生
@@ -21,10 +40,16 @@
  *
  * 【拖曳/畫線生命週期】
  *   mousedown → 註冊 window.mousemove + window.mouseup
- *   mousemove → 即時更新本地暫態（dragPosition / draftLine）
- *   mouseup   → emit 結果；移除 window 事件
+ *   mousemove → 即時更新本地暫態（dragPosition / draftLine / entityDragPosition）
+ *   mouseup   → emit 結果或呼叫 store action；移除 window 事件
  *
  * window 監聽避免「游標拖出 SVG 即失追蹤」的常見坑。
+ *
+ * 【為何拖曳期間用 Transient State 而非頻繁 store 寫入】
+ *   - 每幀寫 store 會觸發整個 reactive 鏈（panel 列表也重渲染），效能災難
+ *   - 拖到一半若使用者按 Esc，本地暫態直接丟掉即可，store 從未被弄髒
+ *   - mouseup 才一次性呼叫 updateBossPosition / updateEnemy，dirty flag 也只跳一次
+ *   - 此模式與 waymark 拖曳的 dragPosition 設計一致，全 codebase 統一風格
  * ============================================================
  */
 
@@ -382,9 +407,13 @@ function onGridMaskClick(event: MouseEvent): void {
   const cellH = height / grid.rows;
   const col = Math.floor(logical.x / cellW);
   const row = Math.floor(logical.y / cellH);
-  // clamp 到 [0, cols-1] / [0, rows-1]：邊界恰在 width/height 上時 floor 會給出 cols/rows
+  // 防右/下邊界 floor 溢位：當 logical.x 恰好等於 width（或 y 等於 height），
+  // floor(width / cellW) = cols，超出有效 [0, cols-1]，反推 index 會越界。
+  // 例如 4×4 grid、width=1000、cellW=250：logical.x=1000 → col=4，但實際應屬最右一格 col=3。
+  // Math.min 把這些剛好落在外緣的點吸回最後一格，行為符合直覺（玩家點到邊界 = 點到該格）。
   const safeCol = Math.min(col, grid.cols - 1);
   const safeRow = Math.min(row, grid.rows - 1);
+  // Row-major 公式：index = row * cols + col（與 shared/types/question.ts arenaMask 註解保持唯一來源）
   const index = safeRow * grid.cols + safeCol;
   editorStore.toggleArenaMask(index);
 }

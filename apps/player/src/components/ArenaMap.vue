@@ -277,14 +277,15 @@ function onBackgroundError(): void {
 /**
  * 將 arenaMask 轉為可渲染的破損格資料（含左上座標與寬高）。
  *
- * 渲染邏輯：
- *   - index = row * cols + col（row-major）
- *   - 每格寬高 = arena.size / { cols, rows }
+ * 【索引規則 - 與 shared/types/question.ts arenaMask 註解保持一致】
+ *   正向：index = row * cols + col   （row-major，0-based，左上到右下）
+ *   反向：row = Math.floor(index / cols)、col = index % cols   ← 此函數使用
+ *   每格幾何：tileWidth = arena.size.width / cols、tileHeight 同理
  *
  * 【資料不合理時的降級】
  *   validator 已過濾 index 越界、非整數等情境；但此元件也能處理
  *   「arenaMask 提供卻無 grid」的意外輸入（直接回空陣列，不渲染），
- *   避免開發期誤用導致整個 view 崩潰。
+ *   避免開發期誤用導致整個 view 崩潰（雙層防線）。
  */
 const brokenTiles = computed(() => {
   const grid = props.arena.grid;
@@ -294,6 +295,7 @@ const brokenTiles = computed(() => {
   return props.arenaMask
     .filter((idx) => Number.isInteger(idx) && idx >= 0 && idx < grid.rows * grid.cols)
     .map((idx) => {
+      // 反向索引：row-major 拆 1D index 回 (row, col)
       const row = Math.floor(idx / grid.cols);
       const col = idx % grid.cols;
       return {

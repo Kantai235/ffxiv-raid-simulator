@@ -672,6 +672,14 @@ function onRemoveTether(idx: number): void {
           連到職能時，畫布上以場地中央示意（練習時才會定位到玩家）。
         </p>
 
+        <!--
+          【複合 :key 的設計原因】
+          Tether schema 沒有 id 欄位（同 source/target 組合可能合法重複，
+          無法從欄位推導唯一 key）。若用 idx 為 key，刪中段條目時 Vue 會
+          做 in-place patch，把後續每筆的 select.value 重新塞給上一個 DOM
+          節點，造成「下拉看似亂跳、選錯顏色」的 reactivity 錯位。
+          複合 key 把欄位內容也納入 - 內容變動時直接重建 DOM，避開復用陷阱。
+        -->
         <ul v-if="tethers.length > 0" class="space-y-2 mb-2" data-testid="tethers-list">
           <li
             v-for="(t, idx) in tethers"

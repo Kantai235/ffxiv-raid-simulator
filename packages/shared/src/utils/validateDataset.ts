@@ -265,7 +265,17 @@ function assertValidQuestionExtensions(
   }
 
   // ----- arenaMask -----
-  // 只有「提供且非空」才強制需要 grid；空陣列視同未使用（向下相容編輯中暫存）
+  //
+  // 【Schema 強制契約】
+  //   非空 arenaMask → 所屬 Instance.arena 必須有 grid 定義，否則拒絕載入。
+  //   理由：player ArenaMap 的破碎格渲染要 row = Math.floor(idx / cols)，
+  //         若 grid 缺失等於 cols 為 undefined，整個畫布渲染會崩潰；
+  //         寧可在 schema 層直接擋下，也不讓 player 端帶傷上場。
+  //
+  // 【為何空陣列允許無 grid】
+  //   editor 編輯期可能先 toggle 一格再立刻清掉，arenaMask 暫時是 []；
+  //   或出題者打算未來才設定破碎格。空陣列視同「未使用此欄位」，
+  //   不強制 grid 才不會在編輯中段拋錯打斷流程。
   if (q.arenaMask !== undefined) {
     if (!Array.isArray(q.arenaMask)) {
       throw new DatasetValidationError(
