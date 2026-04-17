@@ -76,4 +76,24 @@ export interface Arena {
    * 純視覺用途，不參與命中判定。
    */
   lines?: ArenaLine[];
+
+  /**
+   * 網格設定（選填）- 用於「動態場地破壞」機制（如 M1S 捕鼠）。
+   *
+   * 【網格切分】
+   *   場地被切為 rows × cols 個等大矩形網格。index 採 row-major：
+   *   index = row * cols + col（左上 0、右下 rows*cols - 1）。
+   *
+   * 【與命中判定的關係】
+   *   Phase 1 僅作為「題目指定破碎格」的座標系參考 + 視覺渲染用；
+   *   不參與安全區命中判定（玩家站在破碎格上的懲罰邏輯留待後續）。
+   *
+   * 【為何放 Arena 而非 Question】
+   *   切分規則由副本結構決定（M1S 是 4×4 而非 3×5），全副本共用同一網格；
+   *   哪幾格碎裂才是 Question.arenaMask 的個別題目狀態。
+   */
+  grid?: {
+    rows: number;
+    cols: number;
+  };
 }

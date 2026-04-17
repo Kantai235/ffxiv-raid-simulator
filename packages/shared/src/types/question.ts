@@ -57,6 +57,47 @@ export interface BossState {
 }
 
 /**
+ * 敵方分身實體 - 場上除王本身外的可追蹤目標。
+ *
+ * 用途舉例：M1S「模仿貓」、P6S「靈魂之影」、P8S「巨像」等機制產生的分身，
+ * 需要獨立的位置與面嚮才能正確呈現 AOE 指示或牽線。
+ *
+ * 【id 約定】
+ *   由出題者（或 editor 自動）指定，在同題目的 enemies 範圍內唯一。
+ *   Tether.sourceId / targetId 可引用此 id；與 WAYMARK_ID / 'boss' 保留字衝突時，
+ *   前台依「'boss' → enemies → waymarks」的順序解析。
+ */
+export interface EnemyEntity {
+  /** 唯一識別碼（題內唯一） */
+  id: string;
+  /** 顯示名稱，例：'模仿貓 1'、'靈魂之影' */
+  name: string;
+  /** 場上位置（邏輯座標，左上原點） */
+  position: Point2D;
+  /** 面嚮角度（度，正北 0 順時針）- 與 BossState.facing 同約定 */
+  facing: number;
+}
+
+/**
+ * 視覺連線（Tether）- 實體之間的牽引/點名線。
+ *
+ * 用途舉例：M1S「傾盆大貓」的連線點名、P8S「靈魂痛擊」的牽線。
+ *
+ * 【ID 解析順序】
+ *   sourceId / targetId 可以是：
+ *     1. 字面量 'boss' - 指向 Question.boss
+ *     2. enemies[].id  - 指向分身
+ *     3. WaymarkId     - 指向 waymark 座標
+ *   前台按此順序解析；任一端找不到對應座標則不渲染該條連線（優雅降級）。
+ */
+export interface Tether {
+  sourceId: string;
+  targetId: string;
+  /** 連線顏色（受限選單，對應常見遊戲內視覺）。前台自行映射實際色碼 */
+  color: 'red' | 'blue' | 'purple' | 'yellow' | 'green';
+}
+
+/**
  * 選擇題的單一選項。
  */
 export interface QuestionOption {
@@ -179,6 +220,33 @@ interface QuestionBase {
 
   /** 王的狀態 */
   boss: BossState;
+
+  /**
+   * 敵方分身（選填）- 除王以外的可追蹤單位。
+   *
+   * 未提供則視為此題只有王一個實體。渲染時與王同層（Layer 5），
+   * 樣式略異（縮小 + 灰紅色調），以便玩家辨識主從關係。
+   */
+  enemies?: EnemyEntity[];
+
+  /**
+   * 破損網格索引（選填，row-major）- 此題中無法站立的網格。
+   *
+   * 【索引規則】
+   *   index = row * cols + col，0-based，左上到右下。
+   *   值必須 0 ≤ index < arena.grid.rows * arena.grid.cols；
+   *   若使用此欄位，其所屬 Instance.arena 必須設定 grid（validator 強制）。
+   *
+   * 【向下相容】
+   *   未使用此欄位（undefined 或空陣列）的題目 = 場地完整，與舊資料行為相同。
+   */
+  arenaMask?: number[];
+
+  /**
+   * 實體連線（選填）- 呈現「傾盆大貓」等牽線機制。
+   * 渲染位於 safeAreas 之上、boss/enemies 之下，視覺上「線被圖示壓住」。
+   */
+  tethers?: Tether[];
 }
 
 /**

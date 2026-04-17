@@ -145,6 +145,11 @@ export function assertValidInstanceDataset(
     throw new DatasetValidationError('parse', 'debuffLibrary 必須為陣列');
   }
 
+  // 取出 arena.grid 一次，供後續 arenaMask 邊界檢查使用
+  // 由 assertValidInstance 保證 instance / arena 已存在且為物件
+  const arena = (data.instance as Record<string, unknown>).arena as Record<string, unknown>;
+  const gridSize = extractGridSize(arena.grid);
+
   // 每題必須有 strategyId（schema 1.1+ 新增的必要欄位 - 題目綁攻略）
   // 不檢查該 strategyId 是否存在於 strategies 陣列中：
   //   1. 編輯期可能先建題目再建攻略（順序自由）
@@ -159,6 +164,172 @@ export function assertValidInstanceDataset(
         'parse',
         `questions[${i}].strategyId 必須為非空字串（題目須綁定攻略組）`,
       );
+    }
+    assertValidQuestionExtensions(q, i, gridSize);
+  }
+}
+
+// ========================================================================
+// Phase 1 新增：實體與動態場地相關欄位驗證
+// ========================================================================
+
+/**
+ * 若 arena.grid 存在則驗證其結構並回傳格數；否則回 null。
+ *
+ * Why 在此一次取出：questions 迴圈中每題都可能檢查 arenaMask 邊界，
+ * 事先 resolve 出「總格數」避免在每題重複驗證 grid 結構。
+ *
+ * @returns  { rows, cols, total } 或 null（表 arena 沒設 grid）
+ * @throws   DatasetValidationError  grid 結構不合法
+ */
+function extractGridSize(
+  grid: unknown,
+): { rows: number; cols: number; total: number } | null {
+  if (grid === undefined) return null;
+  if (!isPlainObject(grid)) {
+    throw new DatasetValidationError('parse', 'arena.grid 必須為物件');
+  }
+  const { rows, cols } = grid;
+  if (!Number.isInteger(rows) || (rows as number) <= 0) {
+    throw new DatasetValidationError('parse', 'arena.grid.rows 必須為正整數');
+  }
+  if (!Number.isInteger(cols) || (cols as number) <= 0) {
+    throw new DatasetValidationError('parse', 'arena.grid.cols 必須為正整數');
+  }
+  return {
+    rows: rows as number,
+    cols: cols as number,
+    total: (rows as number) * (cols as number),
+  };
+}
+
+/**
+ * 驗證題目的 Phase 1 新欄位：enemies / arenaMask / tethers。
+ *
+ * 設計原則：欄位皆為選填，未提供則完全略過檢查（向下相容）；
+ * 但提供則必須符合結構與邏輯約束（避免「格式不符 + 不驗證」導致執行期崩潰）。
+ *
+ * @param q        題目物件（已確認為 plain object）
+ * @param idx      題目索引（錯誤訊息用）
+ * @param gridSize 副本網格總格數，null 表無 grid
+ */
+function assertValidQuestionExtensions(
+  q: Record<string, unknown>,
+  idx: number,
+  gridSize: { total: number } | null,
+): void {
+  // ----- enemies -----
+  if (q.enemies !== undefined) {
+    if (!Array.isArray(q.enemies)) {
+      throw new DatasetValidationError('parse', `questions[${idx}].enemies 必須為陣列`);
+    }
+    for (let j = 0; j < q.enemies.length; j++) {
+      const e = q.enemies[j];
+      if (!isPlainObject(e)) {
+        throw new DatasetValidationError(
+          'parse',
+          `questions[${idx}].enemies[${j}] 必須為物件`,
+        );
+      }
+      if (typeof e.id !== 'string' || !e.id) {
+        throw new DatasetValidationError(
+          'parse',
+          `questions[${idx}].enemies[${j}].id 必須為非空字串`,
+        );
+      }
+      if (typeof e.name !== 'string') {
+        throw new DatasetValidationError(
+          'parse',
+          `questions[${idx}].enemies[${j}].name 必須為字串`,
+        );
+      }
+      if (typeof e.facing !== 'number' || !Number.isFinite(e.facing)) {
+        throw new DatasetValidationError(
+          'parse',
+          `questions[${idx}].enemies[${j}].facing 必須為有限數值`,
+        );
+      }
+      if (!isPlainObject(e.position)) {
+        throw new DatasetValidationError(
+          'parse',
+          `questions[${idx}].enemies[${j}].position 必須為物件`,
+        );
+      }
+      if (typeof e.position.x !== 'number' || typeof e.position.y !== 'number') {
+        throw new DatasetValidationError(
+          'parse',
+          `questions[${idx}].enemies[${j}].position 需含數值 x / y`,
+        );
+      }
+    }
+  }
+
+  // ----- arenaMask -----
+  // 只有「提供且非空」才強制需要 grid；空陣列視同未使用（向下相容編輯中暫存）
+  if (q.arenaMask !== undefined) {
+    if (!Array.isArray(q.arenaMask)) {
+      throw new DatasetValidationError(
+        'parse',
+        `questions[${idx}].arenaMask 必須為數字陣列`,
+      );
+    }
+    if (q.arenaMask.length > 0) {
+      if (!gridSize) {
+        throw new DatasetValidationError(
+          'parse',
+          `questions[${idx}].arenaMask 有資料但所屬 arena 未設定 grid（需先在 arena.grid 定義 rows/cols）`,
+        );
+      }
+      for (let j = 0; j < q.arenaMask.length; j++) {
+        const v = q.arenaMask[j];
+        if (!Number.isInteger(v)) {
+          throw new DatasetValidationError(
+            'parse',
+            `questions[${idx}].arenaMask[${j}] 必須為整數`,
+          );
+        }
+        if ((v as number) < 0 || (v as number) >= gridSize.total) {
+          throw new DatasetValidationError(
+            'parse',
+            `questions[${idx}].arenaMask[${j}] (${v}) 超出 grid 範圍 [0, ${gridSize.total - 1}]`,
+          );
+        }
+      }
+    }
+  }
+
+  // ----- tethers -----
+  if (q.tethers !== undefined) {
+    if (!Array.isArray(q.tethers)) {
+      throw new DatasetValidationError('parse', `questions[${idx}].tethers 必須為陣列`);
+    }
+    const allowedColors = new Set(['red', 'blue', 'purple', 'yellow', 'green']);
+    for (let j = 0; j < q.tethers.length; j++) {
+      const t = q.tethers[j];
+      if (!isPlainObject(t)) {
+        throw new DatasetValidationError(
+          'parse',
+          `questions[${idx}].tethers[${j}] 必須為物件`,
+        );
+      }
+      if (typeof t.sourceId !== 'string' || !t.sourceId) {
+        throw new DatasetValidationError(
+          'parse',
+          `questions[${idx}].tethers[${j}].sourceId 必須為非空字串`,
+        );
+      }
+      if (typeof t.targetId !== 'string' || !t.targetId) {
+        throw new DatasetValidationError(
+          'parse',
+          `questions[${idx}].tethers[${j}].targetId 必須為非空字串`,
+        );
+      }
+      if (typeof t.color !== 'string' || !allowedColors.has(t.color)) {
+        throw new DatasetValidationError(
+          'parse',
+          `questions[${idx}].tethers[${j}].color 必須為 ${[...allowedColors].join(' | ')}`,
+        );
+      }
     }
   }
 }

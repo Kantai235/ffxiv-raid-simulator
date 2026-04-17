@@ -38,7 +38,15 @@
  */
 
 import { computed, ref } from 'vue';
-import type { Arena, Point2D, SafeArea, Strategy } from '@ffxiv-sim/shared';
+import type {
+  Arena,
+  EnemyEntity,
+  Point2D,
+  SafeArea,
+  Strategy,
+  Tether,
+  WaymarkId,
+} from '@ffxiv-sim/shared';
 import { WAYMARK_COLOR, WAYMARK_IDS, facingToCssRotation } from '@ffxiv-sim/shared';
 
 type ArenaMapMode = 'interactive' | 'review' | 'readonly';
@@ -67,6 +75,22 @@ interface Props {
   safeAreas?: SafeArea[];
   /** 玩家的點擊軌跡 */
   userClicks?: Point2D[];
+  /**
+   * 分身列表（Phase 1 動態實體系統）。
+   * 每個實體擁有獨立座標與面嚮，樣式上為王的縮小灰紅色版本。
+   */
+  enemies?: EnemyEntity[];
+  /**
+   * 破損網格索引（Phase 1 動態場地）。
+   * 依賴 arena.grid 提供的 rows/cols。若無 grid 或陣列空則不渲染。
+   */
+  arenaMask?: number[];
+  /**
+   * 實體連線（Phase 1 連線機制）。
+   * sourceId / targetId 依「'boss' → enemies → waymarks」順序解析；
+   * 任一端無法解析則該條連線略過不畫（優雅降級）。
+   */
+  tethers?: Tether[];
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -76,6 +100,9 @@ const props = withDefaults(defineProps<Props>(), {
   bossPosition: undefined,
   safeAreas: () => [],
   userClicks: () => [],
+  enemies: () => [],
+  arenaMask: () => [],
+  tethers: () => [],
 });
 
 const emit = defineEmits<{
@@ -242,6 +269,131 @@ const backgroundFailed = ref(false);
 function onBackgroundError(): void {
   backgroundFailed.value = true;
 }
+
+// ========================================================================
+// Phase 1：動態網格（arenaMask）
+// ========================================================================
+
+/**
+ * 將 arenaMask 轉為可渲染的破損格資料（含左上座標與寬高）。
+ *
+ * 渲染邏輯：
+ *   - index = row * cols + col（row-major）
+ *   - 每格寬高 = arena.size / { cols, rows }
+ *
+ * 【資料不合理時的降級】
+ *   validator 已過濾 index 越界、非整數等情境；但此元件也能處理
+ *   「arenaMask 提供卻無 grid」的意外輸入（直接回空陣列，不渲染），
+ *   避免開發期誤用導致整個 view 崩潰。
+ */
+const brokenTiles = computed(() => {
+  const grid = props.arena.grid;
+  if (!grid || props.arenaMask.length === 0) return [];
+  const tileWidth = props.arena.size.width / grid.cols;
+  const tileHeight = props.arena.size.height / grid.rows;
+  return props.arenaMask
+    .filter((idx) => Number.isInteger(idx) && idx >= 0 && idx < grid.rows * grid.cols)
+    .map((idx) => {
+      const row = Math.floor(idx / grid.cols);
+      const col = idx % grid.cols;
+      return {
+        index: idx,
+        x: col * tileWidth,
+        y: row * tileHeight,
+        width: tileWidth,
+        height: tileHeight,
+      };
+    });
+});
+
+// ========================================================================
+// Phase 1：連線（tethers）- sourceId / targetId 座標解析
+// ========================================================================
+
+/** Waymark ID 型別守衛 - 比較 shared 的 WAYMARK_IDS 清單 */
+function isWaymarkId(id: string): id is WaymarkId {
+  return (WAYMARK_IDS as readonly string[]).includes(id);
+}
+
+/**
+ * 將實體 ID 解析為場上座標。支援：
+ *   - 'boss'         → resolvedBossPosition
+ *   - EnemyEntity.id → enemies 陣列中對應 position
+ *   - WAYMARK_ID     → waymarks 對應座標
+ *
+ * 找不到則回 null（呼叫端應過濾掉該條連線，優雅降級）。
+ *
+ * Why 按此順序：'boss' 為保留字（優先）；接下來 enemies 與 waymark 本質是獨立
+ *   命名空間，但 enemies 為「題目當下動態生成的實體」優先級高於「全攻略共用的 waymark」。
+ */
+function resolveEntityPosition(id: string): Point2D | null {
+  if (id === 'boss') return resolvedBossPosition.value;
+  const enemy = props.enemies.find((e) => e.id === id);
+  if (enemy) return enemy.position;
+  if (isWaymarkId(id)) {
+    const wm = props.waymarks[id];
+    if (wm) return wm;
+  }
+  return null;
+}
+
+/**
+ * 連線顏色 → 實際 CSS 色碼的對映。
+ * 採用明亮色系並保留高飽和度，方便在深色場地上依然清晰。
+ */
+const TETHER_COLOR_MAP: Record<Tether['color'], string> = {
+  red: '#E74C3C',
+  blue: '#3498DB',
+  purple: '#9B59B6',
+  yellow: '#F1C40F',
+  green: '#2ECC71',
+};
+
+/**
+ * 可渲染的連線列表 - 過濾掉任一端無法解析的條目。
+ */
+const renderableTethers = computed(() =>
+  props.tethers
+    .map((t, idx) => {
+      const src = resolveEntityPosition(t.sourceId);
+      const tgt = resolveEntityPosition(t.targetId);
+      if (!src || !tgt) return null;
+      return {
+        key: `${idx}-${t.sourceId}-${t.targetId}`,
+        x1: src.x,
+        y1: src.y,
+        x2: tgt.x,
+        y2: tgt.y,
+        color: TETHER_COLOR_MAP[t.color],
+      };
+    })
+    .filter((t): t is NonNullable<typeof t> => t !== null),
+);
+
+// ========================================================================
+// Phase 1：分身（enemies）渲染資料
+// ========================================================================
+
+/**
+ * 分身 marker 視覺尺寸（縮小版 boss marker）。
+ * 小於 BOSS_IMAGE_SIZE，視覺上「分身 = 弱化的王」。
+ */
+const ENEMY_MARKER_SIZE = 80;
+
+/**
+ * 將 enemies 轉為渲染資料（含左上座標與 CSS 旋轉角度）。
+ */
+const renderableEnemies = computed(() =>
+  props.enemies.map((e) => ({
+    id: e.id,
+    name: e.name,
+    cx: e.position.x,
+    cy: e.position.y,
+    imgX: e.position.x - ENEMY_MARKER_SIZE / 2,
+    imgY: e.position.y - ENEMY_MARKER_SIZE / 2,
+    rotation: facingToCssRotation(e.facing),
+  })),
+);
 </script>
 
 <template>
@@ -304,6 +456,49 @@ function onBackgroundError(): void {
         preserveAspectRatio="xMidYMid slice"
         @error="onBackgroundError"
       />
+    </g>
+
+    <!-- =========================================================
+         Layer 1.5: 破損網格遮罩（Arena Mask）
+         - 位置：介於背景與輔助線之間；遮罩要壓過背景圖但不該擋住
+           waymark / 安全區等重要資訊
+         - 視覺：半透明黑色填滿 + 對角交叉線，表示「此格無法站立」
+         - pointer-events=none：玩家仍可點擊破碎格（hit test 由
+           呼叫端判斷是否算失誤；此處僅負責視覺警示）
+         ========================================================= -->
+    <g data-layer="arena-mask" pointer-events="none">
+      <g
+        v-for="tile in brokenTiles"
+        :key="`mask-${tile.index}`"
+        :data-mask-index="tile.index"
+      >
+        <rect
+          :x="tile.x"
+          :y="tile.y"
+          :width="tile.width"
+          :height="tile.height"
+          fill="rgba(0, 0, 0, 0.65)"
+          stroke="rgba(231, 76, 60, 0.8)"
+          stroke-width="1.5"
+        />
+        <!-- 對角交叉線讓「破碎」視覺更直覺 -->
+        <line
+          :x1="tile.x"
+          :y1="tile.y"
+          :x2="tile.x + tile.width"
+          :y2="tile.y + tile.height"
+          stroke="rgba(231, 76, 60, 0.75)"
+          stroke-width="2"
+        />
+        <line
+          :x1="tile.x + tile.width"
+          :y1="tile.y"
+          :x2="tile.x"
+          :y2="tile.y + tile.height"
+          stroke="rgba(231, 76, 60, 0.75)"
+          stroke-width="2"
+        />
+      </g>
     </g>
 
     <!-- =========================================================
@@ -463,17 +658,45 @@ function onBackgroundError(): void {
     </g>
 
     <!-- =========================================================
-         Layer 5: 王與面嚮指示器
-         王用黑色圓表示，上方延伸箭頭指向面嚮方向。
-         箭頭素材基準為「朝上 = 北」，CSS rotate 角度 = facingToCssRotation(facing)。
+         Layer 4.5: 實體連線（Tethers）
+         介於安全區與實體之間，視覺上「線被圖示壓住」。
+         - stroke-dasharray 產生虛線質感，與遊戲內的連線視覺接近
+         - stroke-linecap round 讓線頭柔和、端點與實體 marker 過渡自然
+         - drop-shadow 增加可見度（深色場地不被吞掉）
          ========================================================= -->
     <g
-      v-if="showBossFacing"
+      data-layer="tethers"
+      pointer-events="none"
+      filter="drop-shadow(0 1px 2px rgba(0,0,0,0.7))"
+    >
+      <line
+        v-for="t in renderableTethers"
+        :key="t.key"
+        :x1="t.x1"
+        :y1="t.y1"
+        :x2="t.x2"
+        :y2="t.y2"
+        :stroke="t.color"
+        stroke-width="4"
+        stroke-linecap="round"
+        stroke-dasharray="10 6"
+        stroke-opacity="0.85"
+      />
+    </g>
+
+    <!-- =========================================================
+         Layer 5: 王與分身
+         - 王：PNG 素材 + 面嚮旋轉，優先使用 boss.position，無則 arena.center
+         - 分身：同款素材縮小版 + 紅色光暈，與王視覺呼應但明顯次要
+         ========================================================= -->
+    <g
       data-layer="boss"
       pointer-events="none"
       filter="drop-shadow(0 2px 4px rgba(0,0,0,0.7))"
     >
+      <!-- 王本體（有提供 bossFacing 才畫） -->
       <g
+        v-if="showBossFacing"
         :data-testid="'boss-facing'"
         :transform="`rotate(${bossArrowRotation} ${resolvedBossPosition.x} ${resolvedBossPosition.y})`"
       >
@@ -489,6 +712,36 @@ function onBackgroundError(): void {
           :width="BOSS_IMAGE_SIZE"
           :height="BOSS_IMAGE_SIZE"
         />
+      </g>
+
+      <!-- 分身（縮小 boss marker + 紅色光暈） -->
+      <g
+        v-for="enemy in renderableEnemies"
+        :key="enemy.id"
+        :data-enemy-id="enemy.id"
+      >
+        <!-- 紅色光暈：微透明圓框，與王區別但保持「敵方」色調一致性 -->
+        <circle
+          :cx="enemy.cx"
+          :cy="enemy.cy"
+          :r="ENEMY_MARKER_SIZE / 2 + 4"
+          fill="rgba(231, 76, 60, 0.12)"
+          stroke="rgba(231, 76, 60, 0.55)"
+          stroke-width="2"
+          stroke-dasharray="4 3"
+        />
+        <g
+          :transform="`rotate(${enemy.rotation} ${enemy.cx} ${enemy.cy})`"
+        >
+          <image
+            :href="BOSS_IMAGE_HREF"
+            :x="enemy.imgX"
+            :y="enemy.imgY"
+            :width="ENEMY_MARKER_SIZE"
+            :height="ENEMY_MARKER_SIZE"
+            opacity="0.85"
+          />
+        </g>
       </g>
     </g>
 

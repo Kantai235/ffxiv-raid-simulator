@@ -174,6 +174,9 @@ function backToResults(): void {
         :boss-position="item.question.boss.position"
         :user-clicks="userClicks"
         :safe-areas="safeAreas"
+        :enemies="item.question.enemies ?? []"
+        :arena-mask="item.question.arenaMask ?? []"
+        :tethers="item.question.tethers ?? []"
       />
     </div>
 

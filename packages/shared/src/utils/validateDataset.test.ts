@@ -107,6 +107,175 @@ describe('assertValidInstanceDataset', () => {
   });
 });
 
+// ========================================================================
+// Phase 1 擴充欄位：arena.grid / enemies / arenaMask / tethers
+// ========================================================================
+
+/** 產生含 1 題 map-click 的 dataset（給 Phase 1 擴充欄位測試用） */
+function makeDatasetWithQuestion(extra: Record<string, unknown> = {}): unknown {
+  const ds = makeValidDataset() as Record<string, unknown>;
+  (ds.questions as unknown[]) = [
+    {
+      id: 'q1',
+      instanceId: 'm1s',
+      strategyId: 'game8',
+      name: '測試題',
+      type: 'map-click',
+      clickCount: 1,
+      boss: { skillName: 'x', castTime: 8, facing: 0 },
+      roleSolutions: {},
+      ...extra,
+    },
+  ];
+  return ds;
+}
+
+describe('arena.grid 驗證', () => {
+  it('合法 { rows, cols } → 不拋錯', () => {
+    const d = makeValidDataset() as Record<string, unknown>;
+    ((d.instance as Record<string, unknown>).arena as Record<string, unknown>).grid = {
+      rows: 4,
+      cols: 4,
+    };
+    expect(() => assertValidInstanceDataset(d)).not.toThrow();
+  });
+
+  it('rows 非正整數 → parse 錯誤', () => {
+    const d = makeValidDataset() as Record<string, unknown>;
+    ((d.instance as Record<string, unknown>).arena as Record<string, unknown>).grid = {
+      rows: 0,
+      cols: 4,
+    };
+    expect(() => assertValidInstanceDataset(d)).toThrow(/rows/);
+  });
+
+  it('cols 小數 → parse 錯誤', () => {
+    const d = makeValidDataset() as Record<string, unknown>;
+    ((d.instance as Record<string, unknown>).arena as Record<string, unknown>).grid = {
+      rows: 4,
+      cols: 4.5,
+    };
+    expect(() => assertValidInstanceDataset(d)).toThrow(/cols/);
+  });
+
+  it('grid 為陣列（非物件）→ parse 錯誤', () => {
+    const d = makeValidDataset() as Record<string, unknown>;
+    ((d.instance as Record<string, unknown>).arena as Record<string, unknown>).grid = [4, 4];
+    expect(() => assertValidInstanceDataset(d)).toThrow(/grid/);
+  });
+});
+
+describe('Question.arenaMask 驗證', () => {
+  function withGrid(d: Record<string, unknown>, rows = 4, cols = 4): void {
+    ((d.instance as Record<string, unknown>).arena as Record<string, unknown>).grid = {
+      rows,
+      cols,
+    };
+  }
+
+  it('合法 index（0 到 total-1）→ 不拋錯', () => {
+    const d = makeDatasetWithQuestion({ arenaMask: [0, 5, 15] }) as Record<string, unknown>;
+    withGrid(d);
+    expect(() => assertValidInstanceDataset(d)).not.toThrow();
+  });
+
+  it('空陣列 + 無 grid → 視同未使用，不拋錯（向下相容）', () => {
+    const d = makeDatasetWithQuestion({ arenaMask: [] });
+    expect(() => assertValidInstanceDataset(d)).not.toThrow();
+  });
+
+  it('非空 arenaMask 但 arena 未設 grid → parse 錯誤', () => {
+    const d = makeDatasetWithQuestion({ arenaMask: [0] });
+    expect(() => assertValidInstanceDataset(d)).toThrow(/grid/);
+  });
+
+  it('index 超過上界 → parse 錯誤', () => {
+    const d = makeDatasetWithQuestion({ arenaMask: [16] }) as Record<string, unknown>;
+    withGrid(d, 4, 4); // total = 16，合法範圍 0..15
+    expect(() => assertValidInstanceDataset(d)).toThrow(/超出/);
+  });
+
+  it('index 為負 → parse 錯誤', () => {
+    const d = makeDatasetWithQuestion({ arenaMask: [-1] }) as Record<string, unknown>;
+    withGrid(d);
+    expect(() => assertValidInstanceDataset(d)).toThrow(/超出/);
+  });
+
+  it('index 為小數 → parse 錯誤', () => {
+    const d = makeDatasetWithQuestion({ arenaMask: [1.5] }) as Record<string, unknown>;
+    withGrid(d);
+    expect(() => assertValidInstanceDataset(d)).toThrow(/整數/);
+  });
+
+  it('arenaMask 非陣列 → parse 錯誤', () => {
+    const d = makeDatasetWithQuestion({ arenaMask: 'abc' });
+    expect(() => assertValidInstanceDataset(d)).toThrow(/arenaMask/);
+  });
+});
+
+describe('Question.enemies 驗證', () => {
+  it('合法 enemies → 不拋錯', () => {
+    const d = makeDatasetWithQuestion({
+      enemies: [{ id: 'e1', name: '模仿貓 1', position: { x: 100, y: 200 }, facing: 90 }],
+    });
+    expect(() => assertValidInstanceDataset(d)).not.toThrow();
+  });
+
+  it('enemies 非陣列 → parse 錯誤', () => {
+    const d = makeDatasetWithQuestion({ enemies: {} });
+    expect(() => assertValidInstanceDataset(d)).toThrow(/enemies/);
+  });
+
+  it('enemy 缺 id → parse 錯誤', () => {
+    const d = makeDatasetWithQuestion({
+      enemies: [{ name: 'x', position: { x: 0, y: 0 }, facing: 0 }],
+    });
+    expect(() => assertValidInstanceDataset(d)).toThrow(/id/);
+  });
+
+  it('enemy.position 缺 y → parse 錯誤', () => {
+    const d = makeDatasetWithQuestion({
+      enemies: [{ id: 'e1', name: 'x', position: { x: 0 }, facing: 0 }],
+    });
+    expect(() => assertValidInstanceDataset(d)).toThrow(/position/);
+  });
+
+  it('enemy.facing 為 NaN → parse 錯誤', () => {
+    const d = makeDatasetWithQuestion({
+      enemies: [{ id: 'e1', name: 'x', position: { x: 0, y: 0 }, facing: Number.NaN }],
+    });
+    expect(() => assertValidInstanceDataset(d)).toThrow(/facing/);
+  });
+});
+
+describe('Question.tethers 驗證', () => {
+  it('合法 tethers → 不拋錯', () => {
+    const d = makeDatasetWithQuestion({
+      tethers: [{ sourceId: 'boss', targetId: 'A', color: 'red' }],
+    });
+    expect(() => assertValidInstanceDataset(d)).not.toThrow();
+  });
+
+  it('color 不在白名單 → parse 錯誤', () => {
+    const d = makeDatasetWithQuestion({
+      tethers: [{ sourceId: 'boss', targetId: 'A', color: 'black' }],
+    });
+    expect(() => assertValidInstanceDataset(d)).toThrow(/color/);
+  });
+
+  it('sourceId 空字串 → parse 錯誤', () => {
+    const d = makeDatasetWithQuestion({
+      tethers: [{ sourceId: '', targetId: 'A', color: 'red' }],
+    });
+    expect(() => assertValidInstanceDataset(d)).toThrow(/sourceId/);
+  });
+
+  it('tethers 非陣列 → parse 錯誤', () => {
+    const d = makeDatasetWithQuestion({ tethers: 'x' });
+    expect(() => assertValidInstanceDataset(d)).toThrow(/tethers/);
+  });
+});
+
 describe('isValidInstanceDataset', () => {
   it('合法 → true', () => {
     expect(isValidInstanceDataset(makeValidDataset())).toBe(true);

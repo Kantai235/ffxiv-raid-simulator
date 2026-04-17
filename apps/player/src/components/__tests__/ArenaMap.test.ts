@@ -190,9 +190,11 @@ describe('ArenaMap - Waymark 渲染', () => {
 });
 
 describe('ArenaMap - 王面嚮指示器', () => {
-  it('未提供 bossFacing 時不渲染指示器', () => {
+  it('未提供 bossFacing 時不渲染王指示器（boss-facing 子群）', () => {
+    // Phase 1 後 [data-layer="boss"] 容器本身恆存在（會承載分身），
+    // 但王本體的 [data-testid="boss-facing"] 只在 bossFacing 有提供時才渲染
     const wrapper = mount(ArenaMap, { props: { arena: mockArena } });
-    expect(wrapper.find('[data-layer="boss"]').exists()).toBe(false);
+    expect(wrapper.find('[data-testid="boss-facing"]').exists()).toBe(false);
   });
 
   it('bossFacing = 0（正北）為合法值，必須渲染', () => {
@@ -336,5 +338,161 @@ describe('ArenaMap - 玩家點擊軌跡', () => {
     expect(layer.findAll('[data-click-index]')).toHaveLength(3);
     const texts = layer.findAll('text').map((t) => t.text());
     expect(texts).toEqual(['1', '2', '3']);
+  });
+});
+
+// ========================================================================
+// Phase 1 - 動態實體與場地遮罩
+// ========================================================================
+
+describe('ArenaMap - 動態網格遮罩（arenaMask）', () => {
+  const gridArena: Arena = {
+    ...mockArena,
+    grid: { rows: 4, cols: 4 },
+  };
+
+  it('有 grid + arenaMask 非空 → 渲染對應數量的破碎格', () => {
+    const wrapper = mount(ArenaMap, {
+      props: { mode: 'readonly', arena: gridArena, arenaMask: [0, 5, 10] },
+    });
+    const layer = wrapper.find('[data-layer="arena-mask"]');
+    expect(layer.exists()).toBe(true);
+    expect(layer.findAll('[data-mask-index]')).toHaveLength(3);
+  });
+
+  it('arenaMask 空陣列 → layer 存在但內部無破碎格（向下相容）', () => {
+    const wrapper = mount(ArenaMap, {
+      props: { mode: 'readonly', arena: gridArena, arenaMask: [] },
+    });
+    expect(wrapper.findAll('[data-mask-index]')).toHaveLength(0);
+  });
+
+  it('arena 無 grid 但誤傳 arenaMask → 不崩潰、不渲染破碎格', () => {
+    const wrapper = mount(ArenaMap, {
+      props: { mode: 'readonly', arena: mockArena, arenaMask: [0, 1, 2] },
+    });
+    expect(wrapper.findAll('[data-mask-index]')).toHaveLength(0);
+  });
+
+  it('破碎格幾何：index 0 應位於左上 (0,0)，index = cols-1 位於右上', () => {
+    const wrapper = mount(ArenaMap, {
+      props: { mode: 'readonly', arena: gridArena, arenaMask: [0, 3] },
+    });
+    const tiles = wrapper.findAll('[data-mask-index]');
+    const tile0 = tiles[0].find('rect');
+    // 1000 / 4 = 250；index 0 = (row 0, col 0) = (0, 0)
+    expect(tile0.attributes('x')).toBe('0');
+    expect(tile0.attributes('y')).toBe('0');
+    expect(tile0.attributes('width')).toBe('250');
+    expect(tile0.attributes('height')).toBe('250');
+
+    const tile3 = tiles[1].find('rect');
+    // index 3 = (row 0, col 3) → x = 3 * 250 = 750
+    expect(tile3.attributes('x')).toBe('750');
+    expect(tile3.attributes('y')).toBe('0');
+  });
+
+  it('越界 index 會被過濾掉，不渲染（二度防線）', () => {
+    // validator 已阻擋此情境，但元件層再 filter 一次避免硬傷
+    const wrapper = mount(ArenaMap, {
+      props: { mode: 'readonly', arena: gridArena, arenaMask: [0, 99, -1] },
+    });
+    expect(wrapper.findAll('[data-mask-index]')).toHaveLength(1);
+  });
+});
+
+describe('ArenaMap - 分身（enemies）', () => {
+  it('提供 enemies → 渲染對應的 data-enemy-id 節點', () => {
+    const wrapper = mount(ArenaMap, {
+      props: {
+        mode: 'readonly',
+        arena: mockArena,
+        bossFacing: 0,
+        enemies: [
+          { id: 'e1', name: '模仿貓 1', position: { x: 200, y: 300 }, facing: 90 },
+          { id: 'e2', name: '模仿貓 2', position: { x: 700, y: 700 }, facing: 180 },
+        ],
+      },
+    });
+    expect(wrapper.find('[data-enemy-id="e1"]').exists()).toBe(true);
+    expect(wrapper.find('[data-enemy-id="e2"]').exists()).toBe(true);
+  });
+
+  it('未提供 enemies → 不渲染任何分身節點', () => {
+    const wrapper = mount(ArenaMap, {
+      props: { mode: 'readonly', arena: mockArena, bossFacing: 0 },
+    });
+    expect(wrapper.findAll('[data-enemy-id]')).toHaveLength(0);
+  });
+});
+
+describe('ArenaMap - 連線（tethers）', () => {
+  it('boss ↔ waymark 連線可解析 → 渲染一條 line', () => {
+    const wrapper = mount(ArenaMap, {
+      props: {
+        mode: 'readonly',
+        arena: mockArena,
+        bossFacing: 0,
+        waymarks: { A: { x: 200, y: 200 } },
+        tethers: [{ sourceId: 'boss', targetId: 'A', color: 'red' }],
+      },
+    });
+    const layer = wrapper.find('[data-layer="tethers"]');
+    expect(layer.exists()).toBe(true);
+    expect(layer.findAll('line')).toHaveLength(1);
+  });
+
+  it('boss ↔ enemy 連線可解析（enemy 為動態實體）', () => {
+    const wrapper = mount(ArenaMap, {
+      props: {
+        mode: 'readonly',
+        arena: mockArena,
+        bossFacing: 0,
+        enemies: [{ id: 'e1', name: 'x', position: { x: 800, y: 800 }, facing: 0 }],
+        tethers: [{ sourceId: 'boss', targetId: 'e1', color: 'blue' }],
+      },
+    });
+    expect(wrapper.find('[data-layer="tethers"]').findAll('line')).toHaveLength(1);
+  });
+
+  it('任一端 ID 無法解析 → 該條 tether 被過濾不渲染（優雅降級）', () => {
+    const wrapper = mount(ArenaMap, {
+      props: {
+        mode: 'readonly',
+        arena: mockArena,
+        bossFacing: 0,
+        // A 不存在於 waymarks、ghost 也不存在於 enemies
+        tethers: [
+          { sourceId: 'boss', targetId: 'A', color: 'red' },
+          { sourceId: 'boss', targetId: 'ghost', color: 'red' },
+        ],
+      },
+    });
+    expect(wrapper.find('[data-layer="tethers"]').findAll('line')).toHaveLength(0);
+  });
+});
+
+describe('ArenaMap - boss.position fallback', () => {
+  it('未提供 bossPosition → 使用 arena.center 作為王位置', () => {
+    const wrapper = mount(ArenaMap, {
+      props: { mode: 'readonly', arena: mockArena, bossFacing: 0 },
+    });
+    const g = wrapper.find('[data-testid="boss-facing"]');
+    expect(g.exists()).toBe(true);
+    // rotate(0 500 500) 對應 arena.center（500,500）
+    expect(g.attributes('transform')).toContain('500 500');
+  });
+
+  it('提供 bossPosition → 覆寫 arena.center', () => {
+    const wrapper = mount(ArenaMap, {
+      props: {
+        mode: 'readonly',
+        arena: mockArena,
+        bossFacing: 0,
+        bossPosition: { x: 250, y: 750 },
+      },
+    });
+    const g = wrapper.find('[data-testid="boss-facing"]');
+    expect(g.attributes('transform')).toContain('250 750');
   });
 });
