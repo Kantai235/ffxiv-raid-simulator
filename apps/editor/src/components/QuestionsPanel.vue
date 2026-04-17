@@ -10,7 +10,7 @@
 import { computed, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import type { ChoiceQuestion, QuestionType } from '@ffxiv-sim/shared';
-import { useEditorStore } from '@/stores/editor';
+import { useEditorStore, type QuestionSubMode } from '@/stores/editor';
 
 const store = useEditorStore();
 const {
@@ -19,6 +19,7 @@ const {
   selectedQuestionId,
   selectedStrategyId,
   selectedStrategy,
+  questionSubMode,
 } = storeToRefs(store);
 
 /**
@@ -158,6 +159,81 @@ function isFirstOption(optionId: string): boolean {
 
 function isLastOption(optionId: string): boolean {
   return options.value[options.value.length - 1]?.id === optionId;
+}
+
+// ----------------------------------------------------------------------
+// Phase 2 - 子模式切換 + 實體 / 網格 panel
+// ----------------------------------------------------------------------
+
+const SUB_MODE_LABELS: Record<QuestionSubMode, string> = {
+  'safe-area': '安全區',
+  entity: '實體與分身',
+  'grid-mask': '場地破壞',
+};
+
+function setSubMode(next: QuestionSubMode): void {
+  store.setQuestionSubMode(next);
+}
+
+// ===== entity 面板 =====
+const enemies = computed(() => selectedQuestion.value?.enemies ?? []);
+
+function onAddEnemy(): void {
+  store.addEnemy();
+}
+
+function onRemoveEnemy(id: string): void {
+  if (!window.confirm('刪除此分身會同時清除所有引用它的連線（tethers），確定？')) return;
+  store.removeEnemy(id);
+}
+
+function onUpdateEnemyName(id: string, name: string): void {
+  store.updateEnemy(id, { name });
+}
+
+function onUpdateEnemyFacing(id: string, raw: number): void {
+  if (Number.isNaN(raw)) return;
+  store.updateEnemy(id, { facing: raw });
+}
+
+// ===== grid-mask 面板 =====
+const arena = computed(() => dataset.value?.instance.arena);
+const grid = computed(() => arena.value?.grid);
+const arenaMask = computed(() => selectedQuestion.value?.arenaMask ?? []);
+
+/**
+ * grid 編輯暫態 - rows/cols 用本地 ref 而非直接 v-model 到 store，
+ * 因為使用者可能正在打字（如打到「3」要打「30」），中途的「3」不該立刻
+ * 觸發越界清掃。改為按「套用」按鈕才呼叫 store.updateArenaGrid。
+ */
+const draftRows = ref<number>(grid.value?.rows ?? 4);
+const draftCols = ref<number>(grid.value?.cols ?? 4);
+
+function applyGrid(): void {
+  // 套用前檢查 - 與 store 相同規則，避免按鈕看似可用但 store 拒絕
+  if (!Number.isInteger(draftRows.value) || draftRows.value <= 0) return;
+  if (!Number.isInteger(draftCols.value) || draftCols.value <= 0) return;
+  // 縮小尺寸時警告（store 會自動清掃，但讓使用者明確知情）
+  if (
+    grid.value &&
+    (draftRows.value < grid.value.rows || draftCols.value < grid.value.cols) &&
+    dataset.value?.questions.some((q) => q.arenaMask && q.arenaMask.length > 0)
+  ) {
+    const ok = window.confirm(
+      '縮小網格會自動移除所有題目中超出新範圍的破碎格設定，確定套用？',
+    );
+    if (!ok) return;
+  }
+  store.updateArenaGrid(draftRows.value, draftCols.value);
+}
+
+function onClearGrid(): void {
+  if (!window.confirm('將移除整個副本的 grid 設定並清光所有題目的破碎格，確定？')) return;
+  store.clearArenaGrid();
+}
+
+function onClearMask(): void {
+  store.clearArenaMask();
 }
 </script>
 
@@ -411,7 +487,207 @@ function isLastOption(optionId: string): boolean {
       </div>
     </section>
 
-    <p v-else class="text-xs text-gray-500 italic">
+    <!-- ===== Phase 2 - 子模式切換 ===== -->
+    <section
+      v-if="selectedQuestion"
+      data-testid="sub-mode-switcher"
+      class="border-t border-gray-700 pt-4"
+    >
+      <h3 class="text-xs text-editor-accent font-bold mb-2">編輯模式</h3>
+      <div class="flex bg-editor-bg rounded overflow-hidden border border-gray-600">
+        <button
+          v-for="m in (['safe-area', 'entity', 'grid-mask'] as QuestionSubMode[])"
+          :key="m"
+          type="button"
+          :data-sub-mode="m"
+          class="flex-1 px-2 py-1 text-xs transition-colors"
+          :class="
+            questionSubMode === m
+              ? 'bg-editor-accent text-editor-bg font-bold'
+              : 'hover:bg-editor-panel/60'
+          "
+          @click="setSubMode(m)"
+        >
+          {{ SUB_MODE_LABELS[m] }}
+        </button>
+      </div>
+    </section>
+
+    <!-- ===== entity 子模式：分身管理 ===== -->
+    <section
+      v-if="selectedQuestion && questionSubMode === 'entity'"
+      data-testid="entity-panel"
+      class="border-t border-gray-700 pt-4"
+    >
+      <h3 class="text-xs text-editor-accent font-bold mb-2">實體與分身</h3>
+      <p class="text-xs text-gray-400 leading-relaxed mb-2">
+        在畫布上拖曳實體圖示來改變位置；面嚮在此處編輯。
+      </p>
+
+      <!-- Boss 面嚮（與基本資訊同欄位，但獨立放此處方便 entity 編輯流程一氣呵成） -->
+      <div class="mb-3 p-2 rounded bg-editor-bg/40 border border-gray-700">
+        <div class="text-xs text-gray-400 mb-1">王（Boss）</div>
+        <label class="text-xs text-gray-500 block mb-0.5">面嚮（°）</label>
+        <input
+          type="number"
+          step="15"
+          data-testid="entity-boss-facing"
+          :value="selectedQuestion.boss.facing"
+          class="w-full bg-editor-bg border border-gray-600 rounded px-2 py-1 font-mono text-xs"
+          @change="setFacing(Number(($event.target as HTMLInputElement).value))"
+        />
+      </div>
+
+      <!-- 分身列表 -->
+      <div class="space-y-2">
+        <div
+          v-for="(e, idx) in enemies"
+          :key="e.id"
+          :data-enemy-id="e.id"
+          class="p-2 rounded bg-editor-bg/40 border border-gray-700 space-y-1"
+        >
+          <div class="flex items-center justify-between gap-1">
+            <span class="text-xs text-gray-500">分身 {{ idx + 1 }}</span>
+            <button
+              type="button"
+              :data-enemy-remove="e.id"
+              class="px-1.5 py-0.5 text-xs text-red-400 hover:bg-red-500/20 rounded"
+              @click="onRemoveEnemy(e.id)"
+              title="刪除"
+            >✕</button>
+          </div>
+          <div>
+            <label class="text-xs text-gray-500 block mb-0.5">名稱</label>
+            <input
+              type="text"
+              :value="e.name"
+              :data-enemy-name="e.id"
+              class="w-full bg-editor-bg border border-gray-600 rounded px-2 py-1 text-xs"
+              @change="onUpdateEnemyName(e.id, ($event.target as HTMLInputElement).value)"
+            />
+          </div>
+          <div>
+            <label class="text-xs text-gray-500 block mb-0.5">面嚮（°）</label>
+            <input
+              type="number"
+              step="15"
+              :value="e.facing"
+              :data-enemy-facing="e.id"
+              class="w-full bg-editor-bg border border-gray-600 rounded px-2 py-1 text-xs font-mono"
+              @change="onUpdateEnemyFacing(e.id, Number(($event.target as HTMLInputElement).value))"
+            />
+          </div>
+          <div class="text-xs text-gray-500 font-mono">
+            位置：({{ Math.round(e.position.x) }}, {{ Math.round(e.position.y) }})
+          </div>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        data-testid="add-enemy"
+        class="mt-2 w-full px-2 py-1.5 text-xs bg-editor-bg hover:bg-editor-panel/60
+               rounded border border-editor-accent/60 text-editor-accent"
+        @click="onAddEnemy"
+      >
+        + 新增分身
+      </button>
+    </section>
+
+    <!-- ===== grid-mask 子模式：場地破壞設定 ===== -->
+    <section
+      v-if="selectedQuestion && questionSubMode === 'grid-mask'"
+      data-testid="grid-mask-panel"
+      class="border-t border-gray-700 pt-4"
+    >
+      <h3 class="text-xs text-editor-accent font-bold mb-2">場地破壞</h3>
+
+      <!-- 警告橫幅：grid 設定影響全副本 -->
+      <div
+        class="mb-3 p-2 text-xs bg-yellow-500/10 border border-yellow-500/40 rounded text-yellow-200 leading-relaxed"
+      >
+        ⚠ <span class="font-bold">注意：此設定會影響整個副本的所有題目</span>。
+        縮小尺寸時會自動清除越界的破碎格設定。
+      </div>
+
+      <!-- grid rows × cols 編輯（暫態 → 套用） -->
+      <div class="mb-3 p-2 rounded bg-editor-bg/40 border border-gray-700 space-y-2">
+        <div class="text-xs text-gray-400">副本網格設定</div>
+        <div class="flex items-center gap-2">
+          <div class="flex-1">
+            <label class="text-xs text-gray-500 block mb-0.5">列（rows）</label>
+            <input
+              type="number"
+              min="1"
+              step="1"
+              v-model.number="draftRows"
+              data-testid="grid-rows"
+              class="w-full bg-editor-bg border border-gray-600 rounded px-2 py-1 text-xs font-mono"
+            />
+          </div>
+          <div class="flex-1">
+            <label class="text-xs text-gray-500 block mb-0.5">行（cols）</label>
+            <input
+              type="number"
+              min="1"
+              step="1"
+              v-model.number="draftCols"
+              data-testid="grid-cols"
+              class="w-full bg-editor-bg border border-gray-600 rounded px-2 py-1 text-xs font-mono"
+            />
+          </div>
+        </div>
+        <div class="flex gap-1">
+          <button
+            type="button"
+            data-testid="grid-apply"
+            class="flex-1 px-2 py-1 text-xs bg-editor-accent text-editor-bg rounded font-bold"
+            @click="applyGrid"
+          >
+            套用
+          </button>
+          <button
+            v-if="grid"
+            type="button"
+            data-testid="grid-clear"
+            class="px-2 py-1 text-xs text-red-400 hover:bg-red-500/20 rounded border border-red-500/40"
+            @click="onClearGrid"
+          >
+            移除網格
+          </button>
+        </div>
+        <div v-if="grid" class="text-xs text-gray-500">
+          目前：{{ grid.rows }} × {{ grid.cols }}（共 {{ grid.rows * grid.cols }} 格）
+        </div>
+        <div v-else class="text-xs text-gray-500 italic">尚未設定 grid。</div>
+      </div>
+
+      <!-- 此題的破碎格狀態 -->
+      <div v-if="grid" class="p-2 rounded bg-editor-bg/40 border border-gray-700">
+        <div class="text-xs text-gray-400 mb-1">本題破碎格</div>
+        <div class="text-xs text-gray-300 mb-2">
+          已破：{{ arenaMask.length }} / {{ grid.rows * grid.cols }} 格
+          <span v-if="arenaMask.length > 0" class="text-gray-500 font-mono">
+            （index：{{ arenaMask.join(', ') }}）
+          </span>
+        </div>
+        <button
+          type="button"
+          data-testid="clear-mask"
+          :disabled="arenaMask.length === 0"
+          class="w-full px-2 py-1 text-xs bg-editor-bg hover:bg-editor-panel/60 rounded
+                 border border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+          @click="onClearMask"
+        >
+          清空所有破壞
+        </button>
+        <p class="text-xs text-gray-500 mt-2 leading-relaxed">
+          於畫布上點擊網格切換破碎/完好。
+        </p>
+      </div>
+    </section>
+
+    <p v-if="!selectedQuestion" class="text-xs text-gray-500 italic">
       請從上方選擇題目進行編輯。
     </p>
   </div>

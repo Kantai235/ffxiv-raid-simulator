@@ -191,6 +191,14 @@ const safeAreasForCanvas = computed(() => {
   return sol.safeAreas;
 });
 
+// Phase 2 - 分身與破碎格僅 questions 模式才有意義；其他模式傳空陣列
+const enemiesForCanvas = computed(() =>
+  mode.value === 'questions' ? selectedQuestion.value?.enemies ?? [] : [],
+);
+const arenaMaskForCanvas = computed(() =>
+  mode.value === 'questions' ? selectedQuestion.value?.arenaMask ?? [] : [],
+);
+
 // ----------------------------------------------------------------------
 // Save / 下載 / 上傳 - 依環境分流
 // ----------------------------------------------------------------------
@@ -531,6 +539,8 @@ watch(
             :image-path-prefix="imagePathPrefix"
             :boss-state="bossStateForCanvas"
             :safe-areas="safeAreasForCanvas"
+            :enemies="enemiesForCanvas"
+            :arena-mask="arenaMaskForCanvas"
             @waymark-drag-end="onWaymarkDragEnd"
             @line-create="onLineCreate"
             @line-select="onLineSelect"

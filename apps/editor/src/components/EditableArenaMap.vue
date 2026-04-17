@@ -34,6 +34,7 @@ import type {
   Arena,
   ArenaLine,
   BossState,
+  EnemyEntity,
   Point2D,
   SafeArea,
   Strategy,
@@ -73,6 +74,16 @@ interface Props {
    */
   safeAreas?: SafeArea[];
   /**
+   * questions 模式：當前題目的分身（Phase 2）。
+   * entity 子模式下可拖曳；其他子模式為唯讀顯示。
+   */
+  enemies?: EnemyEntity[];
+  /**
+   * questions 模式：當前題目的破碎格 index 陣列（Phase 2）。
+   * grid-mask 子模式下視覺即時反映 toggleArenaMask 結果。
+   */
+  arenaMask?: number[];
+  /**
    * 背景圖路徑前綴。
    *
    * Why: 當 editor 從 player 發佈版（靜態 GH Pages 模式）載入官方題庫時，
@@ -89,6 +100,8 @@ const props = withDefaults(defineProps<Props>(), {
   imageCacheToken: 0,
   bossState: null,
   safeAreas: () => [],
+  enemies: () => [],
+  arenaMask: () => [],
   imagePathPrefix: '',
 });
 
@@ -114,7 +127,8 @@ const svgRef = ref<SVGSVGElement | null>(null);
 // ----------------------------------------------------------------------
 
 const editorStore = useEditorStore();
-const { activeDrawingTool, drawingPoints, selectedSafeAreaId } = storeToRefs(editorStore);
+const { activeDrawingTool, drawingPoints, selectedSafeAreaId, questionSubMode } =
+  storeToRefs(editorStore);
 
 /**
  * 當前游標的邏輯座標（questions 模式 + 啟用工具時才追蹤）。
@@ -125,9 +139,18 @@ const { activeDrawingTool, drawingPoints, selectedSafeAreaId } = storeToRefs(edi
  */
 const currentMousePos = ref<Point2D | null>(null);
 
-/** 是否處於繪圖模式（questions 模式 + 有工具啟用） */
+/**
+ * 是否處於繪圖模式（questions + safe-area 子模式 + 有工具啟用）。
+ *
+ * Phase 2 加入子模式判斷：entity / grid-mask 子模式絕不該觸發 SafeArea 繪圖
+ * 暫態（即使 store 殘留 activeDrawingTool 也不該執行 mousemove 追蹤）。
+ * setQuestionSubMode 已在 store 切換時清掉 tool，這裡是雙保險。
+ */
 const isDrawing = computed(
-  () => props.mode === 'questions' && activeDrawingTool.value !== null,
+  () =>
+    props.mode === 'questions' &&
+    questionSubMode.value === 'safe-area' &&
+    activeDrawingTool.value !== null,
 );
 
 /**
@@ -229,6 +252,177 @@ function onWaymarkMouseUp(): void {
  * 與 waymark 的 dragPosition 設計同構：暫態存本地，commit 才走 store。
  */
 const draftLine = ref<{ start: Point2D; end: Point2D } | null>(null);
+
+// ----------------------------------------------------------------------
+// Phase 2 - entity 子模式：拖曳 boss / 分身
+// ----------------------------------------------------------------------
+
+/**
+ * 當前正在拖曳的實體 ID。
+ *   - 'boss'：王本體
+ *   - 其他字串：對應 enemies[].id
+ *   - null：未拖曳
+ *
+ * Why 用 string union 而非分兩個 ref：兩者拖曳邏輯近 100% 重複，合一個
+ * dragging id + 寫回時 if (id === 'boss') 比兩套 state 更不容易漏掉。
+ */
+const draggingEntityId = ref<string | null>(null);
+
+/** 拖曳期間的暫態座標（mousemove 才更新；mouseup 才寫回 store） */
+const entityDragPosition = ref<Point2D | null>(null);
+
+/**
+ * 是否處於 entity 子模式（畫布 cursor / hitbox 顯示判斷依據）。
+ * 抽 computed 方便 template 與 cursor 計算複用。
+ */
+const isEntitySubMode = computed(
+  () => props.mode === 'questions' && questionSubMode.value === 'entity',
+);
+
+const isGridMaskSubMode = computed(
+  () => props.mode === 'questions' && questionSubMode.value === 'grid-mask',
+);
+
+/**
+ * 啟動實體拖曳。`event.stopPropagation` 阻止外層 onCanvasMouseDown 觸發
+ * （否則 entity 子模式下可能被當成「點擊空白」處理）。
+ */
+function onEntityMouseDown(event: MouseEvent, entityId: string): void {
+  if (event.button !== 0) return;
+  if (!isEntitySubMode.value) return;
+  event.preventDefault();
+  event.stopPropagation();
+
+  draggingEntityId.value = entityId;
+  // 初始位置取目前狀態（避免 mousemove 還沒觸發前圖示瞬移）
+  if (entityId === 'boss') {
+    entityDragPosition.value = props.bossState?.position
+      ? { ...props.bossState.position }
+      : { ...props.arena.center };
+  } else {
+    const enemy = props.enemies.find((e) => e.id === entityId);
+    entityDragPosition.value = enemy ? { ...enemy.position } : null;
+  }
+  window.addEventListener('mousemove', onEntityMouseMove);
+  window.addEventListener('mouseup', onEntityMouseUp);
+}
+
+function onEntityMouseMove(event: MouseEvent): void {
+  if (!draggingEntityId.value) return;
+  const logical = screenToLogical(event.clientX, event.clientY);
+  if (!logical) return;
+  entityDragPosition.value = clampToArena(logical);
+}
+
+function onEntityMouseUp(): void {
+  const id = draggingEntityId.value;
+  const finalPos = entityDragPosition.value;
+  window.removeEventListener('mousemove', onEntityMouseMove);
+  window.removeEventListener('mouseup', onEntityMouseUp);
+  draggingEntityId.value = null;
+  entityDragPosition.value = null;
+  if (!id || !finalPos) return;
+  // 寫回 store（mouseup 才寫；mousemove 期間僅本地暫態）
+  if (id === 'boss') {
+    editorStore.updateBossPosition(finalPos);
+  } else {
+    editorStore.updateEnemy(id, { position: finalPos });
+  }
+}
+
+/**
+ * 當前 boss 應該顯示的位置（拖曳時用暫態，否則用 props 提供值或場地中心 fallback）。
+ * 渲染與 hitbox 都依賴此值，確保 mousemove 更新時視覺同步。
+ */
+const liveBossPosition = computed<Point2D>(() => {
+  if (draggingEntityId.value === 'boss' && entityDragPosition.value) {
+    return entityDragPosition.value;
+  }
+  return props.bossState?.position ?? props.arena.center;
+});
+
+/** 取得分身的當前顯示座標（拖曳中用暫態） */
+function liveEnemyPosition(enemy: EnemyEntity): Point2D {
+  if (draggingEntityId.value === enemy.id && entityDragPosition.value) {
+    return entityDragPosition.value;
+  }
+  return enemy.position;
+}
+
+// ----------------------------------------------------------------------
+// Phase 2 - grid-mask 子模式：點擊網格切換破碎
+// ----------------------------------------------------------------------
+
+/**
+ * grid-mask 子模式下的畫布 click 事件。
+ *
+ * 為何用 click 而非 mousedown：
+ *   - 避免與 entity 拖曳手勢混淆（拖曳是 mousedown→mouseup，click 才是「就地完成」）
+ *   - 出題者可能會「按住游標掃過多格」，用 mousedown 容易誤觸
+ *
+ * 邊界：座標超出 [0, width] / [0, height] → 忽略。
+ */
+function onGridMaskClick(event: MouseEvent): void {
+  if (!isGridMaskSubMode.value) return;
+  const grid = props.arena.grid;
+  if (!grid) return;
+  const logical = screenToLogical(event.clientX, event.clientY);
+  if (!logical) return;
+  const { width, height } = props.arena.size;
+  if (logical.x < 0 || logical.x > width) return;
+  if (logical.y < 0 || logical.y > height) return;
+  const cellW = width / grid.cols;
+  const cellH = height / grid.rows;
+  const col = Math.floor(logical.x / cellW);
+  const row = Math.floor(logical.y / cellH);
+  // clamp 到 [0, cols-1] / [0, rows-1]：邊界恰在 width/height 上時 floor 會給出 cols/rows
+  const safeCol = Math.min(col, grid.cols - 1);
+  const safeRow = Math.min(row, grid.rows - 1);
+  const index = safeRow * grid.cols + safeCol;
+  editorStore.toggleArenaMask(index);
+}
+
+/**
+ * grid-mask 子模式可視覺化的網格輔助線（cell 邊界）。
+ * 只在 grid 存在時計算；其他子模式不渲染（避免畫布雜訊）。
+ */
+const gridLines = computed(() => {
+  const grid = props.arena.grid;
+  if (!grid) return null;
+  const { width, height } = props.arena.size;
+  const cellW = width / grid.cols;
+  const cellH = height / grid.rows;
+  // 內部分隔線 - 邊界線由背景的 stroke 已涵蓋
+  const verticals: number[] = [];
+  for (let i = 1; i < grid.cols; i++) verticals.push(i * cellW);
+  const horizontals: number[] = [];
+  for (let i = 1; i < grid.rows; i++) horizontals.push(i * cellH);
+  return { verticals, horizontals, cellW, cellH };
+});
+
+/**
+ * 破碎格的視覺資料（與 player ArenaMap 的 brokenTiles 同型）。
+ * 不論子模式都渲染（出題者切回 safe-area 時也該看到當前破碎狀態）。
+ */
+const brokenTiles = computed(() => {
+  const grid = props.arena.grid;
+  if (!grid || props.arenaMask.length === 0) return [];
+  const cellW = props.arena.size.width / grid.cols;
+  const cellH = props.arena.size.height / grid.rows;
+  return props.arenaMask
+    .filter((idx) => Number.isInteger(idx) && idx >= 0 && idx < grid.rows * grid.cols)
+    .map((idx) => {
+      const row = Math.floor(idx / grid.cols);
+      const col = idx % grid.cols;
+      return {
+        index: idx,
+        x: col * cellW,
+        y: row * cellH,
+        width: cellW,
+        height: cellH,
+      };
+    });
+});
 
 // ----------------------------------------------------------------------
 // 繪製安全區（questions 模式）
@@ -347,9 +541,14 @@ watchEffect((onCleanup) => {
 function onCanvasMouseDown(event: MouseEvent): void {
   if (event.button !== 0) return;
 
-  // questions 模式：依 activeDrawingTool 分派繪圖狀態機
+  // questions 模式：先依子模式徹底分流，避免 entity 拖曳 / grid-mask 點擊
+  // 與 SafeArea 繪圖狀態機互相干擾
   if (props.mode === 'questions') {
-    handleQuestionsModeMouseDown(event);
+    if (questionSubMode.value === 'safe-area') {
+      handleQuestionsModeMouseDown(event);
+    }
+    // entity 子模式：實體拖曳由各自的 hitbox @mousedown 處理；空白點擊不動作
+    // grid-mask 子模式：用 @click（非 mousedown）由 onGridMaskClick 處理
     return;
   }
 
@@ -417,6 +616,9 @@ onBeforeUnmount(() => {
   window.removeEventListener('mouseup', onCanvasMouseUp);
   // watchEffect cleanup 理論上會處理，但卸載期競態保險：再移除一次
   window.removeEventListener('mousemove', onDrawingMouseMove);
+  // Phase 2: entity 拖曳的 window listener
+  window.removeEventListener('mousemove', onEntityMouseMove);
+  window.removeEventListener('mouseup', onEntityMouseUp);
 });
 
 // ----------------------------------------------------------------------
@@ -466,7 +668,15 @@ const svgCursor = computed(() => {
   if (props.mode === 'arena') {
     return 'cursor-crosshair';
   }
-  // questions 模式：啟用工具時 crosshair 暗示「點擊會在此處放下安全區頂點」
+  // questions 模式：依子模式分流 cursor 暗示
+  if (questionSubMode.value === 'entity') {
+    // 拖曳中 → grabbing；其餘交給 hitbox 自身的 cursor-grab
+    return draggingEntityId.value ? 'cursor-grabbing' : '';
+  }
+  if (questionSubMode.value === 'grid-mask') {
+    return 'cursor-pointer';
+  }
+  // safe-area：啟用工具時 crosshair 暗示「點擊會放下頂點」
   return activeDrawingTool.value ? 'cursor-crosshair' : '';
 });
 
@@ -493,10 +703,12 @@ function onCanvasContextMenu(event: MouseEvent): void {
 const BOSS_IMAGE_SIZE = 130;
 const BOSS_IMAGE_HREF = 'assets/boss/boss-marker.png';
 
-/** 王的實際繪製位置（未提供 position 則 fallback 到 arena.center） */
-const resolvedBossPosition = computed<Point2D>(
-  () => props.bossState?.position ?? props.arena.center,
-);
+/**
+ * 王的實際繪製位置：
+ *   - entity 子模式拖曳中 → 暫態座標（liveBossPosition）
+ *   - 其他情境 → bossState.position 或 arena.center fallback
+ */
+const resolvedBossPosition = computed<Point2D>(() => liveBossPosition.value);
 
 /**
  * 王面嚮箭頭的 CSS rotate 角度。
@@ -561,9 +773,11 @@ const draftPolygon = computed(() => {
     role="img"
     data-testid="editable-arena"
     :data-mode="mode"
+    :data-sub-mode="mode === 'questions' ? questionSubMode : null"
     class="block w-full h-full select-none"
     :class="svgCursor"
     @mousedown="onCanvasMouseDown"
+    @click="onGridMaskClick"
     @contextmenu="onCanvasContextMenu"
   >
     <!-- ===== Layer: 場地背景 ===== -->
@@ -619,6 +833,78 @@ const draftPolygon = computed(() => {
         stroke-width="1"
         stroke-dasharray="6 6"
         pointer-events="none"
+      />
+    </g>
+
+    <!-- ===== Layer: 破損格遮罩（與 Player 同視覺）=====
+         所有子模式都顯示，讓出題者隨時看到當前破壞狀態。
+         pointer-events=none：點擊穿透，給 grid-mask 子模式的 click 處理。 -->
+    <g
+      v-if="brokenTiles.length > 0"
+      data-layer="arena-mask"
+      pointer-events="none"
+    >
+      <g
+        v-for="tile in brokenTiles"
+        :key="`mask-${tile.index}`"
+        :data-mask-index="tile.index"
+      >
+        <rect
+          :x="tile.x"
+          :y="tile.y"
+          :width="tile.width"
+          :height="tile.height"
+          fill="rgba(0, 0, 0, 0.65)"
+          stroke="rgba(231, 76, 60, 0.8)"
+          stroke-width="1.5"
+        />
+        <line
+          :x1="tile.x"
+          :y1="tile.y"
+          :x2="tile.x + tile.width"
+          :y2="tile.y + tile.height"
+          stroke="rgba(231, 76, 60, 0.75)"
+          stroke-width="2"
+        />
+        <line
+          :x1="tile.x + tile.width"
+          :y1="tile.y"
+          :x2="tile.x"
+          :y2="tile.y + tile.height"
+          stroke="rgba(231, 76, 60, 0.75)"
+          stroke-width="2"
+        />
+      </g>
+    </g>
+
+    <!-- ===== Layer: grid-mask 輔助網格線 =====
+         僅 grid-mask 子模式顯示，幫助出題者對齊。pointer-events=none 不擋 click。 -->
+    <g
+      v-if="isGridMaskSubMode && gridLines"
+      data-layer="grid-helper"
+      pointer-events="none"
+    >
+      <line
+        v-for="x in gridLines.verticals"
+        :key="`gv-${x}`"
+        :x1="x"
+        y1="0"
+        :x2="x"
+        :y2="arena.size.height"
+        stroke="rgba(212, 175, 55, 0.5)"
+        stroke-width="1"
+        stroke-dasharray="4 4"
+      />
+      <line
+        v-for="y in gridLines.horizontals"
+        :key="`gh-${y}`"
+        x1="0"
+        :y1="y"
+        :x2="arena.size.width"
+        :y2="y"
+        stroke="rgba(212, 175, 55, 0.5)"
+        stroke-width="1"
+        stroke-dasharray="4 4"
       />
     </g>
 
@@ -951,12 +1237,12 @@ const draftPolygon = computed(() => {
     </g>
 
     <!-- ===== Layer: Boss 面嚮指示器 =====
-         FFXIV 風格：3/4 圓 + 正面三角突起。
-         缺口（含三角）方向 = 王正面，與 Player 視覺完全一致（WYSIWYG）。 -->
+         entity 子模式下額外疊一層透明 hitbox 接拖曳事件。
+         其他子模式 pointer-events=none 不擋下層點擊（如 grid-mask click）。 -->
     <g
       v-if="showBossFacing && bossState"
       data-layer="boss"
-      pointer-events="none"
+      :pointer-events="isEntitySubMode ? 'auto' : 'none'"
       :data-testid="'boss-facing'"
       filter="drop-shadow(0 2px 4px rgba(0,0,0,0.7))"
     >
@@ -973,7 +1259,95 @@ const draftPolygon = computed(() => {
           :y="bossImageY"
           :width="BOSS_IMAGE_SIZE"
           :height="BOSS_IMAGE_SIZE"
+          pointer-events="none"
         />
+      </g>
+      <!--
+        entity 子模式：可拖曳的命中熱區（透明圓）。
+        放在 rotate <g> 之外，這樣 hitbox 不會跟著面嚮旋轉，永遠是固定的可點圓。
+      -->
+      <circle
+        v-if="isEntitySubMode"
+        :cx="resolvedBossPosition.x"
+        :cy="resolvedBossPosition.y"
+        r="65"
+        fill="transparent"
+        :class="draggingEntityId === 'boss' ? 'cursor-grabbing' : 'cursor-grab'"
+        data-testid="boss-hitbox"
+        @mousedown="onEntityMouseDown($event, 'boss')"
+      />
+      <!-- 拖曳中顯示座標小提示 -->
+      <text
+        v-if="draggingEntityId === 'boss'"
+        :x="resolvedBossPosition.x"
+        :y="resolvedBossPosition.y - 75"
+        fill="#10B981"
+        font-size="14"
+        font-family="monospace"
+        text-anchor="middle"
+        pointer-events="none"
+      >({{ Math.round(resolvedBossPosition.x) }}, {{ Math.round(resolvedBossPosition.y) }})</text>
+    </g>
+
+    <!-- ===== Layer: 分身（Phase 2） =====
+         與 Boss 同 z-order；entity 子模式下可拖曳。
+         縮小尺寸 + 紅色光暈，視覺上「敵方但次要」。 -->
+    <g
+      data-layer="enemies"
+      :pointer-events="isEntitySubMode ? 'auto' : 'none'"
+      filter="drop-shadow(0 1px 2px rgba(0,0,0,0.6))"
+    >
+      <g
+        v-for="enemy in enemies"
+        :key="enemy.id"
+        :data-enemy-id="enemy.id"
+      >
+        <!-- 紅色光暈圓框 - 與 Player ArenaMap 視覺一致 -->
+        <circle
+          :cx="liveEnemyPosition(enemy).x"
+          :cy="liveEnemyPosition(enemy).y"
+          r="44"
+          fill="rgba(231, 76, 60, 0.12)"
+          stroke="rgba(231, 76, 60, 0.55)"
+          stroke-width="2"
+          stroke-dasharray="4 3"
+          pointer-events="none"
+        />
+        <g
+          :transform="`rotate(${facingToCssRotation(enemy.facing)} ${liveEnemyPosition(enemy).x} ${liveEnemyPosition(enemy).y})`"
+        >
+          <image
+            :href="BOSS_IMAGE_HREF"
+            :x="liveEnemyPosition(enemy).x - 40"
+            :y="liveEnemyPosition(enemy).y - 40"
+            width="80"
+            height="80"
+            opacity="0.85"
+            pointer-events="none"
+          />
+        </g>
+        <!-- entity 子模式 hitbox -->
+        <circle
+          v-if="isEntitySubMode"
+          :cx="liveEnemyPosition(enemy).x"
+          :cy="liveEnemyPosition(enemy).y"
+          r="44"
+          fill="transparent"
+          :class="draggingEntityId === enemy.id ? 'cursor-grabbing' : 'cursor-grab'"
+          :data-enemy-hitbox="enemy.id"
+          @mousedown="onEntityMouseDown($event, enemy.id)"
+        />
+        <!-- 拖曳座標提示 -->
+        <text
+          v-if="draggingEntityId === enemy.id"
+          :x="liveEnemyPosition(enemy).x"
+          :y="liveEnemyPosition(enemy).y - 55"
+          fill="#10B981"
+          font-size="12"
+          font-family="monospace"
+          text-anchor="middle"
+          pointer-events="none"
+        >({{ Math.round(liveEnemyPosition(enemy).x) }}, {{ Math.round(liveEnemyPosition(enemy).y) }})</text>
       </g>
     </g>
   </svg>

@@ -6,6 +6,7 @@ import type {
   ChoiceQuestion,
   ChoiceRoleSolution,
   DatasetIndex,
+  EnemyEntity,
   InstanceDataset,
   InstanceIndexEntry,
   MapClickQuestion,
@@ -40,6 +41,20 @@ import {
 
 /** 編輯模式 - 切換不同的 panel 與畫布互動 */
 export type EditorMode = 'waymarks' | 'arena' | 'questions';
+
+/**
+ * questions 主模式下的子模式 - 切換畫布互動語意。
+ *
+ * - 'safe-area' : 既有的 SafeArea 繪製狀態機（drawingPoints / activeDrawingTool）
+ * - 'entity'    : 拖曳 boss / 分身改變位置；面嚮在側欄 panel 編輯
+ * - 'grid-mask' : 點擊網格切換破碎/完好（Phase 1 schema 已支援 arenaMask）
+ *
+ * Why 用子模式而非展開更多 EditorMode：
+ *   三者皆屬「編輯題目當下狀態」的範疇（共用題目選取、職能 tab、解析文字等），
+ *   把它們塞回 EditorMode 會讓 waymarks/arena 與 entity/grid-mask 變成同層
+ *   選擇，但其實後者只在前者為 'questions' 時才有意義。
+ */
+export type QuestionSubMode = 'safe-area' | 'entity' | 'grid-mask';
 
 /**
  * ========================================================================
@@ -193,6 +208,14 @@ export const useEditorStore = defineStore('editor', () => {
    * 連動：切題、切職能、啟用工具時自動清空（避免在錯目標上按 Delete）。
    */
   const selectedSafeAreaId = ref<string | null>(null);
+
+  /**
+   * questions 主模式下的子模式（Phase 2）。
+   *
+   * 預設 'safe-area' 維持既有 SafeArea 繪圖行為，舊操作肌肉記憶不受影響。
+   * 切題或離開 questions 主模式時自動重置（見 selectQuestion / setMode）。
+   */
+  const questionSubMode = ref<QuestionSubMode>('safe-area');
 
   // ----------------------------------------------------------------------
   // Getters
@@ -560,6 +583,7 @@ export const useEditorStore = defineStore('editor', () => {
     activeDrawingTool.value = null;
     drawingPoints.value = [];
     selectedSafeAreaId.value = null;
+    questionSubMode.value = 'safe-area';
   }
 
   // ----------------------------------------------------------------------
@@ -575,7 +599,20 @@ export const useEditorStore = defineStore('editor', () => {
       activeDrawingTool.value = null;
       drawingPoints.value = [];
       selectedSafeAreaId.value = null;
+      // 子模式回到 'safe-area' 預設，下次再進 questions 不會殘留 entity / grid-mask
+      questionSubMode.value = 'safe-area';
     }
+  }
+
+  /**
+   * 切換 questions 主模式下的子模式。
+   * 切換時統一把繪圖暫態清掉（避免半成品 SafeArea 卡在 entity / grid-mask）。
+   */
+  function setQuestionSubMode(next: QuestionSubMode): void {
+    questionSubMode.value = next;
+    cancelDrawing();
+    selectedSafeAreaId.value = null;
+    activeDrawingTool.value = null;
   }
 
   function selectLine(lineId: string | null): void {
@@ -587,6 +624,8 @@ export const useEditorStore = defineStore('editor', () => {
       selectedQuestionId.value = null;
       cancelDrawing();
       selectedSafeAreaId.value = null;
+      // 切題（含切到「無題目」狀態）一律重置子模式
+      questionSubMode.value = 'safe-area';
       return;
     }
     if (!dataset.value?.questions.some((q) => q.id === questionId)) return;
@@ -594,6 +633,8 @@ export const useEditorStore = defineStore('editor', () => {
     // 切題時清掉繪圖暫態與選取（避免在舊題上的 ID 套到新題）
     cancelDrawing();
     selectedSafeAreaId.value = null;
+    // 子模式重置 - 出題者每進入新題目都從 SafeArea 開始（最常用情境）
+    questionSubMode.value = 'safe-area';
   }
 
   function selectRole(roleId: RoleId): void {
@@ -1098,6 +1139,202 @@ export const useEditorStore = defineStore('editor', () => {
     isDirty.value = true;
   }
 
+  // ----------------------------------------------------------------------
+  // Actions - Phase 2：實體位置與分身（boss.position / enemies CRUD）
+  // ----------------------------------------------------------------------
+
+  /**
+   * 私用 helper：對「當前選取題目」套用 patch 並重組 questions 陣列。
+   *
+   * 把「找 idx → 重組單題 → 重組整列 → 設 dirty」這四步抽出，讓上層
+   * action 專注於決定要 patch 什麼欄位即可，避免重複寫 reactivity 樣板。
+   *
+   * @returns 是否有實際套用（false 表示無 dataset 或無選取題目）
+   */
+  function patchSelectedQuestion(patch: Partial<Question>): boolean {
+    if (!dataset.value || !selectedQuestionId.value) return false;
+    const qIdx = dataset.value.questions.findIndex((q) => q.id === selectedQuestionId.value);
+    if (qIdx === -1) return false;
+    const merged = { ...dataset.value.questions[qIdx], ...patch } as Question;
+    const next = [...dataset.value.questions];
+    next[qIdx] = merged;
+    dataset.value.questions = next;
+    isDirty.value = true;
+    return true;
+  }
+
+  /**
+   * 更新當前題目的 boss 位置（對應「貓跳平移」這類機制）。
+   * 不檢查座標是否在場地內 - clamp 屬於 view 層拖曳邏輯，store 不假設場地形狀。
+   */
+  function updateBossPosition(pos: Point2D): void {
+    const q = selectedQuestion.value;
+    if (!q) return;
+    patchSelectedQuestion({ boss: { ...q.boss, position: { ...pos } } });
+  }
+
+  /**
+   * 更新當前題目的 boss 面嚮（度，與 BossState.facing 同約定）。
+   * 抽獨立 action 是因為 entity 子模式下 panel 也會編輯 facing，語意明確。
+   */
+  function updateBossFacing(facing: number): void {
+    const q = selectedQuestion.value;
+    if (!q) return;
+    patchSelectedQuestion({ boss: { ...q.boss, facing } });
+  }
+
+  /**
+   * 為當前題目新增一隻分身。
+   *
+   * 預設值規則：
+   *   - id      : 自動產生（題內唯一，與 SafeArea ID 同源策略）
+   *   - name    : '分身 N'，N = 現有 enemies.length + 1（給人看的）
+   *   - position: arena.center（出題者通常會立刻拖到目標位置）
+   *   - facing  : 0（正北 - 與 boss 預設一致）
+   *
+   * @returns 新分身的 id（成功）或 null
+   */
+  function addEnemy(): string | null {
+    const q = selectedQuestion.value;
+    if (!q || !dataset.value) return null;
+    const arena = dataset.value.instance.arena;
+    const existing = q.enemies ?? [];
+    const newEnemy: EnemyEntity = {
+      id: generateEnemyId(),
+      name: `分身 ${existing.length + 1}`,
+      position: { ...arena.center },
+      facing: 0,
+    };
+    patchSelectedQuestion({ enemies: [...existing, newEnemy] });
+    return newEnemy.id;
+  }
+
+  /**
+   * 部分更新指定分身（淺層 merge）。不存在則 no-op。
+   * patch 不允許動 id（id 是穩定的引用，改 id 會打斷 tethers 的引用關係）。
+   */
+  function updateEnemy(id: string, updates: Partial<Omit<EnemyEntity, 'id'>>): void {
+    const q = selectedQuestion.value;
+    if (!q) return;
+    const enemies = q.enemies ?? [];
+    const idx = enemies.findIndex((e) => e.id === id);
+    if (idx === -1) return;
+    const next = [...enemies];
+    next[idx] = { ...enemies[idx], ...updates };
+    patchSelectedQuestion({ enemies: next });
+  }
+
+  /**
+   * 移除指定分身。
+   *
+   * 連動：清掉 tethers 中引用此 id 的條目（避免出現「線連到不存在的實體」），
+   *      與 removeQuestionOption 清孤兒 correctOptionIds 同精神。
+   */
+  function removeEnemy(id: string): void {
+    const q = selectedQuestion.value;
+    if (!q) return;
+    const enemies = q.enemies ?? [];
+    if (!enemies.some((e) => e.id === id)) return;
+    const nextEnemies = enemies.filter((e) => e.id !== id);
+    const nextTethers = (q.tethers ?? []).filter((t) => t.sourceId !== id && t.targetId !== id);
+    patchSelectedQuestion({ enemies: nextEnemies, tethers: nextTethers });
+  }
+
+  // ----------------------------------------------------------------------
+  // Actions - Phase 2：場地網格（arena.grid + question.arenaMask）
+  // ----------------------------------------------------------------------
+
+  /**
+   * 更新副本的 grid 設定（rows × cols）。
+   *
+   * 【極重要：跨題清掃】
+   *   grid 是 Instance 全副本共用的設定，縮小尺寸（例 4×4 → 3×3）會讓
+   *   原本合法的 mask index（如 9~15）超出新範圍而變成非法資料。
+   *   為避免存檔後 player 載入觸發 validator 拒絕，此 action 必須
+   *   主動掃描 *所有題目* 的 arenaMask，移除越界 index。
+   *
+   * 【為何不直接刪 grid】
+   *   傳入 0 / 負數 / 非整數時拒絕（避免 Arena.grid 變成不合法物件，
+   *   也避免「不小心打 0」清掉所有破碎設定的災難）。要清空請呼叫 clearArenaGrid。
+   *
+   * @param rows  正整數
+   * @param cols  正整數
+   */
+  function updateArenaGrid(rows: number, cols: number): void {
+    if (!dataset.value) return;
+    if (!Number.isInteger(rows) || rows <= 0) return;
+    if (!Number.isInteger(cols) || cols <= 0) return;
+    const arena = dataset.value.instance.arena;
+    dataset.value.instance.arena = { ...arena, grid: { rows, cols } };
+
+    // 跨題清掃 - 過濾 >= total 的越界 index
+    const total = rows * cols;
+    const nextQuestions = dataset.value.questions.map((q) => {
+      if (!q.arenaMask || q.arenaMask.length === 0) return q;
+      const filtered = q.arenaMask.filter((idx) => idx >= 0 && idx < total);
+      // 沒任何 index 被淘汰 → 直接回傳原物件（避免無謂的 reference 變動）
+      if (filtered.length === q.arenaMask.length) return q;
+      return { ...q, arenaMask: filtered } as Question;
+    });
+    dataset.value.questions = nextQuestions;
+    isDirty.value = true;
+  }
+
+  /**
+   * 移除副本的 grid 設定（同步清光所有題目的 arenaMask）。
+   *
+   * 提供獨立 action 避免 updateArenaGrid 被誤用為清除工具。
+   */
+  function clearArenaGrid(): void {
+    if (!dataset.value) return;
+    const arena = dataset.value.instance.arena;
+    if (arena.grid === undefined && !dataset.value.questions.some((q) => q.arenaMask?.length)) {
+      return; // 本來就沒設定，不必觸發 dirty
+    }
+    const { grid: _grid, ...rest } = arena;
+    void _grid;
+    dataset.value.instance.arena = rest;
+    dataset.value.questions = dataset.value.questions.map((q) =>
+      q.arenaMask?.length ? ({ ...q, arenaMask: [] } as Question) : q,
+    );
+    isDirty.value = true;
+  }
+
+  /**
+   * 切換當前題目的某格網格破碎/完好狀態。
+   *
+   * 行為：
+   *   - 已存在於 arenaMask → 移除（恢復完好）
+   *   - 不存在 → 加入（變成破碎）
+   *
+   * 邊界檢查：若副本未設 grid 或 index 越界，no-op
+   *  （UI 不該讓此情境發生，但 store 防禦避免存出非法資料）。
+   */
+  function toggleArenaMask(index: number): void {
+    const q = selectedQuestion.value;
+    if (!q || !dataset.value) return;
+    const grid = dataset.value.instance.arena.grid;
+    if (!grid) return;
+    const total = grid.rows * grid.cols;
+    if (!Number.isInteger(index) || index < 0 || index >= total) return;
+    const current = q.arenaMask ?? [];
+    const next = current.includes(index)
+      ? current.filter((i) => i !== index)
+      : [...current, index].sort((a, b) => a - b); // 排序便於 git diff 與人類閱讀
+    patchSelectedQuestion({ arenaMask: next });
+  }
+
+  /**
+   * 清空當前題目的所有破碎格（保留 arena.grid 設定）。
+   * 沒任何破碎 → no-op，不誤觸 dirty。
+   */
+  function clearArenaMask(): void {
+    const q = selectedQuestion.value;
+    if (!q) return;
+    if (!q.arenaMask || q.arenaMask.length === 0) return;
+    patchSelectedQuestion({ arenaMask: [] });
+  }
+
   return {
     // state
     dataset,
@@ -1119,6 +1356,7 @@ export const useEditorStore = defineStore('editor', () => {
     activeDrawingTool,
     drawingPoints,
     selectedSafeAreaId,
+    questionSubMode,
     isLocalApiAvailable,
     // getters
     selectedStrategy,
@@ -1140,6 +1378,7 @@ export const useEditorStore = defineStore('editor', () => {
     addWaymark,
     removeWaymark,
     setMode,
+    setQuestionSubMode,
     selectLine,
     updateArena,
     setBackgroundImage,
@@ -1164,6 +1403,16 @@ export const useEditorStore = defineStore('editor', () => {
     removeQuestionOption,
     moveQuestionOption,
     setCorrectOptionIds,
+    // Phase 2 - 實體與場地
+    updateBossPosition,
+    updateBossFacing,
+    addEnemy,
+    updateEnemy,
+    removeEnemy,
+    updateArenaGrid,
+    clearArenaGrid,
+    toggleArenaMask,
+    clearArenaMask,
     reset,
   };
 });
@@ -1293,4 +1542,12 @@ function generateSafeAreaId(): string {
  */
 function generateOptionId(): string {
   return `opt-${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
+}
+
+/**
+ * 產生 EnemyEntity 的唯一識別碼。
+ * 格式：enemy-{時間戳}-{隨機}。
+ */
+function generateEnemyId(): string {
+  return `enemy-${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
 }

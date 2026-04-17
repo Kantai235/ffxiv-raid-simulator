@@ -1431,3 +1431,247 @@ describe('loadPublishedDataset', () => {
     expect(store.selectedQuestionId).toBe('q0');
   });
 });
+
+// ========================================================================
+// Phase 2 - questionSubMode + 實體 CRUD + 網格管理
+// ========================================================================
+
+describe('questionSubMode 子模式切換與重置連動', () => {
+  it('預設為 safe-area', () => {
+    const store = useEditorStore();
+    expect(store.questionSubMode).toBe('safe-area');
+  });
+
+  it('setQuestionSubMode 可切換並清掉繪圖暫態', async () => {
+    vi.spyOn(api, 'readDataset').mockResolvedValue(makeDatasetWithQuestions());
+    const store = useEditorStore();
+    await store.loadDataset('m1s.json');
+    store.selectQuestion('q0');
+    store.startDrawing('circle');
+    store.appendDrawingPoint({ x: 100, y: 100 });
+    expect(store.drawingPoints).toHaveLength(1);
+
+    store.setQuestionSubMode('entity');
+    expect(store.questionSubMode).toBe('entity');
+    expect(store.drawingPoints).toHaveLength(0);
+    expect(store.activeDrawingTool).toBeNull();
+  });
+
+  it('離開 questions 主模式 → 子模式重置為 safe-area', async () => {
+    vi.spyOn(api, 'readDataset').mockResolvedValue(makeDatasetWithQuestions());
+    const store = useEditorStore();
+    await store.loadDataset('m1s.json');
+    store.selectQuestion('q0');
+    store.setQuestionSubMode('entity');
+    expect(store.questionSubMode).toBe('entity');
+
+    store.setMode('arena');
+    expect(store.questionSubMode).toBe('safe-area');
+  });
+
+  it('切題時 → 子模式重置為 safe-area', async () => {
+    vi.spyOn(api, 'readDataset').mockResolvedValue(makeDatasetWithQuestions());
+    const store = useEditorStore();
+    await store.loadDataset('m1s.json');
+    store.selectQuestion('q0');
+    store.setQuestionSubMode('grid-mask');
+    expect(store.questionSubMode).toBe('grid-mask');
+
+    store.selectQuestion('q1');
+    expect(store.questionSubMode).toBe('safe-area');
+  });
+});
+
+describe('實體 CRUD - boss / enemies', () => {
+  beforeEach(() => {
+    vi.spyOn(api, 'readDataset').mockResolvedValue(makeDatasetWithQuestions());
+  });
+
+  it('updateBossPosition → 更新當前題的 boss.position 且設 dirty', async () => {
+    const store = useEditorStore();
+    await store.loadDataset('m1s.json');
+    store.selectQuestion('q0');
+    expect(store.isDirty).toBe(false);
+
+    store.updateBossPosition({ x: 250, y: 750 });
+    expect(store.selectedQuestion?.boss.position).toEqual({ x: 250, y: 750 });
+    expect(store.isDirty).toBe(true);
+  });
+
+  it('updateBossFacing → 更新 facing', async () => {
+    const store = useEditorStore();
+    await store.loadDataset('m1s.json');
+    store.selectQuestion('q0');
+    store.updateBossFacing(180);
+    expect(store.selectedQuestion?.boss.facing).toBe(180);
+  });
+
+  it('addEnemy → 預設 name 為「分身 N」、position 為 arena.center、facing=0', async () => {
+    const store = useEditorStore();
+    await store.loadDataset('m1s.json');
+    store.selectQuestion('q0');
+
+    const id1 = store.addEnemy();
+    expect(id1).toBeTruthy();
+    const e1 = store.selectedQuestion?.enemies?.[0];
+    expect(e1?.name).toBe('分身 1');
+    expect(e1?.position).toEqual({ x: 500, y: 500 }); // mockArena center
+    expect(e1?.facing).toBe(0);
+
+    const id2 = store.addEnemy();
+    expect(id2).not.toBe(id1);
+    expect(store.selectedQuestion?.enemies?.[1].name).toBe('分身 2');
+  });
+
+  it('updateEnemy → 更新 name / facing / position（id 不可改）', async () => {
+    const store = useEditorStore();
+    await store.loadDataset('m1s.json');
+    store.selectQuestion('q0');
+    const id = store.addEnemy()!;
+
+    store.updateEnemy(id, { name: '模仿貓', facing: 90, position: { x: 100, y: 200 } });
+    const e = store.selectedQuestion?.enemies?.[0];
+    expect(e?.name).toBe('模仿貓');
+    expect(e?.facing).toBe(90);
+    expect(e?.position).toEqual({ x: 100, y: 200 });
+    expect(e?.id).toBe(id); // id 應保留
+  });
+
+  it('updateEnemy 對不存在的 id → no-op', async () => {
+    const store = useEditorStore();
+    await store.loadDataset('m1s.json');
+    store.selectQuestion('q0');
+    store.addEnemy();
+    const before = JSON.stringify(store.selectedQuestion?.enemies);
+    store.updateEnemy('does-not-exist', { name: 'x' });
+    expect(JSON.stringify(store.selectedQuestion?.enemies)).toBe(before);
+  });
+
+  it('removeEnemy → 移除分身且連帶清掉 tethers 中引用此 id 的條目', async () => {
+    const store = useEditorStore();
+    await store.loadDataset('m1s.json');
+    store.selectQuestion('q0');
+    const id = store.addEnemy()!;
+    // 手動塞入 tether 引用此 enemy
+    store.dataset!.questions[0].tethers = [
+      { sourceId: 'boss', targetId: id, color: 'red' },
+      { sourceId: 'boss', targetId: 'A', color: 'blue' }, // 與此 enemy 無關，應保留
+    ];
+
+    store.removeEnemy(id);
+    expect(store.selectedQuestion?.enemies).toEqual([]);
+    expect(store.selectedQuestion?.tethers).toHaveLength(1);
+    expect(store.selectedQuestion?.tethers?.[0].targetId).toBe('A');
+  });
+});
+
+describe('網格管理 - updateArenaGrid / toggleArenaMask / clearArenaMask', () => {
+  beforeEach(() => {
+    vi.spyOn(api, 'readDataset').mockResolvedValue(makeDatasetWithQuestions());
+  });
+
+  it('updateArenaGrid 寫入新 rows × cols', async () => {
+    const store = useEditorStore();
+    await store.loadDataset('m1s.json');
+    store.updateArenaGrid(4, 4);
+    expect(store.dataset?.instance.arena.grid).toEqual({ rows: 4, cols: 4 });
+    expect(store.isDirty).toBe(true);
+  });
+
+  it('updateArenaGrid 拒絕非正整數（no-op，不污染 grid）', async () => {
+    const store = useEditorStore();
+    await store.loadDataset('m1s.json');
+    store.updateArenaGrid(0, 4);
+    store.updateArenaGrid(4, -1);
+    store.updateArenaGrid(4.5, 4);
+    expect(store.dataset?.instance.arena.grid).toBeUndefined();
+    expect(store.isDirty).toBe(false);
+  });
+
+  it('toggleArenaMask 來回切換破碎/完好', async () => {
+    const store = useEditorStore();
+    await store.loadDataset('m1s.json');
+    store.updateArenaGrid(4, 4);
+    store.selectQuestion('q0');
+
+    store.toggleArenaMask(5);
+    expect(store.selectedQuestion?.arenaMask).toEqual([5]);
+    store.toggleArenaMask(2);
+    expect(store.selectedQuestion?.arenaMask).toEqual([2, 5]); // 自動排序
+    store.toggleArenaMask(5);
+    expect(store.selectedQuestion?.arenaMask).toEqual([2]);
+  });
+
+  it('toggleArenaMask 越界 index → no-op', async () => {
+    const store = useEditorStore();
+    await store.loadDataset('m1s.json');
+    store.updateArenaGrid(3, 3); // total = 9
+    store.selectQuestion('q0');
+    store.toggleArenaMask(9);
+    store.toggleArenaMask(-1);
+    store.toggleArenaMask(1.5);
+    expect(store.selectedQuestion?.arenaMask ?? []).toEqual([]);
+  });
+
+  it('toggleArenaMask 在無 grid 時 → no-op', async () => {
+    const store = useEditorStore();
+    await store.loadDataset('m1s.json');
+    store.selectQuestion('q0');
+    store.toggleArenaMask(0);
+    expect(store.selectedQuestion?.arenaMask ?? []).toEqual([]);
+  });
+
+  it('clearArenaMask 清空當前題目的破碎格', async () => {
+    const store = useEditorStore();
+    await store.loadDataset('m1s.json');
+    store.updateArenaGrid(4, 4);
+    store.selectQuestion('q0');
+    store.toggleArenaMask(0);
+    store.toggleArenaMask(5);
+
+    store.clearArenaMask();
+    expect(store.selectedQuestion?.arenaMask).toEqual([]);
+  });
+
+  it('clearArenaMask 對沒任何破碎的題 → no-op，不誤觸 dirty', async () => {
+    const store = useEditorStore();
+    await store.loadDataset('m1s.json');
+    store.selectQuestion('q0');
+    store.isDirty = false; // 強制重置觀察 clearArenaMask 是否錯誤觸發
+    store.clearArenaMask();
+    expect(store.isDirty).toBe(false);
+  });
+
+  it('updateArenaGrid 縮小尺寸 → 跨題清掃越界 mask（極重要）', async () => {
+    const store = useEditorStore();
+    await store.loadDataset('m1s.json');
+    store.updateArenaGrid(4, 4); // total = 16
+
+    // 三題都塞 mask，混合越界與不越界
+    store.dataset!.questions[0].arenaMask = [0, 5, 9, 15];
+    store.dataset!.questions[1].arenaMask = [10, 12]; // 全會被清
+    store.dataset!.questions[2].arenaMask = [0, 1, 2]; // 全保留
+    store.isDirty = false;
+
+    // 縮為 3×3 → total = 9，>= 9 的 index 必須消失
+    store.updateArenaGrid(3, 3);
+
+    expect(store.dataset!.questions[0].arenaMask).toEqual([0, 5]); // 9, 15 被清
+    expect(store.dataset!.questions[1].arenaMask).toEqual([]); // 全清
+    expect(store.dataset!.questions[2].arenaMask).toEqual([0, 1, 2]); // 全留
+    expect(store.isDirty).toBe(true);
+  });
+
+  it('clearArenaGrid → 移除 grid 並清光所有題目的 arenaMask', async () => {
+    const store = useEditorStore();
+    await store.loadDataset('m1s.json');
+    store.updateArenaGrid(4, 4);
+    store.dataset!.questions[0].arenaMask = [0, 1];
+    store.dataset!.questions[1].arenaMask = [5];
+
+    store.clearArenaGrid();
+    expect(store.dataset!.instance.arena.grid).toBeUndefined();
+    expect(store.dataset!.questions[0].arenaMask).toEqual([]);
+    expect(store.dataset!.questions[1].arenaMask).toEqual([]);
+  });
+});
