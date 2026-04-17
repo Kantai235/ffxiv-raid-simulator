@@ -9,7 +9,8 @@
  */
 import { computed, ref } from 'vue';
 import { storeToRefs } from 'pinia';
-import type { ChoiceQuestion, QuestionType } from '@ffxiv-sim/shared';
+import type { ChoiceQuestion, QuestionType, Tether } from '@ffxiv-sim/shared';
+import { ROLE_IDS, WAYMARK_IDS } from '@ffxiv-sim/shared';
 import { useEditorStore, type QuestionSubMode } from '@/stores/editor';
 
 const store = useEditorStore();
@@ -234,6 +235,76 @@ function onClearGrid(): void {
 
 function onClearMask(): void {
   store.clearArenaMask();
+}
+
+// ----------------------------------------------------------------------
+// Phase 3 - Tethers（連線）編輯
+// ----------------------------------------------------------------------
+
+const tethers = computed(() => selectedQuestion.value?.tethers ?? []);
+
+/** 顏色選項 - 與 shared/types/question.ts 的 Tether['color'] 字面聯合對齊 */
+const TETHER_COLORS: { value: Tether['color']; label: string; preview: string }[] = [
+  { value: 'red', label: '紅色', preview: '#E74C3C' },
+  { value: 'blue', label: '藍色', preview: '#3498DB' },
+  { value: 'purple', label: '紫色', preview: '#9B59B6' },
+  { value: 'yellow', label: '黃色', preview: '#F1C40F' },
+  { value: 'green', label: '綠色', preview: '#2ECC71' },
+];
+
+/**
+ * 端點選項分組 - 給 source / target 下拉同時使用。
+ *
+ * 結構為 optgroup 友善的格式：
+ *   [{ label: 'Boss', items: [{ value, label }] }, ...]
+ *
+ * Why 用 computed 而非靜態：enemies 隨題目變動；其他三組（Boss/Roles/Waymarks）
+ *   雖然靜態，放一起方便 template 一次 v-for。
+ */
+const endpointGroups = computed(() => {
+  const enemies = selectedQuestion.value?.enemies ?? [];
+  return [
+    {
+      label: 'Boss',
+      items: [{ value: 'boss', label: '王（Boss）' }],
+    },
+    {
+      label: '分身',
+      items: enemies.map((e) => ({ value: e.id, label: e.name })),
+    },
+    {
+      label: '職能',
+      items: ROLE_IDS.map((r) => ({ value: r, label: r })),
+    },
+    {
+      label: '場地標記',
+      items: WAYMARK_IDS.map((w) => ({ value: w, label: w })),
+    },
+  ];
+});
+
+/**
+ * Role ID Set - 給 view 判斷某條 tether 是否引用職能（Player 端不解析職能 →
+ * editor 端要用淡虛線提示「練習時定位玩家」）。
+ */
+const ROLE_ID_SET = new Set<string>(ROLE_IDS);
+function isRoleEndpoint(endpointId: string): boolean {
+  return ROLE_ID_SET.has(endpointId);
+}
+function tetherHasRole(t: Tether): boolean {
+  return isRoleEndpoint(t.sourceId) || isRoleEndpoint(t.targetId);
+}
+
+function onAddTether(): void {
+  store.addTether();
+}
+
+function onUpdateTether(idx: number, updates: Partial<Tether>): void {
+  store.updateTether(idx, updates);
+}
+
+function onRemoveTether(idx: number): void {
+  store.removeTether(idx);
 }
 </script>
 
@@ -592,6 +663,117 @@ function onClearMask(): void {
       >
         + 新增分身
       </button>
+
+      <!-- ===== 連線設定（Tethers） ===== -->
+      <div class="mt-4 pt-3 border-t border-gray-700">
+        <h4 class="text-xs text-editor-accent font-bold mb-1">連線設定</h4>
+        <p class="text-xs text-gray-400 leading-relaxed mb-2">
+          設定實體間的視覺連線（如「傾盆大貓」牽線）。
+          連到職能時，畫布上以場地中央示意（練習時才會定位到玩家）。
+        </p>
+
+        <ul v-if="tethers.length > 0" class="space-y-2 mb-2" data-testid="tethers-list">
+          <li
+            v-for="(t, idx) in tethers"
+            :key="`${t.sourceId}-${t.targetId}-${idx}`"
+            :data-tether-index="idx"
+            class="p-2 rounded bg-editor-bg/40 border border-gray-700 space-y-1"
+          >
+            <div class="flex items-center justify-between gap-1">
+              <span class="text-xs text-gray-500">連線 {{ idx + 1 }}</span>
+              <button
+                type="button"
+                :data-tether-remove="idx"
+                class="px-1.5 py-0.5 text-xs text-red-400 hover:bg-red-500/20 rounded"
+                @click="onRemoveTether(idx)"
+                title="刪除"
+              >✕</button>
+            </div>
+
+            <!-- Source 下拉 -->
+            <div>
+              <label class="text-xs text-gray-500 block mb-0.5">起點</label>
+              <select
+                :value="t.sourceId"
+                :data-tether-source="idx"
+                class="w-full bg-editor-bg border border-gray-600 rounded px-2 py-1 text-xs"
+                @change="onUpdateTether(idx, { sourceId: ($event.target as HTMLSelectElement).value })"
+              >
+                <optgroup
+                  v-for="g in endpointGroups"
+                  :key="g.label"
+                  :label="g.label"
+                >
+                  <option v-for="opt in g.items" :key="opt.value" :value="opt.value">
+                    {{ opt.label }}
+                  </option>
+                </optgroup>
+              </select>
+            </div>
+
+            <!-- Target 下拉 -->
+            <div>
+              <label class="text-xs text-gray-500 block mb-0.5">終點</label>
+              <select
+                :value="t.targetId"
+                :data-tether-target="idx"
+                class="w-full bg-editor-bg border border-gray-600 rounded px-2 py-1 text-xs"
+                @change="onUpdateTether(idx, { targetId: ($event.target as HTMLSelectElement).value })"
+              >
+                <optgroup
+                  v-for="g in endpointGroups"
+                  :key="g.label"
+                  :label="g.label"
+                >
+                  <option v-for="opt in g.items" :key="opt.value" :value="opt.value">
+                    {{ opt.label }}
+                  </option>
+                </optgroup>
+              </select>
+            </div>
+
+            <!-- Color 下拉（含色塊預覽） -->
+            <div class="flex items-center gap-2">
+              <label class="text-xs text-gray-500">顏色</label>
+              <select
+                :value="t.color"
+                :data-tether-color="idx"
+                class="flex-1 bg-editor-bg border border-gray-600 rounded px-2 py-1 text-xs"
+                @change="onUpdateTether(idx, { color: ($event.target as HTMLSelectElement).value as Tether['color'] })"
+              >
+                <option v-for="c in TETHER_COLORS" :key="c.value" :value="c.value">
+                  {{ c.label }}
+                </option>
+              </select>
+              <!-- 色塊預覽 -->
+              <span
+                class="inline-block w-5 h-5 rounded border border-gray-600 shrink-0"
+                :style="{ backgroundColor: TETHER_COLORS.find((c) => c.value === t.color)?.preview }"
+              />
+            </div>
+
+            <!-- Role 提示 -->
+            <p
+              v-if="tetherHasRole(t)"
+              :data-tether-role-hint="idx"
+              class="text-xs text-yellow-400 italic"
+            >
+              （練習時定位玩家）
+            </p>
+          </li>
+        </ul>
+        <p v-else class="text-xs text-gray-500 italic mb-2">（尚無連線）</p>
+
+        <button
+          type="button"
+          data-testid="add-tether"
+          class="w-full px-2 py-1.5 text-xs bg-editor-bg hover:bg-editor-panel/60
+                 rounded border border-editor-accent/60 text-editor-accent"
+          @click="onAddTether"
+        >
+          + 新增連線
+        </button>
+      </div>
     </section>
 
     <!-- ===== grid-mask 子模式：場地破壞設定 ===== -->

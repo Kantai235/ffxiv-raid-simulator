@@ -1675,3 +1675,107 @@ describe('網格管理 - updateArenaGrid / toggleArenaMask / clearArenaMask', ()
     expect(store.dataset!.questions[1].arenaMask).toEqual([]);
   });
 });
+
+// ========================================================================
+// Phase 3 - Tethers CRUD
+// ========================================================================
+
+describe('Tethers - addTether / updateTether / removeTether', () => {
+  beforeEach(() => {
+    vi.spyOn(api, 'readDataset').mockResolvedValue(makeDatasetWithQuestions());
+  });
+
+  it('addTether → 預設 boss → A、color=red 且設 dirty', async () => {
+    const store = useEditorStore();
+    await store.loadDataset('m1s.json');
+    store.selectQuestion('q0');
+    expect(store.isDirty).toBe(false);
+
+    store.addTether();
+    expect(store.selectedQuestion?.tethers).toEqual([
+      { sourceId: 'boss', targetId: 'A', color: 'red' },
+    ]);
+    expect(store.isDirty).toBe(true);
+  });
+
+  it('addTether 多次 → 累加（允許同 source/target 重複）', async () => {
+    const store = useEditorStore();
+    await store.loadDataset('m1s.json');
+    store.selectQuestion('q0');
+    store.addTether();
+    store.addTether();
+    expect(store.selectedQuestion?.tethers).toHaveLength(2);
+  });
+
+  it('updateTether → 部分 merge 指定欄位', async () => {
+    const store = useEditorStore();
+    await store.loadDataset('m1s.json');
+    store.selectQuestion('q0');
+    store.addTether();
+    store.updateTether(0, { targetId: 'B', color: 'blue' });
+    expect(store.selectedQuestion?.tethers?.[0]).toEqual({
+      sourceId: 'boss',
+      targetId: 'B',
+      color: 'blue',
+    });
+  });
+
+  it('updateTether 越界 index → no-op', async () => {
+    const store = useEditorStore();
+    await store.loadDataset('m1s.json');
+    store.selectQuestion('q0');
+    store.addTether();
+    store.updateTether(99, { color: 'green' });
+    store.updateTether(-1, { color: 'green' });
+    expect(store.selectedQuestion?.tethers?.[0].color).toBe('red');
+  });
+
+  it('removeTether → 依 index 移除', async () => {
+    const store = useEditorStore();
+    await store.loadDataset('m1s.json');
+    store.selectQuestion('q0');
+    // 三條，刪中間一條
+    store.addTether();
+    store.updateTether(0, { color: 'red' });
+    store.addTether();
+    store.updateTether(1, { color: 'blue' });
+    store.addTether();
+    store.updateTether(2, { color: 'green' });
+
+    store.removeTether(1);
+    const colors = store.selectedQuestion?.tethers?.map((t) => t.color);
+    expect(colors).toEqual(['red', 'green']);
+  });
+
+  it('removeTether 越界 → no-op', async () => {
+    const store = useEditorStore();
+    await store.loadDataset('m1s.json');
+    store.selectQuestion('q0');
+    store.addTether();
+    store.removeTether(5);
+    expect(store.selectedQuestion?.tethers).toHaveLength(1);
+  });
+
+  it('Phase 2 連動仍生效：removeEnemy 會清掉引用該 enemy id 的 tethers', async () => {
+    const store = useEditorStore();
+    await store.loadDataset('m1s.json');
+    store.selectQuestion('q0');
+    const enemyId = store.addEnemy()!;
+
+    // 三條 tether：1 條引用 enemy（應被清）、1 條 enemy → boss（應被清）、1 條無關
+    store.addTether();
+    store.updateTether(0, { sourceId: 'boss', targetId: enemyId });
+    store.addTether();
+    store.updateTether(1, { sourceId: enemyId, targetId: 'boss' });
+    store.addTether();
+    store.updateTether(2, { sourceId: 'boss', targetId: 'A' });
+
+    store.removeEnemy(enemyId);
+    expect(store.selectedQuestion?.tethers).toHaveLength(1);
+    expect(store.selectedQuestion?.tethers?.[0]).toEqual({
+      sourceId: 'boss',
+      targetId: 'A',
+      color: 'red',
+    });
+  });
+});

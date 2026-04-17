@@ -198,6 +198,10 @@ const enemiesForCanvas = computed(() =>
 const arenaMaskForCanvas = computed(() =>
   mode.value === 'questions' ? selectedQuestion.value?.arenaMask ?? [] : [],
 );
+// Phase 3 - 連線同樣只在 questions 模式渲染
+const tethersForCanvas = computed(() =>
+  mode.value === 'questions' ? selectedQuestion.value?.tethers ?? [] : [],
+);
 
 // ----------------------------------------------------------------------
 // Save / 下載 / 上傳 - 依環境分流
@@ -541,6 +545,7 @@ watch(
             :safe-areas="safeAreasForCanvas"
             :enemies="enemiesForCanvas"
             :arena-mask="arenaMaskForCanvas"
+            :tethers="tethersForCanvas"
             @waymark-drag-end="onWaymarkDragEnd"
             @line-create="onLineCreate"
             @line-select="onLineSelect"

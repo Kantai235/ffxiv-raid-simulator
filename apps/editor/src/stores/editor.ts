@@ -19,6 +19,7 @@ import type {
   RoleSolution,
   SafeArea,
   Strategy,
+  Tether,
   WaymarkId,
 } from '@ffxiv-sim/shared';
 import {
@@ -1335,6 +1336,57 @@ export const useEditorStore = defineStore('editor', () => {
     patchSelectedQuestion({ arenaMask: [] });
   }
 
+  // ----------------------------------------------------------------------
+  // Actions - Phase 3：連線（tethers）
+  // ----------------------------------------------------------------------
+
+  /**
+   * 為當前題目新增一條連線。
+   *
+   * 預設 sourceId='boss' / targetId='A' / color='red'：
+   *   - 兩端都是 player ArenaMap 能立即解析的 ID（boss + waymark），
+   *     新增完即可在畫布上看到視覺回饋，不會出現「加了卻看不到線」的困惑。
+   *   - color 用紅是 FFXIV 連線最常見的視覺。
+   *
+   * Why 不檢查「已存在重複連線」：同樣 source/target 同色的連線在出題語意中
+   *   可能合理（例：兩條同方向但代表不同階段的牽引），讓出題者自行判斷。
+   */
+  function addTether(): void {
+    const q = selectedQuestion.value;
+    if (!q) return;
+    const newTether: Tether = { sourceId: 'boss', targetId: 'A', color: 'red' };
+    patchSelectedQuestion({ tethers: [...(q.tethers ?? []), newTether] });
+  }
+
+  /**
+   * 部分更新指定 index 的連線（淺層 merge）。
+   *
+   * Why 用 index 而非 id：Tether schema 沒有 id 欄位（同樣 source/target
+   *   組合可能合法重複，無法從 source/target 推導唯一 key），
+   *   editor 端用陣列 index 引用是最直接的方式。
+   *
+   * 越界 index → no-op（防 UI race 例如「按刪除瞬間又按編輯」）。
+   */
+  function updateTether(index: number, updates: Partial<Tether>): void {
+    const q = selectedQuestion.value;
+    if (!q || !q.tethers) return;
+    if (!Number.isInteger(index) || index < 0 || index >= q.tethers.length) return;
+    const next = [...q.tethers];
+    next[index] = { ...next[index], ...updates };
+    patchSelectedQuestion({ tethers: next });
+  }
+
+  /**
+   * 移除指定 index 的連線。越界 → no-op。
+   */
+  function removeTether(index: number): void {
+    const q = selectedQuestion.value;
+    if (!q || !q.tethers) return;
+    if (!Number.isInteger(index) || index < 0 || index >= q.tethers.length) return;
+    const next = q.tethers.filter((_, i) => i !== index);
+    patchSelectedQuestion({ tethers: next });
+  }
+
   return {
     // state
     dataset,
@@ -1413,6 +1465,9 @@ export const useEditorStore = defineStore('editor', () => {
     clearArenaGrid,
     toggleArenaMask,
     clearArenaMask,
+    addTether,
+    updateTether,
+    removeTether,
     reset,
   };
 });

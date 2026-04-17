@@ -38,9 +38,10 @@ import type {
   Point2D,
   SafeArea,
   Strategy,
+  Tether,
   WaymarkId,
 } from '@ffxiv-sim/shared';
-import { WAYMARK_COLOR, WAYMARK_IDS, facingToCssRotation } from '@ffxiv-sim/shared';
+import { ROLE_IDS, WAYMARK_COLOR, WAYMARK_IDS, facingToCssRotation } from '@ffxiv-sim/shared';
 import { useEditorStore } from '@/stores/editor';
 import {
   calculateRadius,
@@ -84,6 +85,11 @@ interface Props {
    */
   arenaMask?: number[];
   /**
+   * questions 模式：當前題目的連線（Phase 3）。
+   * Editor 端視覺與 Player 對齊；Role ID 端點 fallback 到場地中央 + 淡虛線。
+   */
+  tethers?: Tether[];
+  /**
    * 背景圖路徑前綴。
    *
    * Why: 當 editor 從 player 發佈版（靜態 GH Pages 模式）載入官方題庫時，
@@ -102,6 +108,7 @@ const props = withDefaults(defineProps<Props>(), {
   safeAreas: () => [],
   enemies: () => [],
   arenaMask: () => [],
+  tethers: () => [],
   imagePathPrefix: '',
 });
 
@@ -399,6 +406,79 @@ const gridLines = computed(() => {
   for (let i = 1; i < grid.rows; i++) horizontals.push(i * cellH);
   return { verticals, horizontals, cellW, cellH };
 });
+
+// ----------------------------------------------------------------------
+// Phase 3 - Tethers 連線渲染（與 Player ArenaMap 視覺對齊）
+// ----------------------------------------------------------------------
+
+/** Waymark ID 型別守衛 */
+function isWaymarkId(id: string): id is WaymarkId {
+  return (WAYMARK_IDS as readonly string[]).includes(id);
+}
+
+/** Role ID 型別守衛 - 用於 editor 端的「淡虛線示意」分支 */
+const ROLE_ID_SET = new Set<string>(ROLE_IDS);
+function isRoleId(id: string): boolean {
+  return ROLE_ID_SET.has(id);
+}
+
+/**
+ * 解析連線端點 ID 為場上座標。
+ *
+ * 解析順序（與 Player ArenaMap 對齊）：
+ *   1. 'boss'       → resolvedBossPosition
+ *   2. enemy.id     → enemies 陣列對應 position（用 liveEnemyPosition 確保拖曳中也即時更新）
+ *   3. WaymarkId    → waymarks 對應座標
+ *   4. RoleId       → arena.center（editor 無法預知玩家站位，給場地中央示意）
+ *
+ * 找不到任何對應 → 回 null（呼叫端過濾）。
+ */
+function resolveEntityPosition(id: string): Point2D | null {
+  if (id === 'boss') return resolvedBossPosition.value;
+  const enemy = props.enemies.find((e) => e.id === id);
+  if (enemy) return liveEnemyPosition(enemy);
+  if (isWaymarkId(id)) {
+    const wm = props.waymarks[id];
+    if (wm) return wm;
+  }
+  if (isRoleId(id)) return props.arena.center;
+  return null;
+}
+
+/** 連線顏色 → CSS 色碼（與 Player ArenaMap 同表） */
+const TETHER_COLOR_MAP: Record<Tether['color'], string> = {
+  red: '#E74C3C',
+  blue: '#3498DB',
+  purple: '#9B59B6',
+  yellow: '#F1C40F',
+  green: '#2ECC71',
+};
+
+/**
+ * 可渲染的連線資料 - 過濾任一端無法解析者。
+ *
+ * isRoleEndpoint 旗標讓 view 套用「淡虛線」樣式區分：
+ *   editor 端 Role 連線只是示意（端點固定在場地中央），
+ *   實際玩家位置要練習時才知道。
+ */
+const renderableTethers = computed(() =>
+  props.tethers
+    .map((t, idx) => {
+      const src = resolveEntityPosition(t.sourceId);
+      const tgt = resolveEntityPosition(t.targetId);
+      if (!src || !tgt) return null;
+      return {
+        key: `${idx}-${t.sourceId}-${t.targetId}`,
+        x1: src.x,
+        y1: src.y,
+        x2: tgt.x,
+        y2: tgt.y,
+        color: TETHER_COLOR_MAP[t.color],
+        isRoleEndpoint: isRoleId(t.sourceId) || isRoleId(t.targetId),
+      };
+    })
+    .filter((t): t is NonNullable<typeof t> => t !== null),
+);
 
 /**
  * 破碎格的視覺資料（與 player ArenaMap 的 brokenTiles 同型）。
@@ -1234,6 +1314,33 @@ const draftPolygon = computed(() => {
           pointer-events="none"
         >({{ Math.round(wm.pos.x) }}, {{ Math.round(wm.pos.y) }})</text>
       </g>
+    </g>
+
+    <!-- ===== Layer: Tethers 連線（Phase 3）=====
+         與 Player ArenaMap 視覺對齊：虛線 + drop-shadow。
+         Role ID 端點以淡虛線（opacity=0.5 + 較粗 dasharray）示意「練習時定位玩家」。
+         pointer-events=none 不擋下層互動（拖曳實體 / 點擊網格）。 -->
+    <g
+      v-if="renderableTethers.length > 0"
+      data-layer="tethers"
+      class="tethers-layer"
+      pointer-events="none"
+      filter="drop-shadow(0 1px 2px rgba(0,0,0,0.7))"
+    >
+      <line
+        v-for="t in renderableTethers"
+        :key="t.key"
+        :x1="t.x1"
+        :y1="t.y1"
+        :x2="t.x2"
+        :y2="t.y2"
+        :stroke="t.color"
+        stroke-width="4"
+        stroke-linecap="round"
+        :stroke-dasharray="t.isRoleEndpoint ? '8 4' : '10 6'"
+        :stroke-opacity="t.isRoleEndpoint ? 0.5 : 0.85"
+        :data-tether-role="t.isRoleEndpoint ? 'true' : 'false'"
+      />
     </g>
 
     <!-- ===== Layer: Boss 面嚮指示器 =====
