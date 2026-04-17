@@ -1346,3 +1346,88 @@ describe('題型切換時資料清理', () => {
     expect(q.roleSolutions.MT.correctOptionIds).toEqual([]);
   });
 });
+
+// ========================================================================
+// 發佈版官方題庫載入 - 靜態 GH Pages 模式
+// ========================================================================
+
+describe('loadPublishedIndex', () => {
+  it('成功 → publishedIndex 設定 + isLoadingPublished 結束', async () => {
+    const mockIndex = {
+      schemaVersion: '1.0',
+      instances: [
+        {
+          id: 'm1s',
+          name: 'M1S',
+          shortName: 'M1S',
+          dataPath: 'assets/data/m1s.json',
+          schemaVersion: '1.0',
+        },
+      ],
+    };
+    vi.spyOn(api, 'fetchPublishedIndex').mockResolvedValue(mockIndex);
+    const store = useEditorStore();
+    await store.loadPublishedIndex();
+    expect(store.publishedIndex?.instances).toHaveLength(1);
+    expect(store.isLoadingPublished).toBe(false);
+    expect(store.error).toBeNull();
+  });
+
+  it('失敗 → publishedIndex=null + error 訊息', async () => {
+    vi.spyOn(api, 'fetchPublishedIndex').mockRejectedValue(
+      new api.DatasetApiError('http', '/x', '404'),
+    );
+    const store = useEditorStore();
+    await store.loadPublishedIndex();
+    expect(store.publishedIndex).toBeNull();
+    expect(store.error).toContain('404');
+    expect(store.isLoadingPublished).toBe(false);
+  });
+});
+
+describe('loadPublishedDataset', () => {
+  const entry = {
+    id: 'm1s',
+    name: 'M1S',
+    shortName: 'M1S',
+    dataPath: 'assets/data/m1s.json',
+    schemaVersion: '1.0',
+  };
+
+  it('成功 → dataset 寫入 + currentFilename 為 m1s.json + 預選第一個攻略', async () => {
+    vi.spyOn(api, 'fetchPublishedDataset').mockResolvedValue(makeDataset());
+    const store = useEditorStore();
+    const ok = await store.loadPublishedDataset(entry);
+    expect(ok).toBe(true);
+    expect(store.dataset?.instance.id).toBe('m1s');
+    expect(store.currentFilename).toBe('m1s.json');
+    expect(store.selectedStrategyId).toBe('game8');
+    expect(store.isDirty).toBe(false);
+  });
+
+  it('結構驗證失敗 → 錯誤訊息 + dataset 不被覆寫', async () => {
+    vi.spyOn(api, 'fetchPublishedDataset').mockResolvedValue({} as InstanceDataset);
+    const store = useEditorStore();
+    const ok = await store.loadPublishedDataset(entry);
+    expect(ok).toBe(false);
+    expect(store.error).toContain('官方題庫結構錯誤');
+    expect(store.dataset).toBeNull();
+  });
+
+  it('fetch 失敗 → 錯誤訊息', async () => {
+    vi.spyOn(api, 'fetchPublishedDataset').mockRejectedValue(
+      new api.DatasetApiError('network', '/x', '斷線'),
+    );
+    const store = useEditorStore();
+    const ok = await store.loadPublishedDataset(entry);
+    expect(ok).toBe(false);
+    expect(store.error).toContain('斷線');
+  });
+
+  it('載入後 dataset 可正常進入 questions 模式（選取第一題）', async () => {
+    vi.spyOn(api, 'fetchPublishedDataset').mockResolvedValue(makeDatasetWithQuestions());
+    const store = useEditorStore();
+    await store.loadPublishedDataset(entry);
+    expect(store.selectedQuestionId).toBe('q0');
+  });
+});

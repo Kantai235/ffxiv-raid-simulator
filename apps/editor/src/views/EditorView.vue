@@ -32,7 +32,9 @@ const {
   selectedQuestion,
   selectedRoleSolution,
   availableFiles,
+  publishedIndex,
   isLoading,
+  isLoadingPublished,
   isSaving,
   error,
   isDirty,
@@ -52,10 +54,13 @@ const imageCacheToken = ref(0);
 
 onMounted(async () => {
   // 先探測環境：有本機 API 才需要 refreshFileList（從 dev server 取檔案列表）
-  // 靜態 GH Pages 模式下沒 API，跳過 refreshFileList 避免 404 錯誤污染 UI
+  // 靜態 GH Pages 模式下沒 API，改為 fetch 發佈版 index.json 讓出題者
+  // 可直接從官方題庫下拉選擇載入（省去「先下載再上傳」的麻煩）
   await store.detectLocalApiAvailability();
   if (store.isLocalApiAvailable) {
     void store.refreshFileList();
+  } else if (store.isLocalApiAvailable === false) {
+    void store.loadPublishedIndex();
   }
   window.addEventListener('keydown', onKeyDown);
 });
@@ -201,6 +206,29 @@ function triggerJsonFileInput(): void {
   jsonFileInputRef.value?.click();
 }
 
+/**
+ * 「從官方題庫載入」下拉選擇 - 靜態模式下直接 fetch player 發佈目錄下的 JSON。
+ *
+ * dirty 防呆：若當前有未儲存變更，先 confirm。使用者取消時 reset select 回原值。
+ */
+async function onLoadPublished(event: Event): Promise<void> {
+  const target = event.target as HTMLSelectElement;
+  const instanceId = target.value;
+  if (!instanceId) return;
+  if (isDirty.value) {
+    const ok = window.confirm('當前有未儲存的變更，確定要切換副本嗎？');
+    if (!ok) {
+      target.value = '';
+      return;
+    }
+  }
+  const entry = publishedIndex.value?.instances.find((i) => i.id === instanceId);
+  if (!entry) return;
+  await store.loadPublishedDataset(entry);
+  // 載入後重置 select 為空，避免「重載同一副本」時 change 事件不觸發
+  target.value = '';
+}
+
 async function onUploadJsonFile(event: Event): Promise<void> {
   const input = event.target as HTMLInputElement;
   const file = input.files?.[0];
@@ -268,8 +296,42 @@ watch(
           </button>
         </div>
 
-        <!-- 【靜態 GH Pages 模式】無 local API：改為上傳 JSON 檔載入 -->
-        <div v-else-if="isLocalApiAvailable === false" class="flex items-center gap-2">
+        <!-- 【靜態 GH Pages 模式】無 local API：改為從官方題庫選擇 或 上傳 JSON 檔載入 -->
+        <div v-else-if="isLocalApiAvailable === false" class="flex items-center gap-2 flex-wrap">
+          <!-- 官方題庫下拉 - fetch 自 player 發佈目錄 -->
+          <label class="text-xs text-gray-400">官方題庫：</label>
+          <select
+            data-testid="published-selector"
+            :disabled="isLoadingPublished || !publishedIndex"
+            class="bg-editor-bg border border-gray-600 rounded px-2 py-1 text-sm disabled:opacity-50"
+            @change="onLoadPublished"
+          >
+            <option value="">
+              <template v-if="isLoadingPublished">載入中…</template>
+              <template v-else-if="!publishedIndex">（未能載入索引）</template>
+              <template v-else>—— 選擇官方副本 ——</template>
+            </option>
+            <option
+              v-for="entry in publishedIndex?.instances ?? []"
+              :key="entry.id"
+              :value="entry.id"
+            >
+              {{ entry.name }}
+            </option>
+          </select>
+          <button
+            type="button"
+            data-testid="published-refresh"
+            class="text-xs px-2 py-1 bg-editor-bg hover:bg-editor-panel/60 rounded"
+            :disabled="isLoadingPublished"
+            title="重新載入索引"
+            @click="store.loadPublishedIndex()"
+          >
+            ⟳
+          </button>
+
+          <span class="text-gray-500 text-xs">或</span>
+
           <input
             ref="jsonFileInputRef"
             type="file"
@@ -284,7 +346,7 @@ watch(
             class="text-xs px-3 py-1 bg-editor-bg hover:bg-editor-panel/60 rounded border border-editor-accent/60"
             @click="triggerJsonFileInput"
           >
-            📂 載入 JSON
+            📂 載入本機 JSON
           </button>
           <span v-if="currentFilename" class="text-xs text-gray-400 truncate max-w-[160px]">
             {{ currentFilename }}
@@ -354,7 +416,8 @@ watch(
         class="mt-2 text-xs bg-editor-accent/15 border border-editor-accent/40 rounded px-3 py-1.5 text-gray-200"
       >
         <span class="font-bold text-editor-accent">出題者模式</span>
-        ：編輯完成後請按右上「下載 JSON」，將檔案傳給管理員即可。
+        ：可從上方「官方題庫」下拉選擇既有副本開始編輯，或上傳本機 JSON 檔。
+        編輯完成後按右上「下載 JSON」，將檔案傳給管理員即可。
         <span class="text-gray-400">（場地圖上傳功能僅在本機模式可用）</span>
       </div>
 

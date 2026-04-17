@@ -5,7 +5,9 @@ import type {
   ArenaLine,
   ChoiceQuestion,
   ChoiceRoleSolution,
+  DatasetIndex,
   InstanceDataset,
+  InstanceIndexEntry,
   MapClickQuestion,
   MapClickRoleSolution,
   Point2D,
@@ -28,6 +30,8 @@ import {
 export type DrawingTool = 'circle' | 'rect' | 'polygon' | null;
 import {
   detectLocalApi,
+  fetchPublishedDataset,
+  fetchPublishedIndex,
   listDatasets,
   readDataset,
   uploadArenaImage,
@@ -98,6 +102,20 @@ export const useEditorStore = defineStore('editor', () => {
    * UI 元件應依此旗標分流「儲存／載入／上傳」三組行為。
    */
   const isLocalApiAvailable = ref<boolean | null>(null);
+
+  /**
+   * 發佈版官方題庫索引（靜態 GH Pages 模式下用於列出可選副本）。
+   *
+   * Why 獨立 state：
+   *   availableFiles 是本機 dev 模式下「可存取的檔名」; 發佈版索引是靜態模式下
+   *   「可線上載入的副本（含 name / tags 等顯示用 metadata）」 - 兩者資料形狀與取得
+   *   方式不同（listDatasets 回檔名陣列 vs fetchPublishedIndex 回 DatasetIndex 物件），
+   *   放一起反而需要多條件判斷，分開單純。
+   */
+  const publishedIndex = ref<DatasetIndex | null>(null);
+
+  /** 載入發佈版索引 / dataset 的進行中旗標，UI 顯示 spinner 用 */
+  const isLoadingPublished = ref(false);
 
   /**
    * 當前編輯模式 - 影響左側 panel 與 EditableArenaMap 的互動行為。
@@ -368,6 +386,76 @@ export const useEditorStore = defineStore('editor', () => {
   }
 
   // ----------------------------------------------------------------------
+  // Actions - 發佈版官方題庫（靜態 GH Pages 模式專用）
+  // ----------------------------------------------------------------------
+
+  /**
+   * 載入 player 發佈版索引。
+   *
+   * 靜態模式下供「從官方題庫載入」下拉使用；本機 dev 模式的 UI 不會呼叫此 action
+   * （本機用 refreshFileList + loadDataset 即可直接讀寫 player 資料夾）。
+   *
+   * 失敗時錯誤訊息寫入 error 並清空 publishedIndex，讓 UI 顯示錯誤橫幅。
+   */
+  async function loadPublishedIndex(): Promise<void> {
+    isLoadingPublished.value = true;
+    error.value = null;
+    try {
+      publishedIndex.value = await fetchPublishedIndex();
+    } catch (err) {
+      publishedIndex.value = null;
+      error.value = err instanceof Error ? err.message : '載入官方題庫索引失敗';
+    } finally {
+      isLoadingPublished.value = false;
+    }
+  }
+
+  /**
+   * 從發佈版索引載入指定副本的 dataset，寫入編輯狀態。
+   *
+   * 沿用 loadDataset 的結構驗證（assertValidInstanceDataset）- 發佈版 JSON
+   * 雖已經過 player 驗證，editor 再驗一次屬於雙保險。
+   *
+   * currentFilename 以 dataPath 的檔名（如 'm1s.json'）填入，方便下次「下載 JSON」
+   * 時檔名與官方原檔一致，便於管理員比對 diff。
+   *
+   * @param entry 索引中的一筆（含 dataPath 與 schemaVersion）
+   * @returns 是否成功
+   */
+  async function loadPublishedDataset(entry: InstanceIndexEntry): Promise<boolean> {
+    isLoading.value = true;
+    error.value = null;
+    try {
+      const raw = await fetchPublishedDataset(entry.dataPath);
+      assertValidInstanceDataset(raw);
+
+      dataset.value = raw;
+      // 從 'assets/data/m1s.json' 取出 'm1s.json' 作為 currentFilename，
+      // 讓 downloadDataset 的預期檔名與原檔對齊
+      const filename = entry.dataPath.split('/').pop() ?? `${entry.id}.json`;
+      currentFilename.value = filename;
+      selectedStrategyId.value = raw.strategies[0]?.id ?? null;
+      selectedQuestionId.value = raw.questions[0]?.id ?? null;
+      selectedRoleId.value = 'MT';
+      selectedLineId.value = null;
+      selectedSafeAreaId.value = null;
+      activeDrawingTool.value = null;
+      drawingPoints.value = [];
+      isDirty.value = false;
+      return true;
+    } catch (err) {
+      if (err instanceof DatasetValidationError) {
+        error.value = `官方題庫結構錯誤：${err.message}`;
+      } else {
+        error.value = err instanceof Error ? err.message : '載入官方題庫失敗';
+      }
+      return false;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // ----------------------------------------------------------------------
   // Actions - 細粒度 mutation
   // ----------------------------------------------------------------------
 
@@ -443,8 +531,10 @@ export const useEditorStore = defineStore('editor', () => {
     selectedQuestionId.value = null;
     selectedRoleId.value = 'MT';
     availableFiles.value = [];
+    publishedIndex.value = null;
     isLoading.value = false;
     isSaving.value = false;
+    isLoadingPublished.value = false;
     isUploadingImage.value = false;
     error.value = null;
     isDirty.value = false;
@@ -999,8 +1089,10 @@ export const useEditorStore = defineStore('editor', () => {
     selectedQuestionId,
     selectedRoleId,
     availableFiles,
+    publishedIndex,
     isLoading,
     isSaving,
+    isLoadingPublished,
     isUploadingImage,
     error,
     isDirty,
@@ -1021,6 +1113,8 @@ export const useEditorStore = defineStore('editor', () => {
     detectLocalApiAvailability,
     downloadDataset,
     loadDatasetFromJson,
+    loadPublishedIndex,
+    loadPublishedDataset,
     selectStrategy,
     selectQuestion,
     selectRole,

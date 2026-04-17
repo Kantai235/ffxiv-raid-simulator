@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   DatasetApiError,
+  fetchPublishedDataset,
+  fetchPublishedIndex,
   listDatasets,
   readDataset,
   uploadArenaImage,
@@ -89,6 +91,43 @@ describe('writeDataset', () => {
       writeDataset('a/b.json', {} as never),
     ).rejects.toMatchObject({ reason: 'invalid-filename' });
     expect(fetchSpy).not.toHaveBeenCalled();
+  });
+});
+
+describe('fetchPublishedIndex', () => {
+  it('用相對路徑 ../assets/data/index.json 取得 index', async () => {
+    const mockIndex = { schemaVersion: '1.0', instances: [{ id: 'm1s' }] };
+    vi.mocked(fetch).mockResolvedValueOnce(jsonResponse(mockIndex));
+    const result = await fetchPublishedIndex();
+    expect(result).toEqual(mockIndex);
+    expect(vi.mocked(fetch).mock.calls[0][0]).toBe('../assets/data/index.json');
+  });
+
+  it('HTTP 404 → reason=http', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(jsonResponse({ error: '找不到' }, 404));
+    await expect(fetchPublishedIndex()).rejects.toMatchObject({ reason: 'http' });
+  });
+
+  it('網路錯誤 → reason=network', async () => {
+    vi.mocked(fetch).mockRejectedValueOnce(new TypeError('fail'));
+    await expect(fetchPublishedIndex()).rejects.toMatchObject({ reason: 'network' });
+  });
+});
+
+describe('fetchPublishedDataset', () => {
+  it('用 ../<dataPath> 取得 dataset', async () => {
+    const mockData = { schemaVersion: '1.0' };
+    vi.mocked(fetch).mockResolvedValueOnce(jsonResponse(mockData));
+    const result = await fetchPublishedDataset('assets/data/m1s.json');
+    expect(result).toEqual(mockData);
+    expect(vi.mocked(fetch).mock.calls[0][0]).toBe('../assets/data/m1s.json');
+  });
+
+  it('HTTP 500 → reason=http', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(jsonResponse({ error: '伺服器錯誤' }, 500));
+    await expect(fetchPublishedDataset('assets/data/m1s.json')).rejects.toMatchObject({
+      reason: 'http',
+    });
   });
 });
 

@@ -18,7 +18,7 @@
  * ========================================================================
  */
 
-import type { InstanceDataset } from '@ffxiv-sim/shared';
+import type { DatasetIndex, InstanceDataset } from '@ffxiv-sim/shared';
 
 /**
  * Dataset API 失敗錯誤型別。
@@ -164,6 +164,61 @@ export async function uploadArenaImage(file: File): Promise<{ path: string }> {
     return (await res.json()) as { path: string };
   } catch (cause) {
     throw new DatasetApiError('parse', path, '回應 JSON 解析失敗', { cause });
+  }
+}
+
+// ========================================================================
+// 發佈版官方題庫（靜態模式可用：直接 fetch player 部署目錄下的 JSON）
+// ========================================================================
+
+/**
+ * 取得 player 發佈版 index.json 的 URL。
+ *
+ * Editor 部署於 `/<repo>/editor/`、player 資料在 `/<repo>/assets/data/`，
+ * 用相對路徑 `../assets/data/index.json` 即可跨應用讀取，避免依賴
+ * import.meta.env.BASE_URL（editor 與 player 的 BASE_URL 不同）。
+ *
+ * 本機 dev 模式下不會呼叫此路徑（localhost:<editor-port>/../assets/data/
+ * 不存在）- UI 層以 isLocalApiAvailable === false 為條件才觸發。
+ */
+const PUBLISHED_INDEX_PATH = '../assets/data/index.json';
+
+/** 從 dataPath（如 'assets/data/m1s.json'）推導出 editor 端可用的相對路徑 */
+function resolvePublishedDatasetPath(dataPath: string): string {
+  // dataPath 是相對 player 根目錄的路徑；editor 在 /editor/ 子目錄下，
+  // 往上一層（../）即指向 player 根
+  return `../${dataPath}`;
+}
+
+/**
+ * 載入 player 發佈版副本索引（index.json）。
+ *
+ * 用於靜態 GH Pages 模式下 editor 直接讀取官方題庫目錄，讓出題者
+ * 可從下拉選單挑選現有副本開始編輯（毋須先下載檔案再上傳）。
+ */
+export async function fetchPublishedIndex(): Promise<DatasetIndex> {
+  const res = await safeFetch(PUBLISHED_INDEX_PATH);
+  try {
+    return (await res.json()) as DatasetIndex;
+  } catch (cause) {
+    throw new DatasetApiError('parse', PUBLISHED_INDEX_PATH, '官方題庫索引 JSON 解析失敗', {
+      cause,
+    });
+  }
+}
+
+/**
+ * 載入 player 發佈版指定副本的完整 dataset。
+ *
+ * @param dataPath  來自 index.instances[].dataPath（例如 'assets/data/m1s.json'）
+ */
+export async function fetchPublishedDataset(dataPath: string): Promise<InstanceDataset> {
+  const path = resolvePublishedDatasetPath(dataPath);
+  const res = await safeFetch(path);
+  try {
+    return (await res.json()) as InstanceDataset;
+  } catch (cause) {
+    throw new DatasetApiError('parse', path, '官方題庫 JSON 解析失敗', { cause });
   }
 }
 
