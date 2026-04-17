@@ -155,14 +155,24 @@ export const useSessionStore = defineStore('session', () => {
    *
    * 不在 dataset 中存在的攻略 ID（孤兒題目）也會被自動排除。
    *
+   * 【空題庫處理】
+   * 若過濾後沒任何題目（該攻略尚未出題），回傳 false 讓呼叫端決定下一步
+   * （通常是 redirect /setup + 顯示提示），避免 PracticeView 卡在「準備中…」。
+   *
    * @param payload  從 settings store 取得的當前設定 + dataset.questions
+   * @returns        true 表成功開啟 session；false 表無題可練
    */
   function startSession(payload: {
     questions: Question[];
     instanceId: string;
     strategyId: string;
     roleId: RoleId;
-  }): void {
+  }): boolean {
+    const filtered = payload.questions.filter((q) => q.strategyId === payload.strategyId);
+    if (filtered.length === 0) {
+      // 沒題目 → 不建立 session，讓呼叫端顯示「無題可練」提示
+      return false;
+    }
     const now = Date.now();
     sessionMeta.value = {
       sessionId: generateSessionId(),
@@ -171,12 +181,12 @@ export const useSessionStore = defineStore('session', () => {
       roleId: payload.roleId,
       startedAt: now,
     };
-    // 過濾：只保留屬於當前攻略的題目
-    questions.value = payload.questions.filter((q) => q.strategyId === payload.strategyId);
+    questions.value = filtered;
     currentIndex.value = 0;
     answers.value = [];
     isPracticing.value = true;
     loadCurrentQuestion(now);
+    return true;
   }
 
   /**

@@ -89,13 +89,31 @@ export const useSettingsStore = defineStore('settings', () => {
   });
 
   /**
-   * 是否三項都選齊、可開始練習。
+   * 計算指定攻略下的題目數量。
+   *
+   * UI 用途：StrategySelector 卡片顯示「（5 題）」或「（無題目）」，
+   * 讓玩家在選攻略時就能知道是否可練，避免按了「開始練習」才被退回。
+   */
+  function questionCountFor(strategyId: string): number {
+    if (!dataset.value) return 0;
+    return dataset.value.questions.filter((q) => q.strategyId === strategyId).length;
+  }
+
+  /** 當前選定攻略的題目數 - getter 形式給 UI 直接 reactive 使用 */
+  const selectedStrategyQuestionCount = computed(() =>
+    selectedStrategyId.value ? questionCountFor(selectedStrategyId.value) : 0,
+  );
+
+  /**
+   * 是否三項都選齊【且該攻略有題目】，可開始練習。
    * UI 用此 getter 控制「開始練習」按鈕的 disabled 狀態。
    */
-  const canStart = computed(() =>
-    selectedInstanceId.value !== null &&
-    selectedStrategyId.value !== null &&
-    selectedRoleId.value !== null,
+  const canStart = computed(
+    () =>
+      selectedInstanceId.value !== null &&
+      selectedStrategyId.value !== null &&
+      selectedRoleId.value !== null &&
+      selectedStrategyQuestionCount.value > 0,
   );
 
   // ----------------------------------------------------------------------
@@ -171,6 +189,8 @@ export const useSettingsStore = defineStore('settings', () => {
   function selectStrategy(strategyId: string): void {
     selectedStrategyId.value = strategyId;
     selectedRoleId.value = null;
+    // 切攻略時清掉先前的 datasetError（例如「該攻略無題目」訊息）
+    datasetError.value = null;
   }
 
   /**
@@ -279,6 +299,8 @@ export const useSettingsStore = defineStore('settings', () => {
     // getters
     selectedInstanceEntry,
     selectedStrategy,
+    selectedStrategyQuestionCount,
+    questionCountFor,
     canStart,
     // actions
     loadIndex,

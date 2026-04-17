@@ -1,5 +1,6 @@
 import { setActivePinia, createPinia } from 'pinia';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { InstanceDataset } from '@ffxiv-sim/shared';
 import { useSettingsStore } from './settings';
 import * as datasetService from '../services/dataset';
 
@@ -36,6 +37,8 @@ const mockIndex = {
   ],
 };
 
+// 測試用最小化 dataset - 僅滿足 store 使用到的欄位（filter by strategyId、find by id）
+// cast 為 InstanceDataset 以通過型別檢查；未被 store 存取的 Question 欄位不在此 mock 內
 const mockDataset = {
   schemaVersion: '1.0',
   instance: {
@@ -48,9 +51,10 @@ const mockDataset = {
     { id: 'game8', instanceId: 'm1s', name: 'Game8', waymarks: {} },
     { id: 'soup', instanceId: 'm1s', name: '蘇帕醬', waymarks: {} },
   ],
-  questions: [],
+  // game8 有題目 / soup 無題目 - 覆蓋兩種 canStart 分支
+  questions: [{ id: 'q1', strategyId: 'game8' }],
   debuffLibrary: [],
-};
+} as unknown as InstanceDataset;
 
 beforeEach(() => {
   setActivePinia(createPinia());

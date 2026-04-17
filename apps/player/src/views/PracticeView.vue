@@ -127,12 +127,20 @@ function clearAdvanceTimeout(): void {
 onMounted(() => {
   if (!canStart.value || !dataset.value) return;
 
-  session.startSession({
+  // session.startSession 過濾後若該攻略無題目，會回 false。
+  // 此時不該卡在「準備中…」，而是退回 /setup 並把錯誤訊息帶回 settings store
+  // 讓 SetupView 顯示「該攻略尚無題目可練」提示。
+  const ok = session.startSession({
     questions: dataset.value.questions,
     instanceId: settings.selectedInstanceId!,
     strategyId: settings.selectedStrategyId!,
     roleId: settings.selectedRoleId!,
   });
+  if (!ok) {
+    settings.datasetError = '此攻略目前沒有任何題目，請選擇其他攻略或聯絡管理員出題';
+    void router.replace('/setup');
+    return;
+  }
   startTimer();
 });
 

@@ -67,7 +67,9 @@ const {
         :key="strategy.id"
         type="button"
         :data-strategy-id="strategy.id"
-        class="text-left p-4 rounded border-2 transition-colors"
+        :disabled="store.questionCountFor(strategy.id) === 0"
+        class="text-left p-4 rounded border-2 transition-colors
+               disabled:opacity-50 disabled:cursor-not-allowed"
         :class="
           selectedStrategyId === strategy.id
             ? 'border-ffxiv-accent bg-ffxiv-accent/10'
@@ -75,7 +77,23 @@ const {
         "
         @click="store.selectStrategy(strategy.id)"
       >
-        <div class="text-base font-medium">{{ strategy.name }}</div>
+        <div class="flex items-center justify-between gap-2">
+          <div class="text-base font-medium">{{ strategy.name }}</div>
+          <div
+            class="text-xs px-2 py-0.5 rounded shrink-0"
+            :class="
+              store.questionCountFor(strategy.id) === 0
+                ? 'bg-ffxiv-danger/30 text-ffxiv-danger'
+                : 'bg-ffxiv-accent/20 text-ffxiv-accent'
+            "
+          >
+            {{
+              store.questionCountFor(strategy.id) === 0
+                ? '無題目'
+                : `${store.questionCountFor(strategy.id)} 題`
+            }}
+          </div>
+        </div>
         <div v-if="strategy.author" class="text-xs text-gray-400 mt-1">
           作者：{{ strategy.author }}
         </div>
