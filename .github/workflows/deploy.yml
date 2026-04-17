@@ -107,8 +107,12 @@ jobs:
       # ------------------------------------------------------------
       # Pages 部署
       # ------------------------------------------------------------
+      # enablement: true 讓 action 在 repo 尚未啟用 Pages 時自動啟用
+      # 首次部署不需再手動到 Settings → Pages 開設定
       - name: Configure Pages
         uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
