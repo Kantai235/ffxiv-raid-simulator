@@ -807,10 +807,25 @@ function onCanvasContextMenu(event: MouseEvent): void {
 /**
  * Boss 面嚮圖示 - 使用 PNG 素材（與 Player ArenaMap WYSIWYG 一致）。
  * 素材本身正面朝北，外層 <g rotate(facing)> 旋轉到玩家設定方位。
- * Editor dev server 透過 localFileApi plugin 代理 /assets/boss/ 路徑。
+ *
+ * 【路徑解析 - 與 backgroundImageUrl 同邏輯】
+ *   素材實際存放於 player 的 public/assets/boss/，相對 player 根的路徑。
+ *   editor 三種環境路徑差異：
+ *     1. 本機 dev：editor server 透過 localFileApi plugin 代理 /assets/ 路徑 → 直接相對即可
+ *     2. published 模式：editor 部署在 /<repo>/editor/，相對解析會變
+ *        /<repo>/editor/assets/boss/... → 404；需要 imagePathPrefix='../' 跳到 player 根
+ *     3. upload 模式（朋友自行上傳 JSON）：與 published 同源，套同前綴
+ *   bossImageHref 套用 imagePathPrefix（與 backgroundImageUrl 共用同一機制），
+ *   絕對 URL（http://、data:、/）保留原值不加前綴。
  */
 const BOSS_IMAGE_SIZE = 130;
-const BOSS_IMAGE_HREF = 'assets/boss/boss-marker.png';
+const BOSS_IMAGE_HREF_RAW = 'assets/boss/boss-marker.png';
+
+const bossImageHref = computed(() => {
+  // 與 backgroundImageUrl 同套絕對 URL 偵測，避免誤套前綴破壞外部資源
+  const isAbsolute = /^(https?:|data:|\/)/i.test(BOSS_IMAGE_HREF_RAW);
+  return isAbsolute ? BOSS_IMAGE_HREF_RAW : `${props.imagePathPrefix}${BOSS_IMAGE_HREF_RAW}`;
+});
 
 /**
  * 王的實際繪製位置：
@@ -1390,7 +1405,7 @@ const draftPolygon = computed(() => {
           素材本身正面朝北，外層 rotate(facing) 旋轉到玩家設定的方位。
         -->
         <image
-          :href="BOSS_IMAGE_HREF"
+          :href="bossImageHref"
           :x="bossImageX"
           :y="bossImageY"
           :width="BOSS_IMAGE_SIZE"
@@ -1453,7 +1468,7 @@ const draftPolygon = computed(() => {
           :transform="`rotate(${facingToCssRotation(enemy.facing)} ${liveEnemyPosition(enemy).x} ${liveEnemyPosition(enemy).y})`"
         >
           <image
-            :href="BOSS_IMAGE_HREF"
+            :href="bossImageHref"
             :x="liveEnemyPosition(enemy).x - 40"
             :y="liveEnemyPosition(enemy).y - 40"
             width="80"
