@@ -1,0 +1,222 @@
+import type { RoleId } from '../constants/roles';
+import type { Point2D, SafeArea } from './geometry';
+
+/**
+ * ========================================================================
+ * 題型分類（QuestionType）
+ * ========================================================================
+ * 系統目前支援 4 種題型，每種題型對應不同的作答 UI 與解答結構：
+ *
+ *   - single-choice : 單選題（多個選項中選一個）
+ *   - multi-choice  : 多選題（多個選項中選多個，順序不拘）
+ *   - ordering      : 排序題（將給定選項排成正確順序）
+ *   - map-click     : 地圖點擊題（在場地上點擊安全位置，可連續多點）
+ *
+ * Why 採用判別聯合：不同題型的解答資料結構差異大（選項 ID vs 安全區），
+ *      用判別聯合 + 共用 base 介面，TypeScript 可在 switch 中精確收斂型別。
+ * ========================================================================
+ */
+export type QuestionType = 'single-choice' | 'multi-choice' | 'ordering' | 'map-click';
+
+/**
+ * 王（Boss）狀態 - 出題時王的當前讀條與面嚮。
+ */
+export interface BossState {
+  /** 技能名稱（顯示於讀條 UI），例如 '雙重利爪' */
+  skillName: string;
+
+  /**
+   * 讀條時間（秒）。
+   * 前台會以此倒數，模擬「玩家在 X 秒內必須完成走位」。
+   * 倒數結束後自動結算當前作答結果。
+   */
+  castTime: number;
+
+  /**
+   * 王面嚮角度（單位：度 Degree）。
+   *
+   * ============================================================
+   * 【面嚮角度約定 - 全專案唯一真實來源】
+   * ============================================================
+   *   - 0   度 = 面向正北（畫面上方，y 軸負方向）
+   *   - 90  度 = 面向正東（畫面右方，x 軸正方向）
+   *   - 180 度 = 面向正南（畫面下方）
+   *   - 270 度 = 面向正西（畫面左方）
+   *
+   * Why 採用「正北 0 度、順時針增加」：與 FFXIV 玩家社群慣用方位
+   *      （True North 巨集）一致，且與羅盤方位直觀對應，降低出題者心智負擔。
+   *
+   * 注意：此角度與標準數學極座標（東 0 度、逆時針）【不同】，
+   *      前台繪製王模型旋轉時需做轉換：cssRotate = facing - 90（或同等）。
+   * ============================================================
+   */
+  facing: number;
+
+  /** 王在場地上的座標（選填，未填則使用 Arena.center） */
+  position?: Point2D;
+}
+
+/**
+ * 選擇題的單一選項。
+ */
+export interface QuestionOption {
+  id: string;
+  label: string;
+}
+
+// ========================================================================
+// RoleSolution 系列 - 依題型不同攜帶不同欄位
+// ========================================================================
+
+/**
+ * 所有 RoleSolution 共用的基底欄位。
+ */
+interface RoleSolutionBase {
+  /**
+   * 該職能身上的 Debuff（按出現順序排列）。
+   * 引用 debuffLibrary 中的 DebuffDefinition.id。
+   *
+   * 空陣列表示該職能在這題沒有 debuff。
+   */
+  debuffs: string[];
+
+  /**
+   * 解析文字 - 用於回顧模式顯示。
+   * 例如：'王腳下接刀，注意不要轉到後面踩到 D3 的 AOE'。
+   *
+   * Why: CLAUDE.md 第 4 點要求回顧模式提供解析，
+   *      此欄位是學習效果的關鍵。
+   */
+  note?: string;
+}
+
+/**
+ * 選擇/排序題的解答結構（單選、多選、排序共用）。
+ *
+ * - 單選：correctOptionIds 應只有 1 個元素
+ * - 多選：correctOptionIds 為正確的選項 ID 集合，順序不重要
+ * - 排序：correctOptionIds 為正確順序排列的 ID 陣列
+ *
+ * Why 三者共用：判定邏輯近似（ID 比對），差異只在「是否在意順序」與「是否多選」，
+ *      可由 question.type 統一決定。
+ */
+export interface ChoiceRoleSolution extends RoleSolutionBase {
+  correctOptionIds: string[];
+}
+
+/**
+ * 地圖點擊題的解答結構。
+ *
+ * 連續走位機制（clickCount > 1）：
+ *   - safeAreas 的長度應等於 clickCount
+ *   - safeAreas[i] 為「第 i+1 次點擊」應落在的安全區
+ *   - 玩家依序點擊，每次點擊後場景可能變化（例如 debuff 倒數扣秒）
+ *
+ * 單次點擊（clickCount === 1）：
+ *   - safeAreas 長度為 1，玩家一次點擊定生死
+ */
+export interface MapClickRoleSolution extends RoleSolutionBase {
+  /**
+   * 各次點擊的安全區，長度需等於 Question.clickCount。
+   * 每個安全區可為圓/矩形/多邊形（見 geometry.ts）。
+   */
+  safeAreas: SafeArea[];
+
+  /**
+   * （選填）此職能的「理想點位」，用於回顧模式的視覺指引。
+   * 若 safeArea 範圍很大，理想點位可標示出最佳位置（例如安全區中心）。
+   * 長度應與 safeAreas 對齊。
+   */
+  idealPositions?: Point2D[];
+}
+
+/**
+ * RoleSolution 判別聯合 - 依題型分派。
+ *
+ * 注意：判別欄位不在 RoleSolution 本身（為了避免 8 職能各自重複寫 type 欄位），
+ *      而是由父層 Question.type 決定。型別守衛需從 Question 端 narrow 下來。
+ */
+export type RoleSolution = ChoiceRoleSolution | MapClickRoleSolution;
+
+// ========================================================================
+// Question 主型別
+// ========================================================================
+
+/**
+ * Question 基底欄位。
+ */
+interface QuestionBase {
+  /** 唯一識別碼，例如 'm1s-q01' */
+  id: string;
+
+  /** 所屬副本，外鍵 → Instance.id */
+  instanceId: string;
+
+  /**
+   * 所屬攻略組，外鍵 → Strategy.id。
+   *
+   * 【為何題目綁攻略而非僅綁副本】
+   * 不同攻略對同一機制的「站位/解答」差異很大（例如 Game8 的散開位置
+   * 與 MMW 完全不同）。題目若不綁攻略，出題者就無法為不同攻略各自設計解答。
+   *
+   * Player 端的 startSession 會用此欄位過濾出當前攻略的題目；
+   * Editor 端的 QuestionsPanel 也會依此欄位過濾顯示。
+   *
+   * 【孤兒題目】
+   * 若 strategyId 對應的攻略已被刪除，題目仍會留在 dataset 中（避免誤刪），
+   * 但 Player 載入時會自動忽略。出題者應在 Editor 看到 0 題時自行 review JSON。
+   */
+  strategyId: string;
+
+  /** 機制名稱（顯示用，可與 boss.skillName 不同），例如 '連續分散散開' */
+  name: string;
+
+  /** 階段（P1/P2 等），用於分類顯示 */
+  phase?: number;
+
+  /** 出題順序（同階段內排序用） */
+  order?: number;
+
+  /** 王的狀態 */
+  boss: BossState;
+}
+
+/**
+ * 單選/多選/排序題。
+ */
+export interface ChoiceQuestion extends QuestionBase {
+  type: 'single-choice' | 'multi-choice' | 'ordering';
+
+  /** 所有可選選項（顯示順序即為 UI 顯示順序） */
+  options: QuestionOption[];
+
+  /** 8 職能的解答 */
+  roleSolutions: Record<RoleId, ChoiceRoleSolution>;
+}
+
+/**
+ * 地圖點擊題。
+ */
+export interface MapClickQuestion extends QuestionBase {
+  type: 'map-click';
+
+  /**
+   * 玩家需連續點擊的次數。
+   * 每個職能的 safeAreas 長度應等於此值。
+   */
+  clickCount: number;
+
+  /** 8 職能的解答 */
+  roleSolutions: Record<RoleId, MapClickRoleSolution>;
+}
+
+/**
+ * Question 判別聯合 - 對外統一型別。
+ *
+ * 用法範例：
+ *   if (q.type === 'map-click') {
+ *     // q 在此處被收斂為 MapClickQuestion
+ *     q.clickCount; // OK
+ *   }
+ */
+export type Question = ChoiceQuestion | MapClickQuestion;

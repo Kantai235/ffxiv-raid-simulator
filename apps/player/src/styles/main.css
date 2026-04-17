@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ========================================================================
+ * 全域樣式覆寫
+ * ========================================================================
+ * - body 預設套用 FFXIV 暗色背景與抗鋸齒字型渲染
+ * - 滾動列在 panel 元件內可進一步客製
+ */
+html,
+body,
+#app {
+  height: 100%;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

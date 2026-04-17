@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(npm test *)",
+      "Bash(npx tsc *)",
+      "Bash(npx vue-tsc *)",
+      "Bash(VITE_BASE_PATH=/test-repo/ npm run build:player)",
+      "Bash(npm run *)",
+      "Bash(npx vitest *)",
+      "Bash(node -e \"const d=require\\('./apps/player/public/assets/data/m1s.json'\\); console.log\\('strategies count:', d.strategies.length\\); d.strategies.forEach\\(s => console.log\\(' -', s.id, '|', s.name, '|', s.author\\)\\);\")"
+    ]
+  }
+}

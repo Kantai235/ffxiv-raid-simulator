@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["vite/client", "node"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@ffxiv-sim/shared": ["../../packages/shared/src/index.ts"],
+      "@ffxiv-sim/shared/*": ["../../packages/shared/src/*"]
+    },
+    "noEmit": true
+  },
+  "include": ["src/**/*", "src/**/*.vue", "vite.config.ts", "plugins/**/*"]
+}

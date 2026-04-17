@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "1.0",
+  "instances": [
+    {
+      "id": "m1s",
+      "name": "阿卡迪亞零式輕量級 M1S",
+      "shortName": "M1S",
+      "dataPath": "assets/data/m1s.json",
+      "schemaVersion": "1.0",
+      "tags": ["零式", "輕量級", "7.x"]
+    }
+  ]
+}

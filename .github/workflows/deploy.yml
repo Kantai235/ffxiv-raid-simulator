@@ -1,0 +1,120 @@
+# ============================================================================
+# Deploy Player + Editor (static mode) to GitHub Pages
+# ============================================================================
+#
+# 觸發：push 到 main 分支、或手動觸發（workflow_dispatch）
+#
+# 流程：
+#   1. Checkout
+#   2. Setup Node.js（node_modules 快取）
+#   3. npm ci 安裝
+#   4. npm test（跨所有 workspace，fail-fast：測試不過則中止）
+#   5. Build Player → apps/player/dist
+#   6. Build Editor（靜態模式）→ apps/editor/dist
+#   7. 合併兩者到單一 staging/ 目錄：
+#      staging/            ← player 的 dist 內容
+#      staging/editor/     ← editor 的 dist 內容
+#   8. 上傳 staging/ 為 Pages artifact → 部署
+#
+# 部署結果：
+#   - Player : https://<user>.github.io/<repo>/
+#   - Editor : https://<user>.github.io/<repo>/editor/
+#
+# 【靜態模式 Editor 特性】
+#   - localFileApiPlugin 因 apply:'serve' 不會打包進 bundle
+#   - 「儲存」改為下載 JSON、「載入」改為上傳 JSON
+#   - 場地圖上傳 UI 會 disable（告知使用者需本機模式）
+#   - 朋友可透過 /editor/ URL 出題並把 JSON 傳回給管理員
+#
+# 【首次啟用前提】
+#   - Repo Settings → Pages → Source 設為 "GitHub Actions"
+#   - apps/player/vite.config.ts 的 PRODUCTION_BASE_PATH
+#   - apps/editor/vite.config.ts 的 PRODUCTION_BASE_PATH
+#     （兩者 workflow 都透過 VITE_BASE_PATH env 覆寫）
+# ============================================================================
+
+name: Deploy Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # ------------------------------------------------------------
+      # 測試關卡 - 全 workspace 測試綠燈才能 build
+      # ------------------------------------------------------------
+      - name: Run tests
+        run: npm test
+
+      # ------------------------------------------------------------
+      # Build Player（根路徑 /<repo>/）
+      # ------------------------------------------------------------
+      - name: Build Player
+        run: npm run build:player
+        env:
+          VITE_BASE_PATH: /${{ github.event.repository.name }}/
+
+      # ------------------------------------------------------------
+      # Build Editor（子路徑 /<repo>/editor/）
+      # 靜態模式 - localFileApiPlugin 的 apply:'serve' 會讓它不打包進 bundle
+      # ------------------------------------------------------------
+      - name: Build Editor
+        run: npm run build:editor
+        env:
+          VITE_BASE_PATH: /${{ github.event.repository.name }}/editor/
+
+      # ------------------------------------------------------------
+      # 合併兩 app 的 dist 為單一 artifact
+      #   staging/           ← player
+      #   staging/editor/    ← editor
+      # ------------------------------------------------------------
+      - name: Merge build outputs
+        run: |
+          mkdir -p staging
+          cp -r apps/player/dist/. staging/
+          mkdir -p staging/editor
+          cp -r apps/editor/dist/. staging/editor/
+
+      # ------------------------------------------------------------
+      # Pages 部署
+      # ------------------------------------------------------------
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: staging
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

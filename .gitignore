@@ -1,0 +1,35 @@
+# 依賴
+node_modules/
+.pnpm-store/
+
+# 建構輸出
+dist/
+build/
+*.tsbuildinfo
+
+# 開發環境
+.vite/
+.cache/
+.DS_Store
+Thumbs.db
+
+# 編輯器
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# 環境變數
+.env
+.env.local
+.env.*.local
+
+# 日誌
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 編輯器暫存
+*.swp
+*.swo
+*~
