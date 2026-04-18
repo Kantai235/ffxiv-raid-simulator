@@ -427,7 +427,114 @@
           "sourceLabel": "M4S 前半攻略"
         }
       ]
+    },
+    {
+      "id": "m4s-1-game8-q10",
+      "instanceId": "m4s-1",
+      "strategyId": "m4s-1-game8",
+      "name": "P1 - 雷轉質展開第 2 次（看自己的蓄雷秒數先後處理）",
+      "phase": 2,
+      "order": 10,
+      "boss": {
+        "skillName": "雷轉質展開 第 2 次",
+        "castTime": 8,
+        "facing": 0
+      },
+      "type": "single-choice",
+      "options": [
+        { "id": "m4s-1-expand2-fast-first", "label": "22 秒快減益：第一輪電牢籠就要先處理" },
+        { "id": "m4s-1-expand2-slow-second", "label": "42 秒慢減益：等第二輪再回指定點處理" },
+        { "id": "m4s-1-expand2-ignore", "label": "不看秒數，只要記命中多或少就好" },
+        { "id": "m4s-1-expand2-center", "label": "最後全員回場中央再一起解" }
+      ],
+      "roleSolutions": {
+        "MT": { "debuffs": ["m4s-charge-fast"], "correctOptionIds": ["m4s-1-expand2-fast-first"], "note": "這一題給的是 22 秒快減益，第一輪電牢籠爆炸時你就要先解，不是拖到第二輪。" },
+        "ST": { "debuffs": ["m4s-charge-slow"], "correctOptionIds": ["m4s-1-expand2-slow-second"], "note": "這一題給的是 42 秒慢減益，先完成第一輪後，第二輪再回自己的指定位置處理。" },
+        "H1": { "debuffs": ["m4s-charge-fast"], "correctOptionIds": ["m4s-1-expand2-fast-first"], "note": "這一題給的是 22 秒快減益，第一輪電牢籠爆炸時你就要先解，不是拖到第二輪。" },
+        "H2": { "debuffs": ["m4s-charge-slow"], "correctOptionIds": ["m4s-1-expand2-slow-second"], "note": "這一題給的是 42 秒慢減益，先完成第一輪後，第二輪再回自己的指定位置處理。" },
+        "D1": { "debuffs": ["m4s-charge-slow"], "correctOptionIds": ["m4s-1-expand2-slow-second"], "note": "這一題給的是 42 秒慢減益，先完成第一輪後，第二輪再回自己的指定位置處理。" },
+        "D2": { "debuffs": ["m4s-charge-fast"], "correctOptionIds": ["m4s-1-expand2-fast-first"], "note": "這一題給的是 22 秒快減益，第一輪電牢籠爆炸時你就要先解，不是拖到第二輪。" },
+        "D3": { "debuffs": ["m4s-charge-slow"], "correctOptionIds": ["m4s-1-expand2-slow-second"], "note": "這一題給的是 42 秒慢減益，先完成第一輪後，第二輪再回自己的指定位置處理。" },
+        "D4": { "debuffs": ["m4s-charge-fast"], "correctOptionIds": ["m4s-1-expand2-fast-first"], "note": "這一題給的是 22 秒快減益，第一輪電牢籠爆炸時你就要先解，不是拖到第二輪。" }
+      },
+      "referenceImages": [
+        {
+          "id": "m4s-1-game8-q10-ref-1",
+          "src": "assets/questions/m4s-1/expand-2-cage.jpeg",
+          "alt": "雷轉質展開第 2 次電牢籠配置圖",
+          "caption": "攻略先確認蓄雷裝置是 22 秒還是 42 秒，再決定自己是第一輪還是第二輪處理。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m4s-1/",
+          "sourceLabel": "M4S 前半攻略"
+        }
+      ]
+    },
+    {
+      "id": "m4s-1-game8-q11",
+      "instanceId": "m4s-1",
+      "strategyId": "m4s-1-game8",
+      "name": "P1 - 離子簇 + 電子流（依你的正負電子找反色）",
+      "phase": 3,
+      "order": 11,
+      "boss": {
+        "skillName": "離子簇 + 電子流",
+        "castTime": 8,
+        "facing": 0
+      },
+      "type": "single-choice",
+      "options": [
+        { "id": "m4s-1-electron-yellow-side", "label": "往黃色砲身側移動" },
+        { "id": "m4s-1-electron-white-side", "label": "往白色砲身側移動" },
+        { "id": "m4s-1-electron-inner-only", "label": "固定往內側，不看顏色" },
+        { "id": "m4s-1-electron-outer-only", "label": "固定往外側，不看顏色" }
+      ],
+      "roleSolutions": {
+        "MT": { "debuffs": ["m4s-negative-electron"], "correctOptionIds": ["m4s-1-electron-yellow-side"], "note": "電子流先看自己是正電子還是負電子，再去對應的反色方向；負電子要找黃色。" },
+        "ST": { "debuffs": ["m4s-positive-electron"], "correctOptionIds": ["m4s-1-electron-white-side"], "note": "電子流先看自己是正電子還是負電子，再去對應的反色方向；正電子要找白色。" },
+        "H1": { "debuffs": ["m4s-negative-electron"], "correctOptionIds": ["m4s-1-electron-yellow-side"], "note": "電子流先看自己是正電子還是負電子，再去對應的反色方向；負電子要找黃色。" },
+        "H2": { "debuffs": ["m4s-positive-electron"], "correctOptionIds": ["m4s-1-electron-white-side"], "note": "電子流先看自己是正電子還是負電子，再去對應的反色方向；正電子要找白色。" },
+        "D1": { "debuffs": ["m4s-positive-electron"], "correctOptionIds": ["m4s-1-electron-white-side"], "note": "電子流先看自己是正電子還是負電子，再去對應的反色方向；正電子要找白色。" },
+        "D2": { "debuffs": ["m4s-negative-electron"], "correctOptionIds": ["m4s-1-electron-yellow-side"], "note": "電子流先看自己是正電子還是負電子，再去對應的反色方向；負電子要找黃色。" },
+        "D3": { "debuffs": ["m4s-negative-electron"], "correctOptionIds": ["m4s-1-electron-yellow-side"], "note": "電子流先看自己是正電子還是負電子，再去對應的反色方向；負電子要找黃色。" },
+        "D4": { "debuffs": ["m4s-positive-electron"], "correctOptionIds": ["m4s-1-electron-white-side"], "note": "電子流先看自己是正電子還是負電子，再去對應的反色方向；正電子要找白色。" }
+      },
+      "referenceImages": [
+        {
+          "id": "m4s-1-game8-q11-ref-1",
+          "src": "assets/questions/m4s-1/electron-flow-position.jpeg",
+          "alt": "電子流站位參考圖",
+          "caption": "電子流是先進唯一安全列，再依自己身上的正負電子去找反色方向；坦克站在最前方承傷。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m4s-1/",
+          "sourceLabel": "M4S 前半攻略"
+        }
+      ]
     }
   ],
-  "debuffLibrary": []
+  "debuffLibrary": [
+    {
+      "id": "m4s-charge-fast",
+      "name": "蓄雷裝置（22 秒）",
+      "icon": "assets/debuffs/m4s-charge-fast.svg",
+      "duration": 22,
+      "description": "雷轉質展開第 2 次的快減益。第一輪電牢籠與蓄雷會先結算。"
+    },
+    {
+      "id": "m4s-charge-slow",
+      "name": "蓄雷裝置（42 秒）",
+      "icon": "assets/debuffs/m4s-charge-slow.svg",
+      "duration": 42,
+      "description": "雷轉質展開第 2 次的慢減益。先完成第一輪處理，第二輪再解自己的蓄雷。"
+    },
+    {
+      "id": "m4s-negative-electron",
+      "name": "負電子",
+      "icon": "assets/debuffs/m4s-electron-negative.svg",
+      "description": "電子流的白色負電子。要往與自己減益相反的顏色方向移動。"
+    },
+    {
+      "id": "m4s-positive-electron",
+      "name": "正電子",
+      "icon": "assets/debuffs/m4s-electron-positive.svg",
+      "description": "電子流的黃色正電子。要往與自己減益相反的顏色方向移動。"
+    }
+  ]
 }

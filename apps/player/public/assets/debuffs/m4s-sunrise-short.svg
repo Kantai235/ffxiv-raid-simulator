@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">日出短減益</title>
+  <desc id="desc">用於 M4S 日出的短減益圖示。</desc>
+  <defs>
+    <linearGradient id="bg-short" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#3b1d0f" />
+      <stop offset="100%" stop-color="#7c2d12" />
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="56" height="56" rx="12" fill="url(#bg-short)" stroke="#fb923c" stroke-width="3" />
+  <circle cx="32" cy="34" r="14" fill="#f97316" opacity="0.4" />
+  <path d="M16 42 L30 24 L34 32 L48 16" fill="none" stroke="#fdba74" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+  <rect x="14" y="10" width="16" height="10" rx="5" fill="#7f1d1d" stroke="#fdba74" stroke-width="1.5" />
+  <text x="22" y="18" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" font-weight="700" fill="#fff7ed">S</text>
+</svg>

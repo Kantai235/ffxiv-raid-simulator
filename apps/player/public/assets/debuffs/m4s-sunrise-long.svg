@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">日出長減益</title>
+  <desc id="desc">用於 M4S 日出的長減益圖示。</desc>
+  <defs>
+    <linearGradient id="bg-long" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#0f3a5b" />
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="56" height="56" rx="12" fill="url(#bg-long)" stroke="#38bdf8" stroke-width="3" />
+  <rect x="19" y="18" width="26" height="30" rx="6" fill="#0c4a6e" stroke="#bae6fd" stroke-width="3" />
+  <circle cx="32" cy="33" r="8" fill="#e0f2fe" opacity="0.25" />
+  <rect x="21" y="10" width="16" height="10" rx="5" fill="#082f49" stroke="#7dd3fc" stroke-width="1.5" />
+  <text x="29" y="18" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" font-weight="700" fill="#f0f9ff">L</text>
+</svg>

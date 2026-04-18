@@ -358,7 +358,7 @@
       "id": "m4s-2-game8-q08",
       "instanceId": "m4s-2",
       "strategyId": "m4s-2-game8",
-      "name": "P2 - 離子簇 + 黑色安息日的日出（短減益負責什麼）",
+      "name": "P2 - 離子簇 + 黑色安息日的日出（依你的減益先做什麼）",
       "phase": 4,
       "order": 8,
       "boss": {
@@ -374,14 +374,14 @@
         { "id": "m4s-2-sunrise-idle", "label": "只要站在原地不動" }
       ],
       "roleSolutions": {
-        "MT": { "debuffs": [], "correctOptionIds": ["m4s-2-sunrise-beam"], "note": "日出固定是短減益引導光束、長減益踩塔；先分清楚自己的職責。" },
-        "ST": { "debuffs": [], "correctOptionIds": ["m4s-2-sunrise-beam"], "note": "日出固定是短減益引導光束、長減益踩塔；先分清楚自己的職責。" },
-        "H1": { "debuffs": [], "correctOptionIds": ["m4s-2-sunrise-beam"], "note": "日出固定是短減益引導光束、長減益踩塔；先分清楚自己的職責。" },
-        "H2": { "debuffs": [], "correctOptionIds": ["m4s-2-sunrise-beam"], "note": "日出固定是短減益引導光束、長減益踩塔；先分清楚自己的職責。" },
-        "D1": { "debuffs": [], "correctOptionIds": ["m4s-2-sunrise-beam"], "note": "日出固定是短減益引導光束、長減益踩塔；先分清楚自己的職責。" },
-        "D2": { "debuffs": [], "correctOptionIds": ["m4s-2-sunrise-beam"], "note": "日出固定是短減益引導光束、長減益踩塔；先分清楚自己的職責。" },
-        "D3": { "debuffs": [], "correctOptionIds": ["m4s-2-sunrise-beam"], "note": "日出固定是短減益引導光束、長減益踩塔；先分清楚自己的職責。" },
-        "D4": { "debuffs": [], "correctOptionIds": ["m4s-2-sunrise-beam"], "note": "日出固定是短減益引導光束、長減益踩塔；先分清楚自己的職責。" }
+        "MT": { "debuffs": ["m4s-sunrise-short"], "correctOptionIds": ["m4s-2-sunrise-beam"], "note": "短減益的人先去引導光束。你是 TH 的光束組，往 11 點鐘方向逆時針展開。" },
+        "ST": { "debuffs": ["m4s-sunrise-long"], "correctOptionIds": ["m4s-2-sunrise-tower"], "note": "長減益的人先踩塔。你是 TH 的踩塔組，先去西側或南側對應的 2 人塔。" },
+        "H1": { "debuffs": ["m4s-sunrise-short"], "correctOptionIds": ["m4s-2-sunrise-beam"], "note": "短減益的人先去引導光束。你是 TH 的光束組，往 11 點鐘方向逆時針展開。" },
+        "H2": { "debuffs": ["m4s-sunrise-long"], "correctOptionIds": ["m4s-2-sunrise-tower"], "note": "長減益的人先踩塔。你是 TH 的踩塔組，先去西側或南側對應的 2 人塔。" },
+        "D1": { "debuffs": ["m4s-sunrise-long"], "correctOptionIds": ["m4s-2-sunrise-tower"], "note": "長減益的人先踩塔。你是 DPS 的踩塔組，先去北側或東側對應的 2 人塔。" },
+        "D2": { "debuffs": ["m4s-sunrise-short"], "correctOptionIds": ["m4s-2-sunrise-beam"], "note": "短減益的人先去引導光束。你是 DPS 的光束組，往 12 點鐘方向順時針展開。" },
+        "D3": { "debuffs": ["m4s-sunrise-long"], "correctOptionIds": ["m4s-2-sunrise-tower"], "note": "長減益的人先踩塔。你是 DPS 的踩塔組，先去北側或東側對應的 2 人塔。" },
+        "D4": { "debuffs": ["m4s-sunrise-short"], "correctOptionIds": ["m4s-2-sunrise-beam"], "note": "短減益的人先去引導光束。你是 DPS 的光束組，往 12 點鐘方向順時針展開。" }
       },
       "referenceImages": [
         {
@@ -451,5 +451,18 @@
       ]
     }
   ],
-  "debuffLibrary": []
+  "debuffLibrary": [
+    {
+      "id": "m4s-sunrise-short",
+      "name": "日出短減益",
+      "icon": "assets/debuffs/m4s-sunrise-short.svg",
+      "description": "黑色安息日的日出短減益。第一輪先把光束引導去塔不出現的方向。"
+    },
+    {
+      "id": "m4s-sunrise-long",
+      "name": "日出長減益",
+      "icon": "assets/debuffs/m4s-sunrise-long.svg",
+      "description": "黑色安息日的日出長減益。第一輪先進指定的 2 人塔，下一輪再交換職責。"
+    }
+  ]
 }
