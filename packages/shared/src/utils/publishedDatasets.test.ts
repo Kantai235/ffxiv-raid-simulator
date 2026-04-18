@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
+import type { DatasetIndex, InstanceDataset } from '../types';
 import { assertValidInstanceDataset } from './validateDataset';
 
 /**
@@ -24,22 +25,32 @@ function readJson(relativePath: string): unknown {
 }
 
 describe('published datasets', () => {
-  it('m1s.json 應可通過 shared validator，且 Game8 題組已有正式題庫', () => {
-    const dataset = readJson('../../../../apps/player/public/assets/data/m1s.json') as {
-      strategies: Array<{ id: string }>;
-      questions: Array<{ id: string; strategyId: string }>;
-    };
+  it('index.json 列出的每一份官方題庫都應可 parse 並通過 shared validator', () => {
+    const index = readJson('../../../../apps/player/public/assets/data/index.json') as DatasetIndex;
 
-    expect(() => assertValidInstanceDataset(dataset)).not.toThrow();
+    expect(index.instances.length).toBeGreaterThan(0);
 
+    for (const entry of index.instances) {
+      const dataset = readJson(`../../../../apps/player/public/${entry.dataPath}`) as InstanceDataset;
+
+      expect(() => assertValidInstanceDataset(dataset)).not.toThrow();
+      expect(dataset.instance.id).toBe(entry.id);
+      expect(dataset.schemaVersion).toBe(entry.schemaVersion);
+      expect(dataset.strategies.length).toBeGreaterThan(0);
+      expect(dataset.questions.length).toBeGreaterThan(0);
+      expect(new Set(dataset.questions.map((question) => question.id)).size).toBe(
+        dataset.questions.length,
+      );
+    }
+  });
+
+  it('m1s Game8 題組應保留至少 8 題，避免正式題庫被意外刪減', () => {
+    const dataset = readJson('../../../../apps/player/public/assets/data/m1s.json') as InstanceDataset;
     const game8QuestionCount = dataset.questions.filter(
       (question) => question.strategyId === 'm1s-game8',
     ).length;
 
     expect(dataset.strategies.some((strategy) => strategy.id === 'm1s-game8')).toBe(true);
     expect(game8QuestionCount).toBeGreaterThanOrEqual(8);
-    expect(new Set(dataset.questions.map((question) => question.id)).size).toBe(
-      dataset.questions.length,
-    );
   });
 });

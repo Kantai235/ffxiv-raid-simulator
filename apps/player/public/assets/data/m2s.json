@@ -203,7 +203,7 @@
           "correctOptionIds": ["m2s-non-tank-south"],
           "note": "非坦克留在南側即可避開北側兩個 90 度扇形。"
         }
-      ]
+      }
     },
     {
       "id": "m2s-game8-q03",
