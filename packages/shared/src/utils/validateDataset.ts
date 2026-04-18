@@ -398,6 +398,61 @@ function assertValidQuestionExtensions(
       }
     }
   }
+
+  // ----- referenceImages -----
+  if (q.referenceImages !== undefined) {
+    if (!Array.isArray(q.referenceImages)) {
+      throw new DatasetValidationError(
+        'parse',
+        `questions[${idx}].referenceImages 必須為陣列`,
+      );
+    }
+    for (let j = 0; j < q.referenceImages.length; j++) {
+      const image = q.referenceImages[j];
+      if (!isPlainObject(image)) {
+        throw new DatasetValidationError(
+          'parse',
+          `questions[${idx}].referenceImages[${j}] 必須為物件`,
+        );
+      }
+      if (image.id !== undefined && (typeof image.id !== 'string' || !image.id.trim())) {
+        throw new DatasetValidationError(
+          'parse',
+          `questions[${idx}].referenceImages[${j}].id 必須為非空字串`,
+        );
+      }
+      if (typeof image.src !== 'string' || !image.src.trim()) {
+        throw new DatasetValidationError(
+          'parse',
+          `questions[${idx}].referenceImages[${j}].src 必須為非空字串`,
+        );
+      }
+      if (image.alt !== undefined && typeof image.alt !== 'string') {
+        throw new DatasetValidationError(
+          'parse',
+          `questions[${idx}].referenceImages[${j}].alt 必須為字串`,
+        );
+      }
+      if (image.caption !== undefined && typeof image.caption !== 'string') {
+        throw new DatasetValidationError(
+          'parse',
+          `questions[${idx}].referenceImages[${j}].caption 必須為字串`,
+        );
+      }
+      if (image.sourceUrl !== undefined && typeof image.sourceUrl !== 'string') {
+        throw new DatasetValidationError(
+          'parse',
+          `questions[${idx}].referenceImages[${j}].sourceUrl 必須為字串`,
+        );
+      }
+      if (image.sourceLabel !== undefined && typeof image.sourceLabel !== 'string') {
+        throw new DatasetValidationError(
+          'parse',
+          `questions[${idx}].referenceImages[${j}].sourceLabel 必須為字串`,
+        );
+      }
+    }
+  }
 }
 
 /**

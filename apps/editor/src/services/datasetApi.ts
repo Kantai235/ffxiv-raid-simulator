@@ -181,6 +181,27 @@ export async function uploadArenaImage(file: File): Promise<{ path: string }> {
  * 本機 dev 模式下不會呼叫此路徑（localhost:<editor-port>/../assets/data/
  * 不存在）- UI 層以 isLocalApiAvailable === false 為條件才觸發。
  */
+/**
+ * 上傳題目參考圖片到 player 端的 `assets/questions/` 目錄。
+ *
+ * 流程與場地背景圖相同，但獨立資料夾能讓題目輔助圖與 arena 背景分開管理，
+ * 後續若要做清理、比對或批次替換也比較安全。
+ */
+export async function uploadQuestionImage(file: File): Promise<{ path: string }> {
+  const buffer = await file.arrayBuffer();
+  const path = '/api/upload-question-image';
+  const res = await safeFetch(path, {
+    method: 'POST',
+    headers: { 'Content-Type': file.type || 'application/octet-stream' },
+    body: buffer,
+  });
+  try {
+    return (await res.json()) as { path: string };
+  } catch (cause) {
+    throw new DatasetApiError('parse', path, '回應 JSON 解析失敗', { cause });
+  }
+}
+
 const PUBLISHED_INDEX_PATH = '../assets/data/index.json';
 
 /** 從 dataPath（如 'assets/data/m1s.json'）推導出 editor 端可用的相對路徑 */

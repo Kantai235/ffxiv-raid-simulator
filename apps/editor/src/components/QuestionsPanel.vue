@@ -9,7 +9,12 @@
  */
 import { computed, ref } from 'vue';
 import { storeToRefs } from 'pinia';
-import type { ChoiceQuestion, QuestionType, Tether } from '@ffxiv-sim/shared';
+import type {
+  ChoiceQuestion,
+  QuestionReferenceImage,
+  QuestionType,
+  Tether,
+} from '@ffxiv-sim/shared';
 import {
   ROLE_IDS,
   WAYMARK_IDS,
@@ -26,6 +31,8 @@ const {
   selectedStrategyId,
   selectedStrategy,
   questionSubMode,
+  isUploadingImage,
+  isLocalApiAvailable,
 } = storeToRefs(store);
 
 /**
@@ -165,6 +172,76 @@ function isFirstOption(optionId: string): boolean {
 
 function isLastOption(optionId: string): boolean {
   return options.value[options.value.length - 1]?.id === optionId;
+}
+
+// ----------------------------------------------------------------------
+// 題目參考圖片
+// ----------------------------------------------------------------------
+
+const referenceImages = computed(() => selectedQuestion.value?.referenceImages ?? []);
+const referenceImageInputRef = ref<HTMLInputElement | null>(null);
+const pendingReferenceUploadIndex = ref<number | null>(null);
+
+function createReferenceImageId(): string {
+  return `reference-${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
+}
+
+function updateReferenceImages(next: QuestionReferenceImage[]): void {
+  if (!selectedQuestion.value) return;
+  store.updateQuestion(selectedQuestion.value.id, { referenceImages: next });
+}
+
+function addReferenceImage(): void {
+  updateReferenceImages([
+    ...referenceImages.value,
+    {
+      id: createReferenceImageId(),
+      src: '',
+      alt: '',
+      caption: '',
+      sourceUrl: '',
+      sourceLabel: '',
+    },
+  ]);
+}
+
+function updateReferenceImage(
+  index: number,
+  patch: Partial<QuestionReferenceImage>,
+): void {
+  const next = [...referenceImages.value];
+  if (!next[index]) return;
+  next[index] = { ...next[index], ...patch };
+  updateReferenceImages(next);
+}
+
+function removeReferenceImage(index: number): void {
+  updateReferenceImages(referenceImages.value.filter((_, i) => i !== index));
+}
+
+function triggerReferenceImageUpload(index: number): void {
+  pendingReferenceUploadIndex.value = index;
+  referenceImageInputRef.value?.click();
+}
+
+async function onSelectReferenceImage(event: Event): Promise<void> {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+  const index = pendingReferenceUploadIndex.value;
+
+  if (!file || index === null) {
+    input.value = '';
+    pendingReferenceUploadIndex.value = null;
+    return;
+  }
+
+  const uploadedPath = await store.uploadQuestionReferenceImageAsset(file);
+  if (uploadedPath) {
+    updateReferenceImage(index, { src: uploadedPath });
+  }
+
+  input.value = '';
+  pendingReferenceUploadIndex.value = null;
 }
 
 // ----------------------------------------------------------------------
@@ -609,6 +686,146 @@ function onRemoveTether(idx: number): void {
         >
           {{ SUB_MODE_LABELS[m] }}
         </button>
+      </div>
+    </section>
+
+    <section
+      v-if="selectedQuestion"
+      data-testid="reference-images-panel"
+      class="border-t border-gray-700 pt-4"
+    >
+      <div class="flex items-center justify-between gap-2 mb-2">
+        <div>
+          <h3 class="text-xs text-editor-accent font-bold">題目參考圖片</h3>
+          <p class="text-xs text-gray-400 mt-1 leading-relaxed">
+            可直接貼 `assets/questions/...`、外部圖片 URL，或在本機開發模式直接上傳圖片。
+          </p>
+        </div>
+        <button
+          type="button"
+          data-testid="add-reference-image"
+          class="px-2 py-1 text-xs bg-editor-bg hover:bg-editor-panel/60 rounded shrink-0"
+          @click="addReferenceImage"
+        >
+          + 新增圖片
+        </button>
+      </div>
+
+      <input
+        ref="referenceImageInputRef"
+        type="file"
+        accept="image/png,image/jpeg,image/webp,image/gif"
+        class="hidden"
+        data-testid="reference-image-input"
+        @change="onSelectReferenceImage"
+      />
+
+      <p v-if="referenceImages.length === 0" class="text-xs text-gray-500 italic">
+        尚未設定題目參考圖片。
+      </p>
+
+      <div v-else class="space-y-3">
+        <div
+          v-for="(image, idx) in referenceImages"
+          :key="image.id ?? `reference-image-${idx}`"
+          :data-reference-image-index="idx"
+          class="rounded border border-gray-700 bg-editor-bg/30 p-3 space-y-2"
+        >
+          <div class="flex items-center justify-between gap-2">
+            <div class="text-xs text-gray-400 font-mono">參考圖 {{ idx + 1 }}</div>
+            <button
+              type="button"
+              class="px-2 py-1 text-xs text-red-400 hover:bg-red-500/20 rounded"
+              @click="removeReferenceImage(idx)"
+            >
+              刪除
+            </button>
+          </div>
+
+          <div
+            class="rounded border border-gray-700 bg-editor-bg min-h-32 flex items-center justify-center overflow-hidden"
+          >
+            <img
+              v-if="image.src"
+              :src="image.src"
+              :alt="image.alt || image.caption || `題目參考圖片 ${idx + 1}`"
+              class="w-full max-h-52 object-contain"
+            />
+            <div v-else class="text-xs text-gray-500 italic">尚未設定圖片來源</div>
+          </div>
+
+          <div class="space-y-2">
+            <div>
+              <label class="text-xs text-gray-500 block mb-0.5">圖片路徑 / URL</label>
+              <input
+                type="text"
+                :value="image.src"
+                class="w-full bg-editor-bg border border-gray-600 rounded px-2 py-1 text-xs"
+                @change="updateReferenceImage(idx, { src: ($event.target as HTMLInputElement).value })"
+              />
+            </div>
+
+            <div class="flex gap-2 items-center">
+              <button
+                type="button"
+                :disabled="isUploadingImage || isLocalApiAvailable === false"
+                class="px-3 py-1 text-xs rounded border border-editor-accent/60
+                       hover:bg-editor-accent/10 disabled:opacity-50 disabled:cursor-not-allowed"
+                @click="triggerReferenceImageUpload(idx)"
+              >
+                {{
+                  isLocalApiAvailable === false
+                    ? '僅本機開發模式可上傳'
+                    : isUploadingImage
+                      ? '上傳中...'
+                      : '上傳圖片'
+                }}
+              </button>
+              <div class="text-xs text-gray-500">支援 PNG / JPG / WebP / GIF，最大 5 MB</div>
+            </div>
+
+            <div>
+              <label class="text-xs text-gray-500 block mb-0.5">替代文字</label>
+              <input
+                type="text"
+                :value="image.alt ?? ''"
+                class="w-full bg-editor-bg border border-gray-600 rounded px-2 py-1 text-xs"
+                @change="updateReferenceImage(idx, { alt: ($event.target as HTMLInputElement).value })"
+              />
+            </div>
+
+            <div>
+              <label class="text-xs text-gray-500 block mb-0.5">圖片說明</label>
+              <input
+                type="text"
+                :value="image.caption ?? ''"
+                class="w-full bg-editor-bg border border-gray-600 rounded px-2 py-1 text-xs"
+                @change="updateReferenceImage(idx, { caption: ($event.target as HTMLInputElement).value })"
+              />
+            </div>
+
+            <div class="grid grid-cols-1 gap-2 md:grid-cols-2">
+              <div>
+                <label class="text-xs text-gray-500 block mb-0.5">來源連結</label>
+                <input
+                  type="text"
+                  :value="image.sourceUrl ?? ''"
+                  class="w-full bg-editor-bg border border-gray-600 rounded px-2 py-1 text-xs"
+                  @change="updateReferenceImage(idx, { sourceUrl: ($event.target as HTMLInputElement).value })"
+                />
+              </div>
+              <div>
+                <label class="text-xs text-gray-500 block mb-0.5">來源標籤</label>
+                <input
+                  type="text"
+                  :value="image.sourceLabel ?? ''"
+                  class="w-full bg-editor-bg border border-gray-600 rounded px-2 py-1 text-xs"
+                  @change="updateReferenceImage(idx, { sourceLabel: ($event.target as HTMLInputElement).value })"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 

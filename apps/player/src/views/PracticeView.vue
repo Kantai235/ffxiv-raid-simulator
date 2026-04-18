@@ -27,6 +27,7 @@ import { ROLE_DISPLAY_NAME, type ChoiceQuestion } from '@ffxiv-sim/shared';
 import { useSettingsStore } from '@/stores/settings';
 import { useSessionStore } from '@/stores/session';
 import ArenaMap from '@/components/ArenaMap.vue';
+import QuestionReferenceGallery from '@/components/question/QuestionReferenceGallery.vue';
 import BossCastBar from '@/components/practice/BossCastBar.vue';
 import DebuffBar from '@/components/practice/DebuffBar.vue';
 import ChoiceAnswerPanel from '@/components/practice/ChoiceAnswerPanel.vue';
@@ -248,6 +249,11 @@ const isMapClickQuestion = computed(() => currentQuestion.value?.type === 'map-c
 
     <!-- ===== 作答區 - 依題型分派 ===== -->
     <!-- 地圖題：ArenaMap -->
+    <QuestionReferenceGallery
+      v-if="currentQuestion.referenceImages?.length"
+      :images="currentQuestion.referenceImages"
+    />
+
     <div
       v-if="isMapClickQuestion"
       class="bg-ffxiv-bg rounded-lg overflow-hidden aspect-square max-w-[640px] mx-auto transition-shadow"

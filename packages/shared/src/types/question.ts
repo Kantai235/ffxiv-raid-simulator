@@ -170,6 +170,27 @@ export interface Tether {
 }
 
 /**
+ * 題目參考圖片。
+ *
+ * 用於補充攻略圖、站位圖或步驟示意圖。前台會在題目區塊中直接顯示，
+ * 讓玩家在作答前先看懂圖解再進入判斷。
+ */
+export interface QuestionReferenceImage {
+  /** 選填；供 editor 端列表穩定 key 使用。 */
+  id?: string;
+  /** 圖片路徑或外部 URL。 */
+  src: string;
+  /** 圖片替代文字。 */
+  alt?: string;
+  /** 題目中的簡短圖說。 */
+  caption?: string;
+  /** 原始攻略或圖片來源連結。 */
+  sourceUrl?: string;
+  /** 來源標籤，例如「M1S 攻略」。 */
+  sourceLabel?: string;
+}
+
+/**
  * 選擇題的單一選項。
  */
 export interface QuestionOption {
@@ -347,6 +368,14 @@ interface QuestionBase {
    * 渲染位於 safeAreas 之上、boss/enemies 之下，視覺上「線被圖示壓住」。
    */
   tethers?: Tether[];
+
+  /**
+   * 題目參考圖片（選填）。
+   *
+   * 可放本機匯入的素材，也可直接指向外部攻略圖。這些圖片只做輔助說明，
+   * 不參與判定邏輯，因此 schema 只驗證其結構與字串型別。
+   */
+  referenceImages?: QuestionReferenceImage[];
 }
 
 /**

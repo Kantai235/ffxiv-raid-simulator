@@ -96,6 +96,11 @@
   - **Why ID 而非座標**：實體位置是動態的（boss 可被拖、enemy 會被改），ID 引用讓連線在實體移動時自動跟著重繪；存死座標會在資料層產生失同步陷阱
   - **Editor 特例**：Role ID 端點在 editor 無法預知玩家站位，fallback 至 `arena.center` + 淡虛線（`stroke-dasharray="8 4"`、`opacity=0.5`）作示意
   - **連動清理**：`removeEnemy` 自動掃 tethers 移除所有引用該 enemy.id 的條目（避免孤兒引用）
+- **題目參考圖片（`Question.referenceImages`）**：
+  - `Question.referenceImages?: QuestionReferenceImage[]`，每題可附 0~N 張攻略圖、站位圖或步驟示意圖
+  - `src` 可為 `assets/questions/...` 本地素材或外部 URL；`alt` / `caption` / `sourceUrl` / `sourceLabel` 為選填說明欄位
+  - Player 在作答頁與 Review 頁都會顯示；圖片載入失敗只顯示 Placeholder，不影響作答與判定
+  - Editor 可直接貼 URL，本機模式可透過 `/api/upload-question-image` 寫入 `apps/player/public/assets/questions/`
 - **動態場地破壞（arena.grid + Question.arenaMask）**：
   - `Arena.grid?: { rows, cols }` 副本層共用設定
   - `Question.arenaMask?: number[]` 此題破碎的格 index

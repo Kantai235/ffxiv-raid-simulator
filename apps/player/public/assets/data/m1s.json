@@ -17,7 +17,11 @@
       },
       "lines": []
     },
-    "tags": ["零式", "輕量級", "7.x"]
+    "tags": [
+      "零式",
+      "輕量級",
+      "7.x"
+    ]
   },
   "strategies": [
     {
@@ -134,45 +138,95 @@
       "roleSolutions": {
         "MT": {
           "debuffs": [],
-          "correctOptionIds": ["fourfold-th-first", "fourfold-dps-second", "fourfold-x-wait"],
+          "correctOptionIds": [
+            "fourfold-th-first",
+            "fourfold-dps-second",
+            "fourfold-x-wait"
+          ],
           "note": "犬丸式的四連尖甲是 TH 先十字、DPS 後十字，第三與第四擊都回到 X 字安全區等待。"
         },
         "ST": {
           "debuffs": [],
-          "correctOptionIds": ["fourfold-th-first", "fourfold-dps-second", "fourfold-x-wait"],
+          "correctOptionIds": [
+            "fourfold-th-first",
+            "fourfold-dps-second",
+            "fourfold-x-wait"
+          ],
           "note": "犬丸式的四連尖甲是 TH 先十字、DPS 後十字，第三與第四擊都回到 X 字安全區等待。"
         },
         "H1": {
           "debuffs": [],
-          "correctOptionIds": ["fourfold-th-first", "fourfold-dps-second", "fourfold-x-wait"],
+          "correctOptionIds": [
+            "fourfold-th-first",
+            "fourfold-dps-second",
+            "fourfold-x-wait"
+          ],
           "note": "犬丸式的四連尖甲是 TH 先十字、DPS 後十字，第三與第四擊都回到 X 字安全區等待。"
         },
         "H2": {
           "debuffs": [],
-          "correctOptionIds": ["fourfold-th-first", "fourfold-dps-second", "fourfold-x-wait"],
+          "correctOptionIds": [
+            "fourfold-th-first",
+            "fourfold-dps-second",
+            "fourfold-x-wait"
+          ],
           "note": "犬丸式的四連尖甲是 TH 先十字、DPS 後十字，第三與第四擊都回到 X 字安全區等待。"
         },
         "D1": {
           "debuffs": [],
-          "correctOptionIds": ["fourfold-th-first", "fourfold-dps-second", "fourfold-x-wait"],
+          "correctOptionIds": [
+            "fourfold-th-first",
+            "fourfold-dps-second",
+            "fourfold-x-wait"
+          ],
           "note": "犬丸式的四連尖甲是 TH 先十字、DPS 後十字，第三與第四擊都回到 X 字安全區等待。"
         },
         "D2": {
           "debuffs": [],
-          "correctOptionIds": ["fourfold-th-first", "fourfold-dps-second", "fourfold-x-wait"],
+          "correctOptionIds": [
+            "fourfold-th-first",
+            "fourfold-dps-second",
+            "fourfold-x-wait"
+          ],
           "note": "犬丸式的四連尖甲是 TH 先十字、DPS 後十字，第三與第四擊都回到 X 字安全區等待。"
         },
         "D3": {
           "debuffs": [],
-          "correctOptionIds": ["fourfold-th-first", "fourfold-dps-second", "fourfold-x-wait"],
+          "correctOptionIds": [
+            "fourfold-th-first",
+            "fourfold-dps-second",
+            "fourfold-x-wait"
+          ],
           "note": "犬丸式的四連尖甲是 TH 先十字、DPS 後十字，第三與第四擊都回到 X 字安全區等待。"
         },
         "D4": {
           "debuffs": [],
-          "correctOptionIds": ["fourfold-th-first", "fourfold-dps-second", "fourfold-x-wait"],
+          "correctOptionIds": [
+            "fourfold-th-first",
+            "fourfold-dps-second",
+            "fourfold-x-wait"
+          ],
           "note": "犬丸式的四連尖甲是 TH 先十字、DPS 後十字，第三與第四擊都回到 X 字安全區等待。"
         }
-      }
+      },
+      "referenceImages": [
+        {
+          "id": "m1s-game8-q01-ref-1",
+          "src": "assets/questions/m1s/fourfold-1.png",
+          "alt": "四連尖甲第一擊站位示意",
+          "caption": "第 1 擊由 TH 靠近王十字散開，DPS 先待在外圍 X 字。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m1s/",
+          "sourceLabel": "M1S 攻略"
+        },
+        {
+          "id": "m1s-game8-q01-ref-2",
+          "src": "assets/questions/m1s/fourfold-5.png",
+          "alt": "四連尖甲第三與第四擊示意",
+          "caption": "第 3、4 擊會回到第 1、2 擊的十字位置，全員在外圍 X 字等待。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m1s/",
+          "sourceLabel": "M1S 攻略"
+        }
+      ]
     },
     {
       "id": "m1s-game8-q02",
@@ -337,42 +391,58 @@
       "roleSolutions": {
         "MT": {
           "debuffs": [],
-          "correctOptionIds": ["pair-mt-d3"],
+          "correctOptionIds": [
+            "pair-mt-d3"
+          ],
           "note": "四爪依犬丸式固定配對：MT+D3、ST+D2、H1+D1、H2+D4。"
         },
         "ST": {
           "debuffs": [],
-          "correctOptionIds": ["pair-st-d2"],
+          "correctOptionIds": [
+            "pair-st-d2"
+          ],
           "note": "四爪依犬丸式固定配對：MT+D3、ST+D2、H1+D1、H2+D4。"
         },
         "H1": {
           "debuffs": [],
-          "correctOptionIds": ["pair-h1-d1"],
+          "correctOptionIds": [
+            "pair-h1-d1"
+          ],
           "note": "四爪依犬丸式固定配對：MT+D3、ST+D2、H1+D1、H2+D4。"
         },
         "H2": {
           "debuffs": [],
-          "correctOptionIds": ["pair-h2-d4"],
+          "correctOptionIds": [
+            "pair-h2-d4"
+          ],
           "note": "四爪依犬丸式固定配對：MT+D3、ST+D2、H1+D1、H2+D4。"
         },
         "D1": {
           "debuffs": [],
-          "correctOptionIds": ["pair-h1-d1"],
+          "correctOptionIds": [
+            "pair-h1-d1"
+          ],
           "note": "四爪依犬丸式固定配對：MT+D3、ST+D2、H1+D1、H2+D4。"
         },
         "D2": {
           "debuffs": [],
-          "correctOptionIds": ["pair-st-d2"],
+          "correctOptionIds": [
+            "pair-st-d2"
+          ],
           "note": "四爪依犬丸式固定配對：MT+D3、ST+D2、H1+D1、H2+D4。"
         },
         "D3": {
           "debuffs": [],
-          "correctOptionIds": ["pair-mt-d3"],
+          "correctOptionIds": [
+            "pair-mt-d3"
+          ],
           "note": "四爪依犬丸式固定配對：MT+D3、ST+D2、H1+D1、H2+D4。"
         },
         "D4": {
           "debuffs": [],
-          "correctOptionIds": ["pair-h2-d4"],
+          "correctOptionIds": [
+            "pair-h2-d4"
+          ],
           "note": "四爪依犬丸式固定配對：MT+D3、ST+D2、H1+D1、H2+D4。"
         }
       }
@@ -411,45 +481,79 @@
       "roleSolutions": {
         "MT": {
           "debuffs": [],
-          "correctOptionIds": ["mimic-no-read", "mimic-cross-easier"],
+          "correctOptionIds": [
+            "mimic-no-read",
+            "mimic-cross-easier"
+          ],
           "note": "站在單格四角並面向對角，可同時簡化擊飛 / 暈眩判讀與十字範圍觀察。"
         },
         "ST": {
           "debuffs": [],
-          "correctOptionIds": ["mimic-no-read", "mimic-cross-easier"],
+          "correctOptionIds": [
+            "mimic-no-read",
+            "mimic-cross-easier"
+          ],
           "note": "站在單格四角並面向對角，可同時簡化擊飛 / 暈眩判讀與十字範圍觀察。"
         },
         "H1": {
           "debuffs": [],
-          "correctOptionIds": ["mimic-no-read", "mimic-cross-easier"],
+          "correctOptionIds": [
+            "mimic-no-read",
+            "mimic-cross-easier"
+          ],
           "note": "站在單格四角並面向對角，可同時簡化擊飛 / 暈眩判讀與十字範圍觀察。"
         },
         "H2": {
           "debuffs": [],
-          "correctOptionIds": ["mimic-no-read", "mimic-cross-easier"],
+          "correctOptionIds": [
+            "mimic-no-read",
+            "mimic-cross-easier"
+          ],
           "note": "站在單格四角並面向對角，可同時簡化擊飛 / 暈眩判讀與十字範圍觀察。"
         },
         "D1": {
           "debuffs": [],
-          "correctOptionIds": ["mimic-no-read", "mimic-cross-easier"],
+          "correctOptionIds": [
+            "mimic-no-read",
+            "mimic-cross-easier"
+          ],
           "note": "站在單格四角並面向對角，可同時簡化擊飛 / 暈眩判讀與十字範圍觀察。"
         },
         "D2": {
           "debuffs": [],
-          "correctOptionIds": ["mimic-no-read", "mimic-cross-easier"],
+          "correctOptionIds": [
+            "mimic-no-read",
+            "mimic-cross-easier"
+          ],
           "note": "站在單格四角並面向對角，可同時簡化擊飛 / 暈眩判讀與十字範圍觀察。"
         },
         "D3": {
           "debuffs": [],
-          "correctOptionIds": ["mimic-no-read", "mimic-cross-easier"],
+          "correctOptionIds": [
+            "mimic-no-read",
+            "mimic-cross-easier"
+          ],
           "note": "站在單格四角並面向對角，可同時簡化擊飛 / 暈眩判讀與十字範圍觀察。"
         },
         "D4": {
           "debuffs": [],
-          "correctOptionIds": ["mimic-no-read", "mimic-cross-easier"],
+          "correctOptionIds": [
+            "mimic-no-read",
+            "mimic-cross-easier"
+          ],
           "note": "站在單格四角並面向對角，可同時簡化擊飛 / 暈眩判讀與十字範圍觀察。"
         }
-      }
+      },
+      "referenceImages": [
+        {
+          "id": "m1s-game8-q04-ref-1",
+          "src": "assets/questions/m1s/mimic-single-cell.jpeg",
+          "alt": "模仿之貓單格處理法",
+          "caption": "站在單格四角並面向對角，可同時簡化擊飛與十字範圍判讀。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m1s/",
+          "sourceLabel": "M1S 攻略"
+        }
+      ]
     },
     {
       "id": "m1s-game8-q05",
@@ -481,45 +585,95 @@
       "roleSolutions": {
         "MT": {
           "debuffs": [],
-          "correctOptionIds": ["shockwave-observe", "shockwave-pre-position", "shockwave-spread"],
+          "correctOptionIds": [
+            "shockwave-observe",
+            "shockwave-pre-position",
+            "shockwave-spread"
+          ],
           "note": "衝擊波的核心不是硬吃擊退，而是先看快恢復格，再把自己站到會被擊退進安全格的位置。"
         },
         "ST": {
           "debuffs": [],
-          "correctOptionIds": ["shockwave-observe", "shockwave-pre-position", "shockwave-spread"],
+          "correctOptionIds": [
+            "shockwave-observe",
+            "shockwave-pre-position",
+            "shockwave-spread"
+          ],
           "note": "衝擊波的核心不是硬吃擊退，而是先看快恢復格，再把自己站到會被擊退進安全格的位置。"
         },
         "H1": {
           "debuffs": [],
-          "correctOptionIds": ["shockwave-observe", "shockwave-pre-position", "shockwave-spread"],
+          "correctOptionIds": [
+            "shockwave-observe",
+            "shockwave-pre-position",
+            "shockwave-spread"
+          ],
           "note": "衝擊波的核心不是硬吃擊退，而是先看快恢復格，再把自己站到會被擊退進安全格的位置。"
         },
         "H2": {
           "debuffs": [],
-          "correctOptionIds": ["shockwave-observe", "shockwave-pre-position", "shockwave-spread"],
+          "correctOptionIds": [
+            "shockwave-observe",
+            "shockwave-pre-position",
+            "shockwave-spread"
+          ],
           "note": "衝擊波的核心不是硬吃擊退，而是先看快恢復格，再把自己站到會被擊退進安全格的位置。"
         },
         "D1": {
           "debuffs": [],
-          "correctOptionIds": ["shockwave-observe", "shockwave-pre-position", "shockwave-spread"],
+          "correctOptionIds": [
+            "shockwave-observe",
+            "shockwave-pre-position",
+            "shockwave-spread"
+          ],
           "note": "衝擊波的核心不是硬吃擊退，而是先看快恢復格，再把自己站到會被擊退進安全格的位置。"
         },
         "D2": {
           "debuffs": [],
-          "correctOptionIds": ["shockwave-observe", "shockwave-pre-position", "shockwave-spread"],
+          "correctOptionIds": [
+            "shockwave-observe",
+            "shockwave-pre-position",
+            "shockwave-spread"
+          ],
           "note": "衝擊波的核心不是硬吃擊退，而是先看快恢復格，再把自己站到會被擊退進安全格的位置。"
         },
         "D3": {
           "debuffs": [],
-          "correctOptionIds": ["shockwave-observe", "shockwave-pre-position", "shockwave-spread"],
+          "correctOptionIds": [
+            "shockwave-observe",
+            "shockwave-pre-position",
+            "shockwave-spread"
+          ],
           "note": "衝擊波的核心不是硬吃擊退，而是先看快恢復格，再把自己站到會被擊退進安全格的位置。"
         },
         "D4": {
           "debuffs": [],
-          "correctOptionIds": ["shockwave-observe", "shockwave-pre-position", "shockwave-spread"],
+          "correctOptionIds": [
+            "shockwave-observe",
+            "shockwave-pre-position",
+            "shockwave-spread"
+          ],
           "note": "衝擊波的核心不是硬吃擊退，而是先看快恢復格，再把自己站到會被擊退進安全格的位置。"
         }
-      }
+      },
+      "referenceImages": [
+        {
+          "id": "m1s-game8-q05-ref-1",
+          "src": "assets/questions/m1s/shockwave-1.png",
+          "alt": "衝擊波安全格判讀",
+          "caption": "先看哪一格會提早恢復，再站到會被擊退進那一格的位置。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m1s/",
+          "sourceLabel": "M1S 攻略"
+        },
+        {
+          "id": "m1s-game8-q05-ref-2",
+          "src": "assets/questions/m1s/shockwave-5.png",
+          "alt": "衝擊波散開示意",
+          "caption": "被擊退進安全格後，北西組與南東組再做東西向散開。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m1s/",
+          "sourceLabel": "M1S 攻略"
+        }
+      ]
     },
     {
       "id": "m1s-game8-q06",
@@ -621,7 +775,25 @@
           ],
           "note": "貓跳二連尖甲先處理本體的兩段半場，再把靈魂之影記住的方向與順序帶進後續分身題。"
         }
-      }
+      },
+      "referenceImages": [
+        {
+          "id": "m1s-game8-q06-ref-1",
+          "src": "assets/questions/m1s/cat-jump-1.png",
+          "alt": "貓跳二連尖甲第一擊",
+          "caption": "先記住本體二連尖甲的順序，圖中示意左半場先打的第 1 擊。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m1s/",
+          "sourceLabel": "M1S 攻略"
+        },
+        {
+          "id": "m1s-game8-q06-ref-2",
+          "src": "assets/questions/m1s/cat-jump-4.png",
+          "alt": "貓跳二連尖甲分身第二擊",
+          "caption": "分身會照抄本體順序，第 2 擊安全區會落在起始安全區對角。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m1s/",
+          "sourceLabel": "M1S 攻略"
+        }
+      ]
     },
     {
       "id": "m1s-game8-q07",
@@ -768,7 +940,25 @@
           ],
           "note": "本題假設保存的是左半場先打，所以 ST 組站在 BOSS 背後且往東側安全半場微偏。"
         }
-      }
+      },
+      "referenceImages": [
+        {
+          "id": "m1s-game8-q07-ref-1",
+          "src": "assets/questions/m1s/gust-rip-1.png",
+          "alt": "暴風裂左半先打站位",
+          "caption": "圖例為左半場先打時，MT 組先站在王背後偏西的安全區。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m1s/",
+          "sourceLabel": "M1S 攻略"
+        },
+        {
+          "id": "m1s-game8-q07-ref-2",
+          "src": "assets/questions/m1s/gust-rip-2.png",
+          "alt": "暴風裂第一輪後續站位",
+          "caption": "第 1 次處理完後，依下一輪安全半場往對角移動準備續接。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m1s/",
+          "sourceLabel": "M1S 攻略"
+        }
+      ]
     },
     {
       "id": "m1s-game8-q08",
@@ -1048,7 +1238,25 @@
           ],
           "note": "D4 跟 H2、D3 站南側外圍。"
         }
-      }
+      },
+      "referenceImages": [
+        {
+          "id": "m1s-game8-q09-ref-1",
+          "src": "assets/questions/m1s/downpour-1.png",
+          "alt": "傾盆大貓初始站位",
+          "caption": "兩坦在北側接線，其餘人依巨集分成南側目標圈與南側外圍。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m1s/",
+          "sourceLabel": "M1S 攻略"
+        },
+        {
+          "id": "m1s-game8-q09-ref-2",
+          "src": "assets/questions/m1s/downpour-3.png",
+          "alt": "傾盆大貓第四次交換",
+          "caption": "第 3 次後由 MT 交給 D1、ST 交給 D2，準備處理第 4 次接線。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m1s/",
+          "sourceLabel": "M1S 攻略"
+        }
+      ]
     },
     {
       "id": "m1s-game8-q10",
@@ -1088,42 +1296,58 @@
       "roleSolutions": {
         "MT": {
           "debuffs": [],
-          "correctOptionIds": ["downpour-swap-d1"],
+          "correctOptionIds": [
+            "downpour-swap-d1"
+          ],
           "note": "第 3 次扇形後，MT 要把第 4 次接線交給 D1。"
         },
         "ST": {
           "debuffs": [],
-          "correctOptionIds": ["downpour-swap-d2"],
+          "correctOptionIds": [
+            "downpour-swap-d2"
+          ],
           "note": "第 3 次扇形後，ST 要把第 4 次接線交給 D2。"
         },
         "H1": {
           "debuffs": [],
-          "correctOptionIds": ["downpour-no-swap"],
+          "correctOptionIds": [
+            "downpour-no-swap"
+          ],
           "note": "H1 全程留在南側目標圈內，不參與第 4 次交換。"
         },
         "H2": {
           "debuffs": [],
-          "correctOptionIds": ["downpour-no-swap"],
+          "correctOptionIds": [
+            "downpour-no-swap"
+          ],
           "note": "H2 全程留在南側外圍，不參與第 4 次交換。"
         },
         "D1": {
           "debuffs": [],
-          "correctOptionIds": ["downpour-swap-mt"],
+          "correctOptionIds": [
+            "downpour-swap-mt"
+          ],
           "note": "第 4 次前 D1 要去接 MT 的線。"
         },
         "D2": {
           "debuffs": [],
-          "correctOptionIds": ["downpour-swap-st"],
+          "correctOptionIds": [
+            "downpour-swap-st"
+          ],
           "note": "第 4 次前 D2 要去接 ST 的線。"
         },
         "D3": {
           "debuffs": [],
-          "correctOptionIds": ["downpour-no-swap"],
+          "correctOptionIds": [
+            "downpour-no-swap"
+          ],
           "note": "D3 全程留在南側外圍，不參與第 4 次交換。"
         },
         "D4": {
           "debuffs": [],
-          "correctOptionIds": ["downpour-no-swap"],
+          "correctOptionIds": [
+            "downpour-no-swap"
+          ],
           "note": "D4 全程留在南側外圍，不參與第 4 次交換。"
         }
       }

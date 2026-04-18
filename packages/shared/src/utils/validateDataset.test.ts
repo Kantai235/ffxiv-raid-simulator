@@ -342,6 +342,43 @@ describe('Question.tethers 驗證', () => {
   });
 });
 
+describe('Question.referenceImages 驗證', () => {
+  it('接受合法的 referenceImages 陣列', () => {
+    const d = makeDatasetWithQuestion({
+      referenceImages: [
+        {
+          id: 'ref-1',
+          src: 'assets/questions/m1s-fourfold.png',
+          alt: '四連尖甲參考圖',
+          caption: 'TH 先靠近，之後由 DPS 交換承接',
+          sourceUrl: 'https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m1s/',
+          sourceLabel: 'M1S 攻略',
+        },
+      ],
+    });
+    expect(() => assertValidInstanceDataset(d)).not.toThrow();
+  });
+
+  it('referenceImages 非陣列 → parse 錯誤', () => {
+    const d = makeDatasetWithQuestion({ referenceImages: {} });
+    expect(() => assertValidInstanceDataset(d)).toThrow(/referenceImages/);
+  });
+
+  it('referenceImages[i].src 空字串 → parse 錯誤', () => {
+    const d = makeDatasetWithQuestion({
+      referenceImages: [{ src: '   ' }],
+    });
+    expect(() => assertValidInstanceDataset(d)).toThrow(/referenceImages\[0\]\.src/);
+  });
+
+  it('referenceImages[i].sourceUrl 非字串 → parse 錯誤', () => {
+    const d = makeDatasetWithQuestion({
+      referenceImages: [{ src: 'assets/questions/x.png', sourceUrl: 123 }],
+    });
+    expect(() => assertValidInstanceDataset(d)).toThrow(/sourceUrl/);
+  });
+});
+
 describe('isValidInstanceDataset', () => {
   it('合法 → true', () => {
     expect(isValidInstanceDataset(makeValidDataset())).toBe(true);

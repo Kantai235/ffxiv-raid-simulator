@@ -6,6 +6,7 @@ import {
   listDatasets,
   readDataset,
   uploadArenaImage,
+  uploadQuestionImage,
   writeDataset,
 } from './datasetApi';
 
@@ -179,5 +180,38 @@ describe('uploadArenaImage', () => {
       expect((err as DatasetApiError).reason).toBe('http');
       expect((err as DatasetApiError).message).toContain('太大了');
     }
+  });
+});
+
+describe('uploadQuestionImage', () => {
+  function makeFakeFile(type: string, bytes = new Uint8Array([5, 6, 7, 8])): File {
+    return {
+      type,
+      arrayBuffer: () => Promise.resolve(bytes.buffer),
+    } as unknown as File;
+  }
+
+  it('會 POST 到題目參考圖片上傳端點並回傳 path', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(
+      jsonResponse({ ok: true, path: 'assets/questions/ref.png' }),
+    );
+
+    const result = await uploadQuestionImage(makeFakeFile('image/png'));
+
+    expect(result.path).toBe('assets/questions/ref.png');
+    const call = vi.mocked(fetch).mock.calls[0];
+    expect(call[0]).toBe('/api/upload-question-image');
+    expect(call[1]?.method).toBe('POST');
+    expect(call[1]?.headers).toMatchObject({ 'Content-Type': 'image/png' });
+    expect(call[1]?.body).toBeInstanceOf(ArrayBuffer);
+  });
+
+  it('file.type 空值時會 fallback 為 application/octet-stream', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(jsonResponse({ ok: true, path: 'x' }));
+
+    await uploadQuestionImage(makeFakeFile(''));
+
+    const call = vi.mocked(fetch).mock.calls[0];
+    expect(call[1]?.headers).toMatchObject({ 'Content-Type': 'application/octet-stream' });
   });
 });

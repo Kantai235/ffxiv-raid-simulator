@@ -156,4 +156,23 @@ describe('localFileApiPlugin - 共用素材代理', () => {
     expect(response.headers['Content-Type']).toBe('image/png');
     expect(response.headers['Cache-Control']).toBe('public, max-age=300');
   });
+
+  it('會代理 /assets/questions/* 到 player/public/assets/questions', async () => {
+    const workspace = await createWorkspace();
+    tempDirs.push(workspace.repoRoot);
+    await workspace.writePlayerAsset(
+      join('questions', 'm1s', 'reference.png'),
+      Buffer.from([0x89, 0x50, 0x4e, 0x47]),
+    );
+
+    const handler = captureMiddleware(workspace.editorRoot);
+    const { nextCalled, response } = await invoke(handler, {
+      url: '/assets/questions/m1s/reference.png',
+    });
+
+    expect(nextCalled).toBe(false);
+    expect(response.statusCode).toBe(200);
+    expect(response.headers['Content-Type']).toBe('image/png');
+    expect(response.headers['Cache-Control']).toBe('no-store');
+  });
 });

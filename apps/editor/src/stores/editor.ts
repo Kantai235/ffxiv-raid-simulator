@@ -38,6 +38,7 @@ import {
   listDatasets,
   readDataset,
   uploadArenaImage,
+  uploadQuestionImage,
   writeDataset,
 } from '../services/datasetApi';
 
@@ -971,6 +972,30 @@ export const useEditorStore = defineStore('editor', () => {
   }
 
   /**
+   * 上傳題目參考圖片，回傳可寫入 `question.referenceImages[].src` 的相對路徑。
+   *
+   * 與背景圖分開處理，讓題目輔助圖與場地素材分資料夾管理，也方便後續做
+   * 題目專屬的預覽或清理流程。
+   */
+  async function uploadQuestionReferenceImageAsset(file: File): Promise<string | null> {
+    if (!dataset.value) {
+      error.value = '尚未載入任何 dataset，無法上傳題目參考圖片';
+      return null;
+    }
+    isUploadingImage.value = true;
+    error.value = null;
+    try {
+      const { path } = await uploadQuestionImage(file);
+      return path;
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : '上傳題目參考圖片失敗';
+      return null;
+    } finally {
+      isUploadingImage.value = false;
+    }
+  }
+
+  /**
    * 新增一條輔助線。
    *
    * @param line  要新增的線段（id 由呼叫端產生，避免 store 依賴隨機源）
@@ -1520,6 +1545,7 @@ export const useEditorStore = defineStore('editor', () => {
     updateArena,
     setBackgroundImage,
     uploadAndSetBackground,
+    uploadQuestionReferenceImageAsset,
     addArenaLine,
     removeArenaLine,
     updateArenaLine,

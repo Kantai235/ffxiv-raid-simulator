@@ -363,3 +363,12 @@ cd apps/editor && npm test        # Editor stores/services/utils（202 tests）
 - 所有文件、註解、commit message 使用 **繁體中文（台灣用語）**
 - 嚴禁中國用語（介面 ≠ 接口、專案 ≠ 項目、資料庫 ≠ 數據庫 …）
 - FFXIV 專有術語依台服與玩家社群習慣
+
+## 題目參考圖片
+
+每一題都可透過 `Question.referenceImages` 附帶 0~N 張題目參考圖片，適合放攻略圖、站位圖或步驟示意圖。
+
+- Player 會在作答頁與復盤頁直接顯示這些圖片。
+- 圖片載入失敗時會顯示替代提示，不影響答題流程。
+- Editor 可直接貼上圖片 URL，也可在本機開發模式上傳到 `apps/player/public/assets/questions/`。
+- `referenceImages[].src` 可使用相對路徑如 `assets/questions/foo.png`，也可使用外部圖片 URL。

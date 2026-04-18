@@ -32,6 +32,7 @@ import {
 import { useSessionStore } from '@/stores/session';
 import { useSettingsStore } from '@/stores/settings';
 import ArenaMap from '@/components/ArenaMap.vue';
+import QuestionReferenceGallery from '@/components/question/QuestionReferenceGallery.vue';
 import ChoiceReviewPanel from '@/components/review/ChoiceReviewPanel.vue';
 
 interface Props {
@@ -161,6 +162,11 @@ function backToResults(): void {
 
     <!-- ========== Visual Diff ========== -->
     <!-- 地圖題：ArenaMap 疊圖 -->
+    <QuestionReferenceGallery
+      v-if="item.question.referenceImages?.length"
+      :images="item.question.referenceImages"
+    />
+
     <div
       v-if="isMapClickQuestion && arena"
       data-testid="visual-diff-map"

@@ -8,6 +8,7 @@ import type {
   MapClickQuestion,
   MapClickRoleSolution,
   Question,
+  QuestionReferenceImage,
   RoleId,
 } from '@ffxiv-sim/shared';
 import ReviewView from '../ReviewView.vue';
@@ -38,7 +39,11 @@ function makeRoleSolutions<T>(spec: T): Record<RoleId, T> {
 
 const sampleSafeArea = { shape: 'circle' as const, center: { x: 100, y: 100 }, radius: 50 };
 
-function makeQuestion(id: string, name: string): MapClickQuestion {
+function makeQuestion(
+  id: string,
+  name: string,
+  referenceImages?: QuestionReferenceImage[],
+): MapClickQuestion {
   return {
     id,
     instanceId: 'm1s',
@@ -52,6 +57,7 @@ function makeQuestion(id: string, name: string): MapClickQuestion {
       safeAreas: [sampleSafeArea],
       note: `題目 ${id} 的解析`,
     }),
+    referenceImages,
   };
 }
 
@@ -83,7 +89,11 @@ const ArenaMapStub = defineComponent({
 
 /** 設定一個跑完的 session 與對應的 settings store */
 function setupCompletedSession(
-  outcomes: { name: string; clicks: { x: number; y: number }[] }[],
+  outcomes: {
+    name: string;
+    clicks: { x: number; y: number }[];
+    referenceImages?: QuestionReferenceImage[];
+  }[],
 ): void {
   const session = useSessionStore();
   const settings = useSettingsStore();
@@ -107,7 +117,7 @@ function setupCompletedSession(
   settings.selectedStrategyId = 'game8';
   settings.selectedRoleId = 'MT';
 
-  const questions = outcomes.map((o, i) => makeQuestion(`q${i}`, o.name));
+  const questions = outcomes.map((o, i) => makeQuestion(`q${i}`, o.name, o.referenceImages));
   session.startSession({
     questions,
     instanceId: 'm1s',
@@ -207,6 +217,29 @@ describe('ReviewView - 資料提取與 ArenaMap props', () => {
   it('解析文字（note）顯示在 explanation 區塊', () => {
     const wrapper = mountReview('0');
     expect(wrapper.find('[data-testid="explanation"]').text()).toContain('題目 q0 的解析');
+  });
+
+  it('有參考圖時會顯示題目參考圖片區塊', () => {
+    setActivePinia(createPinia());
+    setupCompletedSession([
+      {
+        name: '附圖題',
+        clicks: [{ x: 100, y: 100 }],
+        referenceImages: [
+          {
+            id: 'ref-1',
+            src: 'https://example.com/reference.png',
+            caption: '示意圖',
+            sourceUrl: 'https://example.com/guide',
+            sourceLabel: '攻略',
+          },
+        ],
+      },
+    ]);
+
+    const wrapper = mountReview('0');
+    expect(wrapper.find('[data-testid="question-reference-gallery"]').exists()).toBe(true);
+    expect(wrapper.text()).toContain('示意圖');
   });
 
   it('對錯標記正確顯示', () => {

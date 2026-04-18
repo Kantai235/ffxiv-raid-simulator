@@ -20,6 +20,11 @@ const PLAYER_DATA_DIR_REL = '../player/public/assets/data';
 const PLAYER_ARENAS_RELATIVE_PREFIX = 'assets/arenas';
 
 /**
+ * 題目參考圖片寫回 dataset 時使用的相對路徑前綴。
+ */
+const PLAYER_QUESTIONS_RELATIVE_PREFIX = 'assets/questions';
+
+/**
  * Editor 會在本地開發時直接代理 player/public/assets 內的共用素材。
  *
  * Why:
@@ -30,6 +35,11 @@ const SHARED_ASSET_SOURCES = {
   arenas: {
     urlPrefix: '/assets/arenas/',
     dirRel: '../player/public/assets/arenas',
+    cacheControl: 'no-store',
+  },
+  questions: {
+    urlPrefix: '/assets/questions/',
+    dirRel: '../player/public/assets/questions',
     cacheControl: 'no-store',
   },
   boss: {
@@ -101,11 +111,15 @@ function matchSharedAssetSource(
 }
 
 function resolveSafeSharedAssetPath(pathname: string, source: SharedAssetSource): string | null {
-  const requestedFilename = pathname.slice(source.urlPrefix.length);
-  if (!/^[a-zA-Z0-9_.-]+$/.test(requestedFilename) || requestedFilename.includes('..')) {
+  const requestedPath = pathname.slice(source.urlPrefix.length);
+  const segments = requestedPath.split('/');
+  if (
+    segments.length === 0 ||
+    segments.some((segment) => !segment || !/^[a-zA-Z0-9_.-]+$/.test(segment))
+  ) {
     return null;
   }
-  const target = resolve(source.dirAbs, requestedFilename);
+  const target = resolve(source.dirAbs, ...segments);
   return isPathInsideDir(target, source.dirAbs) ? target : null;
 }
 
@@ -180,6 +194,7 @@ export function localFileApiPlugin(): Plugin {
         if (
           !url.pathname.startsWith('/api/dataset') &&
           url.pathname !== '/api/upload-arena-image' &&
+          url.pathname !== '/api/upload-question-image' &&
           !sharedAssetSource
         ) {
           return next();
@@ -250,6 +265,40 @@ export function localFileApiPlugin(): Plugin {
             return sendJson(res, 200, {
               ok: true,
               path: `${PLAYER_ARENAS_RELATIVE_PREFIX}/${generatedFilename}`,
+            });
+          }
+
+          if (req.method === 'POST' && url.pathname === '/api/upload-question-image') {
+            const declaredLength = Number.parseInt(
+              (req.headers['content-length'] as string | undefined) ?? '0',
+              10,
+            );
+            if (declaredLength > MAX_UPLOAD_BYTES) {
+              return sendError(res, 413, `上傳內容超過限制 ${MAX_UPLOAD_BYTES} bytes`);
+            }
+
+            const buffer = await readBinaryBody(req, MAX_UPLOAD_BYTES);
+            const validation = validateUpload(
+              req.headers['content-type'] as string | undefined,
+              buffer.length,
+            );
+            if (!validation.ok) {
+              const statusCode = validation.reason === 'too-large' ? 413 : 400;
+              return sendError(res, statusCode, validation.message);
+            }
+
+            const questionsSource = sharedAssetSources.find((source) => source.key === 'questions');
+            if (!questionsSource) {
+              return sendError(res, 500, '找不到題目參考圖片資源目錄');
+            }
+
+            const generatedFilename = generateSafeFilename(validation.ext);
+            await mkdir(questionsSource.dirAbs, { recursive: true });
+            await writeFile(resolve(questionsSource.dirAbs, generatedFilename), buffer);
+
+            return sendJson(res, 200, {
+              ok: true,
+              path: `${PLAYER_QUESTIONS_RELATIVE_PREFIX}/${generatedFilename}`,
             });
           }
 

@@ -482,6 +482,39 @@ describe('uploadAndSetBackground', () => {
   });
 });
 
+describe('uploadQuestionReferenceImageAsset', () => {
+  function makeFakeFile(): File {
+    return {
+      type: 'image/png',
+      arrayBuffer: () => Promise.resolve(new ArrayBuffer(8)),
+    } as unknown as File;
+  }
+
+  it('上傳成功時回傳可寫入 referenceImages 的相對路徑', async () => {
+    vi.spyOn(api, 'readDataset').mockResolvedValue(makeDataset());
+    vi.spyOn(api, 'uploadQuestionImage').mockResolvedValue({
+      path: 'assets/questions/m1s/reference.png',
+    });
+    const store = useEditorStore();
+    await store.loadDataset('m1s.json');
+
+    const path = await store.uploadQuestionReferenceImageAsset(makeFakeFile());
+
+    expect(path).toBe('assets/questions/m1s/reference.png');
+    expect(store.isUploadingImage).toBe(false);
+    expect(store.error).toBeNull();
+  });
+
+  it('未載入 dataset 時回傳 null 並寫入錯誤訊息', async () => {
+    const store = useEditorStore();
+
+    const path = await store.uploadQuestionReferenceImageAsset(makeFakeFile());
+
+    expect(path).toBeNull();
+    expect(store.error).toContain('尚未載入任何 dataset');
+  });
+});
+
 describe('arena lines mutations', () => {
   beforeEach(() => {
     vi.spyOn(api, 'readDataset').mockResolvedValue(makeDataset());
