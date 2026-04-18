@@ -283,7 +283,7 @@ Editor 部署於 GitHub Pages 的 `/<repo>/editor/` 子路徑，**完全不需�
 ### 流程
 
 1. 開啟管理員提供的 Editor 網址（例如 `https://foo.github.io/ffxiv-raid-simulator/editor/`）
-2. 按 **「📂 載入 JSON」** 選擇管理員給您的既有題庫 `.json` 檔（或從零開始，但場地圖需管理員先處理）
+2. 從 **「官方題庫」下拉** 直接載入站上已發佈的副本，或按 **「📂 載入 JSON」** 匯入管理員提供的既有題庫 `.json` 檔
 3. 使用三個主模式進行編輯：
    - **場地標記**：拖曳 A/B/C/D/1-4 標記到正確位置
    - **場地設定**：調整場地邏輯尺寸與中心（場地圖上傳此模式下不可用，需管理員處理）
@@ -299,7 +299,7 @@ Editor 部署於 GitHub Pages 的 `/<repo>/editor/` 子路徑，**完全不需�
 
 | 功能 | 本機模式（管理員）| 靜態模式（朋友）|
 |---|---|---|
-| 載入 dataset | 下拉選單列出 repo 內現有檔案 | 手動上傳 JSON 檔 |
+| 載入 dataset | 下拉選單列出 repo 內現有檔案 | 官方題庫下拉或手動上傳 JSON 檔 |
 | 儲存 dataset | 直接寫回 repo 資料夾 | 瀏覽器下載 JSON 檔 |
 | 上傳場地背景圖 | ✅ 可用 | ❌ disabled（需管理員處理） |
 | 編輯 Waymark / 題目 / 解答 | ✅ 可用 | ✅ 可用 |
@@ -340,7 +340,7 @@ GitHub Actions workflow 位於 [`.github/workflows/deploy.yml`](./.github/workfl
 npm test                          # 全 workspace
 cd packages/shared && npm test    # shared 純函數（80 tests）
 cd apps/player && npm test        # Player stores/views/components（228 tests）
-cd apps/editor && npm test        # Editor stores/services/utils（192 tests）
+cd apps/editor && npm test        # Editor stores/services/utils（202 tests）
 ```
 
 總計 500 個單元測試，涵蓋：

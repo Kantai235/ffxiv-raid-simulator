@@ -33,6 +33,7 @@ const {
   selectedRoleSolution,
   availableFiles,
   publishedIndex,
+  selectedPublishedInstanceId,
   datasetSource,
   isLoading,
   isLoadingPublished,
@@ -247,15 +248,13 @@ async function onLoadPublished(event: Event): Promise<void> {
   if (isDirty.value) {
     const ok = window.confirm('當前有未儲存的變更，確定要切換副本嗎？');
     if (!ok) {
-      target.value = '';
+      target.value = selectedPublishedInstanceId.value ?? '';
       return;
     }
   }
   const entry = publishedIndex.value?.instances.find((i) => i.id === instanceId);
   if (!entry) return;
   await store.loadPublishedDataset(entry);
-  // 載入後重置 select 為空，避免「重載同一副本」時 change 事件不觸發
-  target.value = '';
 }
 
 async function onUploadJsonFile(event: Event): Promise<void> {
@@ -331,6 +330,7 @@ watch(
           <label class="text-xs text-gray-400">官方題庫：</label>
           <select
             data-testid="published-selector"
+            :value="selectedPublishedInstanceId ?? ''"
             :disabled="isLoadingPublished || !publishedIndex"
             class="bg-editor-bg border border-gray-600 rounded px-2 py-1 text-sm disabled:opacity-50"
             @change="onLoadPublished"

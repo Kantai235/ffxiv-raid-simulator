@@ -131,6 +131,20 @@ export const useEditorStore = defineStore('editor', () => {
    */
   const publishedIndex = ref<DatasetIndex | null>(null);
 
+  /**
+   * 目前 UI 顯示為「已選取」的官方題庫副本 ID。
+   *
+   * Why 要獨立於 currentFilename：
+   *   currentFilename 只知道檔名（例如 m1s.json），但靜態模式的下拉選單是用
+   *   publishedIndex.instances[].id 當 value。若只靠檔名回推，之後切到本機 JSON /
+   *   本機 API 檔案時容易誤把同名檔案也當成「官方題庫仍被選中」。
+   *
+   * 這裡把「官方題庫選單目前選哪一項」提升成 store state，讓下拉顯示和實際載入來源
+   * 同步；如此一來，成功載入官方題庫後選單不會被 DOM 手動清空，切去其他來源時也能
+   * 明確重置回 placeholder。
+   */
+  const selectedPublishedInstanceId = ref<string | null>(null);
+
   /** 載入發佈版索引 / dataset 的進行中旗標，UI 顯示 spinner 用 */
   const isLoadingPublished = ref(false);
 
@@ -293,6 +307,7 @@ export const useEditorStore = defineStore('editor', () => {
       dataset.value = raw;
       currentFilename.value = filename;
       datasetSource.value = 'local';
+      selectedPublishedInstanceId.value = null;
       // 預設選第一個攻略，方便玩家立刻能拖
       selectedStrategyId.value = dataset.value.strategies[0]?.id ?? null;
       // 預設選第一題，方便切到 questions 模式立即可編輯
@@ -404,6 +419,7 @@ export const useEditorStore = defineStore('editor', () => {
       dataset.value = raw;
       currentFilename.value = filename;
       datasetSource.value = 'upload';
+      selectedPublishedInstanceId.value = null;
       selectedStrategyId.value = raw.strategies[0]?.id ?? null;
       selectedQuestionId.value = null;
       selectedRoleId.value = 'MT';
@@ -475,6 +491,7 @@ export const useEditorStore = defineStore('editor', () => {
       const filename = entry.dataPath.split('/').pop() ?? `${entry.id}.json`;
       currentFilename.value = filename;
       datasetSource.value = 'published';
+      selectedPublishedInstanceId.value = entry.id;
       selectedStrategyId.value = raw.strategies[0]?.id ?? null;
       selectedQuestionId.value = raw.questions[0]?.id ?? null;
       selectedRoleId.value = 'MT';
@@ -573,6 +590,7 @@ export const useEditorStore = defineStore('editor', () => {
     selectedRoleId.value = 'MT';
     availableFiles.value = [];
     publishedIndex.value = null;
+    selectedPublishedInstanceId.value = null;
     datasetSource.value = null;
     isLoading.value = false;
     isSaving.value = false;
@@ -1462,6 +1480,7 @@ export const useEditorStore = defineStore('editor', () => {
     selectedRoleId,
     availableFiles,
     publishedIndex,
+    selectedPublishedInstanceId,
     datasetSource,
     isLoading,
     isSaving,

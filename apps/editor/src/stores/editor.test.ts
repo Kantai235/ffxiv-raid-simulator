@@ -74,6 +74,24 @@ describe('loadDataset', () => {
     expect(store.isDirty).toBe(false);
   });
 
+  it('從官方題庫切回本機檔案時，會清掉官方題庫下拉的選取狀態', async () => {
+    vi.spyOn(api, 'fetchPublishedDataset').mockResolvedValue(makeDataset());
+    vi.spyOn(api, 'readDataset').mockResolvedValue(makeDataset());
+    const store = useEditorStore();
+
+    await store.loadPublishedDataset({
+      id: 'm1s',
+      name: 'M1S',
+      shortName: 'M1S',
+      dataPath: 'assets/data/m1s.json',
+      schemaVersion: '1.0',
+    });
+    expect(store.selectedPublishedInstanceId).toBe('m1s');
+
+    await store.loadDataset('m1s.json');
+    expect(store.selectedPublishedInstanceId).toBeNull();
+  });
+
   it('載入失敗 → error 設定且 dataset 保持 null', async () => {
     vi.spyOn(api, 'readDataset').mockRejectedValue(new api.DatasetApiError('http', '/x', '404'));
     const store = useEditorStore();
@@ -82,6 +100,27 @@ describe('loadDataset', () => {
     expect(store.error).toContain('404');
     expect(store.dataset).toBeNull();
     expect(store.isLoading).toBe(false);
+  });
+});
+
+describe('loadDatasetFromJson', () => {
+  it('從官方題庫切到本機上傳 JSON 時，會清掉官方題庫下拉的選取狀態', async () => {
+    vi.spyOn(api, 'fetchPublishedDataset').mockResolvedValue(makeDataset());
+    const store = useEditorStore();
+
+    await store.loadPublishedDataset({
+      id: 'm1s',
+      name: 'M1S',
+      shortName: 'M1S',
+      dataPath: 'assets/data/m1s.json',
+      schemaVersion: '1.0',
+    });
+    expect(store.selectedPublishedInstanceId).toBe('m1s');
+
+    const ok = store.loadDatasetFromJson(JSON.stringify(makeDataset()), 'custom.json');
+    expect(ok).toBe(true);
+    expect(store.selectedPublishedInstanceId).toBeNull();
+    expect(store.datasetSource).toBe('upload');
   });
 });
 
@@ -1401,6 +1440,7 @@ describe('loadPublishedDataset', () => {
     expect(ok).toBe(true);
     expect(store.dataset?.instance.id).toBe('m1s');
     expect(store.currentFilename).toBe('m1s.json');
+    expect(store.selectedPublishedInstanceId).toBe('m1s');
     expect(store.selectedStrategyId).toBe('game8');
     expect(store.isDirty).toBe(false);
   });
