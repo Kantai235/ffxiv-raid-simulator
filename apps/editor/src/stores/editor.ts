@@ -1402,10 +1402,12 @@ export const useEditorStore = defineStore('editor', () => {
   /**
    * 為當前題目新增一條連線。
    *
-   * 預設 sourceId='boss' / targetId='A' / color='red'：
+   * 預設 sourceId='boss' / targetId='A' / color='red' / kind='tether'：
    *   - 兩端都是 player ArenaMap 能立即解析的 ID（boss + waymark），
    *     新增完即可在畫布上看到視覺回饋，不會出現「加了卻看不到線」的困惑。
    *   - color 用紅是 FFXIV 連線最常見的視覺。
+   *   - kind='tether' 是預設語意（牽線），出題者可在 UI 改成 'movement'。
+   *     showEndIcon 不主動寫入，讓未明確設定者走 schema 的「依 kind 推導」預設。
    *
    * Why 不檢查「已存在重複連線」：同樣 source/target 同色的連線在出題語意中
    *   可能合理（例：兩條同方向但代表不同階段的牽引），讓出題者自行判斷。
@@ -1413,7 +1415,12 @@ export const useEditorStore = defineStore('editor', () => {
   function addTether(): void {
     const q = selectedQuestion.value;
     if (!q) return;
-    const newTether: Tether = { sourceId: 'boss', targetId: 'A', color: 'red' };
+    const newTether: Tether = {
+      sourceId: 'boss',
+      targetId: 'A',
+      color: 'red',
+      kind: 'tether',
+    };
     patchSelectedQuestion({ tethers: [...(q.tethers ?? []), newTether] });
   }
 

@@ -329,6 +329,21 @@ function onUpdateTether(idx: number, updates: Partial<Tether>): void {
 function onRemoveTether(idx: number): void {
   store.removeTether(idx);
 }
+
+/** kind 預設 fallback - 與 schema/Tether 註解保持一致 */
+function effectiveKind(t: Tether): 'tether' | 'movement' {
+  return t.kind ?? 'tether';
+}
+
+/**
+ * showEndIcon 的 effective 值 - schema 預設行為：
+ *   - 未明確指定 → kind=movement 預設 true、tether 預設 false
+ *   - 明確指定 → 直接用該值
+ */
+function effectiveShowEndIcon(t: Tether): boolean {
+  if (t.showEndIcon !== undefined) return t.showEndIcon;
+  return effectiveKind(t) === 'movement';
+}
 </script>
 
 <template>
@@ -834,6 +849,32 @@ function onRemoveTether(idx: number): void {
                 :style="{ backgroundColor: TETHER_COLORS.find((c) => c.value === t.color)?.preview }"
               />
             </div>
+
+            <!-- 種類（kind）下拉：tether（牽線）vs movement（移動指示） -->
+            <div class="flex items-center gap-2">
+              <label class="text-xs text-gray-500">種類</label>
+              <select
+                :value="effectiveKind(t)"
+                :data-tether-kind="idx"
+                class="flex-1 bg-editor-bg border border-gray-600 rounded px-2 py-1 text-xs"
+                @change="onUpdateTether(idx, { kind: ($event.target as HTMLSelectElement).value as 'tether' | 'movement' })"
+              >
+                <option value="tether">牽線（Tether）</option>
+                <option value="movement">移動（Movement）</option>
+              </select>
+            </div>
+
+            <!-- 終點圖標 checkbox - 預設依 kind 推導，玩家可獨立切換 -->
+            <label class="flex items-center gap-2 text-xs text-gray-500">
+              <input
+                type="checkbox"
+                :checked="effectiveShowEndIcon(t)"
+                :data-tether-show-end-icon="idx"
+                class="cursor-pointer"
+                @change="onUpdateTether(idx, { showEndIcon: ($event.target as HTMLInputElement).checked })"
+              />
+              在終點顯示箭頭圖標
+            </label>
 
             <!-- Role 提示 -->
             <p

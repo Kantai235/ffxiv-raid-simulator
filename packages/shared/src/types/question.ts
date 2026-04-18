@@ -143,6 +143,30 @@ export interface Tether {
   targetId: string;
   /** 連線顏色（受限選單，對應常見遊戲內視覺）。前台自行映射實際色碼 */
   color: 'red' | 'blue' | 'purple' | 'yellow' | 'green';
+
+  /**
+   * 連線種類（Phase 3.6，選填，未提供視為 'tether'）。
+   *
+   *   - 'tether'  : 牽引/點名線（預設）。傳達「兩個實體間有羈絆」語意。
+   *   - 'movement': 移動指示。語意是「從 source 走到 target」，視覺上會用
+   *                 較粗的實線/不同 dash 樣式，並可在 target 端加上箭頭圖標。
+   *
+   * Why 同一個 schema 加 kind 而非分兩種型別：解析、渲染管線 100% 共用
+   *   （sourceId/targetId 引用、color 字面聯合、tether 圖層），只是裝飾不同；
+   *   分兩個型別會迫使所有 consumer 寫雙分支判別聯合，得不償失。
+   */
+  kind?: 'tether' | 'movement';
+
+  /**
+   * 是否在終點（target 端）渲染箭頭圖標（Phase 3.6，選填）。
+   *
+   * 預設行為（未提供時）：
+   *   - kind = 'movement' → true（移動本來就需要終點指示）
+   *   - kind = 'tether'   → false（牽線通常不畫箭頭）
+   *
+   * 出題者可獨立勾選/取消。圖標方向由前台用 atan2(end - start) 計算自動旋轉。
+   */
+  showEndIcon?: boolean;
 }
 
 /**

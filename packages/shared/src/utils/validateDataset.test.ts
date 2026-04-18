@@ -310,6 +310,36 @@ describe('Question.tethers 驗證', () => {
     const d = makeDatasetWithQuestion({ tethers: 'x' });
     expect(() => assertValidInstanceDataset(d)).toThrow(/tethers/);
   });
+
+  it('Phase 3.6: kind 與 showEndIcon 為 optional - 未提供時合法（向下相容）', () => {
+    const d = makeDatasetWithQuestion({
+      tethers: [{ sourceId: 'boss', targetId: 'A', color: 'red' }],
+    });
+    expect(() => assertValidInstanceDataset(d)).not.toThrow();
+  });
+
+  it('Phase 3.6: kind=movement + showEndIcon=true 合法', () => {
+    const d = makeDatasetWithQuestion({
+      tethers: [
+        { sourceId: 'boss', targetId: 'A', color: 'red', kind: 'movement', showEndIcon: true },
+      ],
+    });
+    expect(() => assertValidInstanceDataset(d)).not.toThrow();
+  });
+
+  it('Phase 3.6: kind 不在白名單 → parse 錯誤', () => {
+    const d = makeDatasetWithQuestion({
+      tethers: [{ sourceId: 'boss', targetId: 'A', color: 'red', kind: 'jump' }],
+    });
+    expect(() => assertValidInstanceDataset(d)).toThrow(/kind/);
+  });
+
+  it('Phase 3.6: showEndIcon 非 boolean → parse 錯誤', () => {
+    const d = makeDatasetWithQuestion({
+      tethers: [{ sourceId: 'boss', targetId: 'A', color: 'red', showEndIcon: 'yes' }],
+    });
+    expect(() => assertValidInstanceDataset(d)).toThrow(/showEndIcon/);
+  });
 });
 
 describe('isValidInstanceDataset', () => {

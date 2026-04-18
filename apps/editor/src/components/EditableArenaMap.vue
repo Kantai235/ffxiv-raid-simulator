@@ -513,8 +513,41 @@ const TETHER_COLOR_MAP: Record<Tether['color'], string> = {
   green: '#2ECC71',
 };
 
+/** 終點箭頭素材路徑（Phase 3.6）- 與 player 同檔，editor 套 imagePathPrefix */
+const END_ICON_HREF_RAW = 'assets/icons/arrow-end.png';
+const END_ICON_SIZE = 40;
+
+const endIconHref = computed(() => {
+  const isAbsolute = /^(https?:|data:|\/)/i.test(END_ICON_HREF_RAW);
+  return isAbsolute ? END_ICON_HREF_RAW : `${props.imagePathPrefix}${END_ICON_HREF_RAW}`;
+});
+
+/**
+ * Tether kind / showEndIcon 預設 fallback - 與 player 同套規則。
+ */
+function effectiveTetherKind(t: Tether): 'tether' | 'movement' {
+  return t.kind ?? 'tether';
+}
+function effectiveTetherShowIcon(t: Tether): boolean {
+  if (t.showEndIcon !== undefined) return t.showEndIcon;
+  return effectiveTetherKind(t) === 'movement';
+}
+
+/**
+ * 計算「從 start 指向 end」的 CSS rotation 角度（度）。
+ * 公式同 player ArenaMap：atan2(dx, -dy) → deg。素材正面朝北（與 boss-marker 一致）。
+ */
+function tetherIconRotation(start: Point2D, end: Point2D): number {
+  const dx = end.x - start.x;
+  const dy = end.y - start.y;
+  if (dx === 0 && dy === 0) return 0;
+  return (Math.atan2(dx, -dy) * 180) / Math.PI;
+}
+
 /**
  * 可渲染的連線資料 - 過濾任一端無法解析者。
+ *
+ * Phase 3.6 擴充：附帶 kind / showIcon / iconRotation。
  *
  * isRoleEndpoint 旗標讓 view 套用「淡虛線」樣式區分：
  *   editor 端 Role 連線只是示意（端點固定在場地中央），
@@ -526,6 +559,8 @@ const renderableTethers = computed(() =>
       const src = resolveEntityPosition(t.sourceId);
       const tgt = resolveEntityPosition(t.targetId);
       if (!src || !tgt) return null;
+      const kind = effectiveTetherKind(t);
+      const showIcon = effectiveTetherShowIcon(t);
       return {
         key: `${idx}-${t.sourceId}-${t.targetId}`,
         x1: src.x,
@@ -533,6 +568,9 @@ const renderableTethers = computed(() =>
         x2: tgt.x,
         y2: tgt.y,
         color: TETHER_COLOR_MAP[t.color],
+        kind,
+        showIcon,
+        iconRotation: tetherIconRotation(src, tgt),
         isRoleEndpoint: isRoleId(t.sourceId) || isRoleId(t.targetId),
       };
     })
@@ -1401,20 +1439,47 @@ const draftPolygon = computed(() => {
       pointer-events="none"
       filter="drop-shadow(0 1px 2px rgba(0,0,0,0.7))"
     >
-      <line
+      <g
         v-for="t in renderableTethers"
         :key="t.key"
-        :x1="t.x1"
-        :y1="t.y1"
-        :x2="t.x2"
-        :y2="t.y2"
-        :stroke="t.color"
-        stroke-width="4"
-        stroke-linecap="round"
-        :stroke-dasharray="t.isRoleEndpoint ? '8 4' : '10 6'"
-        :stroke-opacity="t.isRoleEndpoint ? 0.5 : 0.85"
+        :data-tether-kind="t.kind"
         :data-tether-role="t.isRoleEndpoint ? 'true' : 'false'"
-      />
+      >
+        <!--
+          線本體 - 三種樣式組合：
+            1. movement (非 role)        : 較粗實線（dasharray 14 4），表「實心移動路徑」
+            2. role 端點（含 movement / tether）: 細淡虛線（dasharray 8 4，opacity 0.5），表「示意」
+            3. tether (非 role) : 標準牽線虛線（dasharray 10 6）
+          role 樣式優先級高於 movement，因為「練習時定位玩家」屬於更重要的提示。
+        -->
+        <line
+          :x1="t.x1"
+          :y1="t.y1"
+          :x2="t.x2"
+          :y2="t.y2"
+          :stroke="t.color"
+          :stroke-width="t.isRoleEndpoint ? 4 : (t.kind === 'movement' ? 5 : 4)"
+          stroke-linecap="round"
+          :stroke-dasharray="
+            t.isRoleEndpoint ? '8 4' : (t.kind === 'movement' ? '14 4' : '10 6')
+          "
+          :stroke-opacity="t.isRoleEndpoint ? 0.5 : 0.85"
+        />
+        <!-- 終點箭頭圖標（Phase 3.6） - 由 showEndIcon 決定是否渲染 -->
+        <g
+          v-if="t.showIcon"
+          :transform="`rotate(${t.iconRotation} ${t.x2} ${t.y2})`"
+          :data-tether-end-icon="true"
+        >
+          <image
+            :href="endIconHref"
+            :x="t.x2 - END_ICON_SIZE / 2"
+            :y="t.y2 - END_ICON_SIZE / 2"
+            :width="END_ICON_SIZE"
+            :height="END_ICON_SIZE"
+          />
+        </g>
+      </g>
     </g>
 
     <!-- ===== Layer: Boss 面嚮指示器 =====

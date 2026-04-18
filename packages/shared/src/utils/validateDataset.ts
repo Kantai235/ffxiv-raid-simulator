@@ -383,6 +383,19 @@ function assertValidQuestionExtensions(
           `questions[${idx}].tethers[${j}].color 必須為 ${[...allowedColors].join(' | ')}`,
         );
       }
+      // Phase 3.6 新增的選填欄位 - 未提供視同 'tether' / undefined（向下相容）
+      if (t.kind !== undefined && t.kind !== 'tether' && t.kind !== 'movement') {
+        throw new DatasetValidationError(
+          'parse',
+          `questions[${idx}].tethers[${j}].kind 必須為 'tether' | 'movement'`,
+        );
+      }
+      if (t.showEndIcon !== undefined && typeof t.showEndIcon !== 'boolean') {
+        throw new DatasetValidationError(
+          'parse',
+          `questions[${idx}].tethers[${j}].showEndIcon 必須為 boolean`,
+        );
+      }
     }
   }
 }

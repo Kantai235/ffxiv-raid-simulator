@@ -363,7 +363,47 @@ const TETHER_COLOR_MAP: Record<Tether['color'], string> = {
 };
 
 /**
+ * 終點箭頭素材（Phase 3.6）。素材正面朝北（與 boss-marker 同約定），
+ * 程式用 atan2(end - start) 計算 CSS rotate 角度自動旋轉到指向終點。
+ */
+const END_ICON_HREF = 'assets/icons/arrow-end.png';
+const END_ICON_SIZE = 40; // 邏輯單位
+
+/**
+ * 計算「從 start 指向 end」的 CSS rotation 角度（度）。
+ *
+ * 數學極座標 atan2 給的是「東 0°、逆時針正」；本專案 facing 採「北 0°、順時針正」，
+ * 與 boss-marker 一致 - 所以箭頭素材設計成朝北、套這套換算公式即可指對方向。
+ *
+ * 公式推導：
+ *   螢幕座標 dx = end.x - start.x、dy = end.y - start.y（y 軸向下）
+ *   想讓素材的「北方」對齊向量方向 → 旋轉角 = atan2(dx, -dy)（rad），轉度。
+ */
+function tetherIconRotation(start: { x: number; y: number }, end: { x: number; y: number }): number {
+  const dx = end.x - start.x;
+  const dy = end.y - start.y;
+  if (dx === 0 && dy === 0) return 0;
+  return (Math.atan2(dx, -dy) * 180) / Math.PI;
+}
+
+/**
+ * 推導 tether 的 effective kind / showEndIcon（schema 預設 fallback）。
+ * 與 editor QuestionsPanel 的 effectiveKind / effectiveShowEndIcon 同邏輯。
+ */
+function effectiveTetherKind(t: Tether): 'tether' | 'movement' {
+  return t.kind ?? 'tether';
+}
+function effectiveTetherShowIcon(t: Tether): boolean {
+  if (t.showEndIcon !== undefined) return t.showEndIcon;
+  return effectiveTetherKind(t) === 'movement';
+}
+
+/**
  * 可渲染的連線列表 - 過濾掉任一端無法解析的條目。
+ *
+ * Phase 3.6 擴充：附帶 kind / showEndIcon / iconRotation，view 層依此切換樣式：
+ *   - tether 線：dasharray="10 6"、stroke-width=4
+ *   - movement 線：較粗實線（dasharray="14 4"、stroke-width=5），視覺上「實心箭頭」感
  */
 const renderableTethers = computed(() =>
   props.tethers
@@ -371,6 +411,8 @@ const renderableTethers = computed(() =>
       const src = resolveEntityPosition(t.sourceId);
       const tgt = resolveEntityPosition(t.targetId);
       if (!src || !tgt) return null;
+      const kind = effectiveTetherKind(t);
+      const showIcon = effectiveTetherShowIcon(t);
       return {
         key: `${idx}-${t.sourceId}-${t.targetId}`,
         x1: src.x,
@@ -378,6 +420,9 @@ const renderableTethers = computed(() =>
         x2: tgt.x,
         y2: tgt.y,
         color: TETHER_COLOR_MAP[t.color],
+        kind,
+        showIcon,
+        iconRotation: tetherIconRotation(src, tgt),
       };
     })
     .filter((t): t is NonNullable<typeof t> => t !== null),
@@ -682,19 +727,45 @@ const renderableEnemies = computed(() =>
       pointer-events="none"
       filter="drop-shadow(0 1px 2px rgba(0,0,0,0.7))"
     >
-      <line
+      <g
         v-for="t in renderableTethers"
         :key="t.key"
-        :x1="t.x1"
-        :y1="t.y1"
-        :x2="t.x2"
-        :y2="t.y2"
-        :stroke="t.color"
-        stroke-width="4"
-        stroke-linecap="round"
-        stroke-dasharray="10 6"
-        stroke-opacity="0.85"
-      />
+        :data-tether-kind="t.kind"
+      >
+        <!--
+          線本體 - movement 用較粗 + 較長 dash 模擬「實心箭頭路徑」感；
+          tether 維持原本的牽線視覺。
+        -->
+        <line
+          :x1="t.x1"
+          :y1="t.y1"
+          :x2="t.x2"
+          :y2="t.y2"
+          :stroke="t.color"
+          :stroke-width="t.kind === 'movement' ? 5 : 4"
+          stroke-linecap="round"
+          :stroke-dasharray="t.kind === 'movement' ? '14 4' : '10 6'"
+          stroke-opacity="0.85"
+        />
+        <!--
+          終點箭頭圖標（Phase 3.6）- 出題者可獨立切換 showEndIcon。
+          素材正面朝北，外層 rotate 對齊「source → target」方向。
+          中心對齊 (t.x2, t.y2)：image x/y 為左上角，扣半個邊長置中。
+        -->
+        <g
+          v-if="t.showIcon"
+          :transform="`rotate(${t.iconRotation} ${t.x2} ${t.y2})`"
+          :data-tether-end-icon="true"
+        >
+          <image
+            :href="END_ICON_HREF"
+            :x="t.x2 - END_ICON_SIZE / 2"
+            :y="t.y2 - END_ICON_SIZE / 2"
+            :width="END_ICON_SIZE"
+            :height="END_ICON_SIZE"
+          />
+        </g>
+      </g>
     </g>
 
     <!-- =========================================================

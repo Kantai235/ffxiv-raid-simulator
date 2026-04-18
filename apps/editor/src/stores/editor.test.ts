@@ -1685,7 +1685,7 @@ describe('Tethers - addTether / updateTether / removeTether', () => {
     vi.spyOn(api, 'readDataset').mockResolvedValue(makeDatasetWithQuestions());
   });
 
-  it('addTether → 預設 boss → A、color=red 且設 dirty', async () => {
+  it('addTether → 預設 boss → A、color=red、kind=tether 且設 dirty', async () => {
     const store = useEditorStore();
     await store.loadDataset('m1s.json');
     store.selectQuestion('q0');
@@ -1693,9 +1693,19 @@ describe('Tethers - addTether / updateTether / removeTether', () => {
 
     store.addTether();
     expect(store.selectedQuestion?.tethers).toEqual([
-      { sourceId: 'boss', targetId: 'A', color: 'red' },
+      { sourceId: 'boss', targetId: 'A', color: 'red', kind: 'tether' },
     ]);
     expect(store.isDirty).toBe(true);
+  });
+
+  it('updateTether → 可切換 kind=movement 與 showEndIcon', async () => {
+    const store = useEditorStore();
+    await store.loadDataset('m1s.json');
+    store.selectQuestion('q0');
+    store.addTether();
+    store.updateTether(0, { kind: 'movement', showEndIcon: true });
+    expect(store.selectedQuestion?.tethers?.[0].kind).toBe('movement');
+    expect(store.selectedQuestion?.tethers?.[0].showEndIcon).toBe(true);
   });
 
   it('addTether 多次 → 累加（允許同 source/target 重複）', async () => {
@@ -1717,6 +1727,7 @@ describe('Tethers - addTether / updateTether / removeTether', () => {
       sourceId: 'boss',
       targetId: 'B',
       color: 'blue',
+      kind: 'tether',
     });
   });
 
@@ -1776,6 +1787,7 @@ describe('Tethers - addTether / updateTether / removeTether', () => {
       sourceId: 'boss',
       targetId: 'A',
       color: 'red',
+      kind: 'tether',
     });
   });
 });
@@ -1850,6 +1862,7 @@ describe('Anchors - addAnchor / updateAnchor / removeAnchor', () => {
       sourceId: 'boss',
       targetId: 'A',
       color: 'red',
+      kind: 'tether',
     });
   });
 
