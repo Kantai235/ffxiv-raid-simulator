@@ -18,6 +18,7 @@ import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import type { ChoiceQuestion, QuestionOption } from '@ffxiv-sim/shared';
 import { useSessionStore } from '@/stores/session';
+import QuestionOptionMedia from '@/components/question/QuestionOptionMedia.vue';
 
 interface Props {
   question: ChoiceQuestion;
@@ -114,7 +115,7 @@ function isLast(id: string): boolean {
             class="w-2.5 h-2.5 rounded-full bg-ffxiv-accent"
           />
         </span>
-        <span>{{ opt.label }}</span>
+        <QuestionOptionMedia :option="opt" />
       </button>
     </div>
 
@@ -146,7 +147,7 @@ function isLast(id: string): boolean {
         >
           <span v-if="isSelected(opt.id)" class="text-xs font-bold leading-none">✓</span>
         </span>
-        <span>{{ opt.label }}</span>
+        <QuestionOptionMedia :option="opt" />
       </button>
     </div>
 
@@ -159,7 +160,7 @@ function isLast(id: string): boolean {
         class="flex items-center gap-3 p-3 rounded border-2 border-ffxiv-panel bg-ffxiv-panel/30"
       >
         <span class="text-ffxiv-accent font-bold w-6 text-center">{{ idx + 1 }}</span>
-        <span class="flex-1">{{ opt.label }}</span>
+        <QuestionOptionMedia :option="opt" compact />
         <button
           type="button"
           :data-testid="`move-up-${opt.id}`"

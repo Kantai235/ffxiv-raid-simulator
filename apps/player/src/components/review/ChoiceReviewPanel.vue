@@ -17,6 +17,7 @@
  */
 import { computed } from 'vue';
 import type { ChoiceQuestion, ChoiceRoleSolution, QuestionOption } from '@ffxiv-sim/shared';
+import QuestionOptionMedia from '@/components/question/QuestionOptionMedia.vue';
 
 interface Props {
   question: ChoiceQuestion;
@@ -66,18 +67,16 @@ const missedIds = computed(() => {
 /** 顯示「玩家答」清單的 label - 排序題保留順序，其他題型用原始 options 順序 */
 const playerDisplayItems = computed(() => {
   if (props.question.type === 'ordering') {
-    return props.playerSelectedIds.map((id) => ({ id, label: optionMap.value[id]?.label ?? id }));
+    return props.playerSelectedIds.map((id) => optionMap.value[id] ?? { id, label: id });
   }
   // 單/多選：依原始 options 順序顯示玩家選了哪些（避免每次顯示順序跳動）
   const selectedSet = new Set(props.playerSelectedIds);
-  return props.question.options
-    .filter((o) => selectedSet.has(o.id))
-    .map((o) => ({ id: o.id, label: o.label }));
+  return props.question.options.filter((o) => selectedSet.has(o.id));
 });
 
 /** 顯示「正解」清單 - 排序題保留順序 */
 const correctDisplayItems = computed(() =>
-  correctIds.value.map((id) => ({ id, label: optionMap.value[id]?.label ?? id })),
+  correctIds.value.map((id) => optionMap.value[id] ?? { id, label: id }),
 );
 
 const isOrdering = computed(() => props.question.type === 'ordering');
@@ -114,7 +113,7 @@ const isOrdering = computed(() => props.question.type === 'ordering');
           "
         >
           <span v-if="isOrdering" class="font-bold w-5 text-center">{{ idx + 1 }}.</span>
-          <span class="flex-1">{{ item.label }}</span>
+          <QuestionOptionMedia :option="item" compact />
           <span class="text-xs">
             {{ isPlayerOptionWrong(item.id, idx) ? '✕' : '✓' }}
           </span>
@@ -141,7 +140,7 @@ const isOrdering = computed(() => props.question.type === 'ordering');
           class="p-2 rounded border-2 border-green-500 bg-green-500/10 text-green-300 flex items-center gap-2"
         >
           <span v-if="isOrdering" class="font-bold w-5 text-center">{{ idx + 1 }}.</span>
-          <span class="flex-1">{{ item.label }}</span>
+          <QuestionOptionMedia :option="item" compact />
         </li>
       </component>
     </section>

@@ -196,6 +196,16 @@ export interface QuestionReferenceImage {
 export interface QuestionOption {
   id: string;
   label: string;
+  /**
+   * 選項圖片（選填）。
+   *
+   * 用途：某些攻略題的辨識核心在「看哪張圖才是正解」，例如多個站位圖、
+   * 場地破壞圖樣或引導順序圖。讓選項本身可帶圖，比把所有圖都塞進
+   * referenceImages 再用文字選項描述，更接近實際攻略閱讀方式。
+   */
+  imageSrc?: string;
+  /** 選項圖片替代文字（選填）。 */
+  imageAlt?: string;
 }
 
 // ========================================================================

@@ -836,17 +836,20 @@ export const useEditorStore = defineStore('editor', () => {
   }
 
   /**
-   * 更新某個 option 的 label。
+   * 更新某個 option 的欄位。
    * 不存在則 no-op。
    */
-  function updateQuestionOption(optionId: string, label: string): void {
+  function updateQuestionOption(
+    optionId: string,
+    patch: Partial<Omit<QuestionOption, 'id'>>,
+  ): void {
     const q = selectedQuestion.value;
     if (!q || q.type === 'map-click') return;
     const opts = (q as ChoiceQuestion).options;
     const idx = opts.findIndex((o) => o.id === optionId);
     if (idx === -1) return;
     const nextOpts = [...opts];
-    nextOpts[idx] = { ...opts[idx], label };
+    nextOpts[idx] = { ...opts[idx], ...patch };
     updateQuestion(q.id, { options: nextOpts } as Partial<Question>);
   }
 
@@ -972,14 +975,15 @@ export const useEditorStore = defineStore('editor', () => {
   }
 
   /**
-   * 上傳題目參考圖片，回傳可寫入 `question.referenceImages[].src` 的相對路徑。
+   * 上傳題目圖片，回傳可寫入 `question.referenceImages[].src` 或
+   * `question.options[].imageSrc` 的相對路徑。
    *
-   * 與背景圖分開處理，讓題目輔助圖與場地素材分資料夾管理，也方便後續做
-   * 題目專屬的預覽或清理流程。
+   * 與背景圖分開處理，讓題目輔助圖、圖文選項素材與場地素材分資料夾管理，
+   * 也方便後續做題目專屬的預覽或清理流程。
    */
-  async function uploadQuestionReferenceImageAsset(file: File): Promise<string | null> {
+  async function uploadQuestionImageAsset(file: File): Promise<string | null> {
     if (!dataset.value) {
-      error.value = '尚未載入任何 dataset，無法上傳題目參考圖片';
+      error.value = '尚未載入任何 dataset，無法上傳題目圖片';
       return null;
     }
     isUploadingImage.value = true;
@@ -988,7 +992,7 @@ export const useEditorStore = defineStore('editor', () => {
       const { path } = await uploadQuestionImage(file);
       return path;
     } catch (err) {
-      error.value = err instanceof Error ? err.message : '上傳題目參考圖片失敗';
+      error.value = err instanceof Error ? err.message : '上傳題目圖片失敗';
       return null;
     } finally {
       isUploadingImage.value = false;
@@ -1545,7 +1549,7 @@ export const useEditorStore = defineStore('editor', () => {
     updateArena,
     setBackgroundImage,
     uploadAndSetBackground,
-    uploadQuestionReferenceImageAsset,
+    uploadQuestionImageAsset,
     addArenaLine,
     removeArenaLine,
     updateArenaLine,

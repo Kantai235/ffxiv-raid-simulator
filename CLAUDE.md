@@ -101,6 +101,11 @@
   - `src` 可為 `assets/questions/...` 本地素材或外部 URL；`alt` / `caption` / `sourceUrl` / `sourceLabel` 為選填說明欄位
   - Player 在作答頁與 Review 頁都會顯示；圖片載入失敗只顯示 Placeholder，不影響作答與判定
   - Editor 可直接貼 URL，本機模式可透過 `/api/upload-question-image` 寫入 `apps/player/public/assets/questions/`
+- **圖文選項（`Question.options[].imageSrc`）**：
+  - `QuestionOption.imageSrc?` / `imageAlt?` 讓單選、多選、排序題可直接把攻略圖做成選項本體，而不只是在題目上方放參考圖
+  - `label` 仍是判定與回顧的主要文字；圖片只做輔助顯示，不改變既有 `correctOptionIds` 比對邏輯
+  - Player 的作答頁與 Review 頁都顯示圖文選項；圖片載入失敗時會以 Placeholder 取代，不可讓整題崩潰
+  - Editor 選項面板可直接編輯 `imageSrc` / `imageAlt`，並重用 `/api/upload-question-image` 上傳至 `apps/player/public/assets/questions/`
 - **動態場地破壞（arena.grid + Question.arenaMask）**：
   - `Arena.grid?: { rows, cols }` 副本層共用設定
   - `Question.arenaMask?: number[]` 此題破碎的格 index

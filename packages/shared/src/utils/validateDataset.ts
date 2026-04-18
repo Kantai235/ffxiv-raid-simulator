@@ -165,6 +165,7 @@ export function assertValidInstanceDataset(
         `questions[${i}].strategyId 必須為非空字串（題目須綁定攻略組）`,
       );
     }
+    assertValidChoiceOptions(q, i);
     assertValidQuestionExtensions(q, i, gridSize);
   }
 }
@@ -201,6 +202,58 @@ function extractGridSize(
     cols: cols as number,
     total: (rows as number) * (cols as number),
   };
+}
+
+/**
+ * 驗證 choice 系列題目的 options 結構。
+ *
+ * Why 獨立成小函式：
+ *   題庫逐漸加入圖文選項後，options 不再只是 id/label 的扁平字串列表；
+ *   若不在 shared validator 擋住空字串或型別錯誤，Player / Editor 端很容易在
+ *   顯示圖片時才於執行期爆炸。這裡先把「結構合法」守住，讓前台只需專心處理
+ *   圖片載入失敗的優雅降級。
+ */
+function assertValidChoiceOptions(q: Record<string, unknown>, idx: number): void {
+  if (q.type === 'map-click' || q.options === undefined) return;
+  if (!Array.isArray(q.options)) {
+    throw new DatasetValidationError('parse', `questions[${idx}].options 必須為陣列`);
+  }
+
+  for (let j = 0; j < q.options.length; j++) {
+    const option = q.options[j];
+    if (!isPlainObject(option)) {
+      throw new DatasetValidationError(
+        'parse',
+        `questions[${idx}].options[${j}] 必須為物件`,
+      );
+    }
+    if (typeof option.id !== 'string' || !option.id.trim()) {
+      throw new DatasetValidationError(
+        'parse',
+        `questions[${idx}].options[${j}].id 必須為非空字串`,
+      );
+    }
+    if (typeof option.label !== 'string' || !option.label.trim()) {
+      throw new DatasetValidationError(
+        'parse',
+        `questions[${idx}].options[${j}].label 必須為非空字串`,
+      );
+    }
+    if (option.imageSrc !== undefined) {
+      if (typeof option.imageSrc !== 'string' || !option.imageSrc.trim()) {
+        throw new DatasetValidationError(
+          'parse',
+          `questions[${idx}].options[${j}].imageSrc 必須為非空字串`,
+        );
+      }
+    }
+    if (option.imageAlt !== undefined && typeof option.imageAlt !== 'string') {
+      throw new DatasetValidationError(
+        'parse',
+        `questions[${idx}].options[${j}].imageAlt 必須為字串`,
+      );
+    }
+  }
 }
 
 /**

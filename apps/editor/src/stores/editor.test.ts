@@ -482,7 +482,7 @@ describe('uploadAndSetBackground', () => {
   });
 });
 
-describe('uploadQuestionReferenceImageAsset', () => {
+describe('uploadQuestionImageAsset', () => {
   function makeFakeFile(): File {
     return {
       type: 'image/png',
@@ -490,7 +490,7 @@ describe('uploadQuestionReferenceImageAsset', () => {
     } as unknown as File;
   }
 
-  it('上傳成功時回傳可寫入 referenceImages 的相對路徑', async () => {
+  it('上傳成功時回傳可寫入題目圖片欄位的相對路徑', async () => {
     vi.spyOn(api, 'readDataset').mockResolvedValue(makeDataset());
     vi.spyOn(api, 'uploadQuestionImage').mockResolvedValue({
       path: 'assets/questions/m1s/reference.png',
@@ -498,7 +498,7 @@ describe('uploadQuestionReferenceImageAsset', () => {
     const store = useEditorStore();
     await store.loadDataset('m1s.json');
 
-    const path = await store.uploadQuestionReferenceImageAsset(makeFakeFile());
+    const path = await store.uploadQuestionImageAsset(makeFakeFile());
 
     expect(path).toBe('assets/questions/m1s/reference.png');
     expect(store.isUploadingImage).toBe(false);
@@ -508,7 +508,7 @@ describe('uploadQuestionReferenceImageAsset', () => {
   it('未載入 dataset 時回傳 null 並寫入錯誤訊息', async () => {
     const store = useEditorStore();
 
-    const path = await store.uploadQuestionReferenceImageAsset(makeFakeFile());
+    const path = await store.uploadQuestionImageAsset(makeFakeFile());
 
     expect(path).toBeNull();
     expect(store.error).toContain('尚未載入任何 dataset');
@@ -1300,14 +1300,22 @@ describe('Question Options CRUD', () => {
     expect(store.addQuestionOption('x')).toBeNull();
   });
 
-  it('updateQuestionOption 更新 label', async () => {
+  it('updateQuestionOption 更新 label 與圖片欄位', async () => {
     const store = useEditorStore();
     await store.loadDataset('m1s.json');
     store.selectQuestion('q1');
     const opts = (store.dataset!.questions[1] as ChoiceQuestion).options;
     const targetId = opts[0].id;
-    store.updateQuestionOption(targetId, '新 label');
-    expect((store.dataset!.questions[1] as ChoiceQuestion).options[0].label).toBe('新 label');
+    store.updateQuestionOption(targetId, {
+      label: '新 label',
+      imageSrc: 'assets/questions/m4s-1/option-a.png',
+      imageAlt: 'A 圖',
+    });
+    expect((store.dataset!.questions[1] as ChoiceQuestion).options[0]).toMatchObject({
+      label: '新 label',
+      imageSrc: 'assets/questions/m4s-1/option-a.png',
+      imageAlt: 'A 圖',
+    });
   });
 
   it('removeQuestionOption → 移除 + 連動清掉所有職能 correctOptionIds 中此 id', async () => {

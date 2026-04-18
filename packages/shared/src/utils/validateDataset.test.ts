@@ -379,6 +379,47 @@ describe('Question.referenceImages 驗證', () => {
   });
 });
 
+describe('Question.options 驗證', () => {
+  it('接受帶圖片欄位的合法 option', () => {
+    const d = makeDatasetWithQuestion({
+      type: 'single-choice',
+      options: [
+        {
+          id: 'opt-1',
+          label: '看 A 圖處理',
+          imageSrc: 'assets/questions/m4s-1/option-a.png',
+          imageAlt: 'A 圖站位示意',
+        },
+      ],
+    });
+    expect(() => assertValidInstanceDataset(d)).not.toThrow();
+  });
+
+  it('options 非陣列 → parse 錯誤', () => {
+    const d = makeDatasetWithQuestion({
+      type: 'single-choice',
+      options: {},
+    });
+    expect(() => assertValidInstanceDataset(d)).toThrow(/options/);
+  });
+
+  it('options[i].imageSrc 空字串 → parse 錯誤', () => {
+    const d = makeDatasetWithQuestion({
+      type: 'single-choice',
+      options: [{ id: 'opt-1', label: 'A', imageSrc: '   ' }],
+    });
+    expect(() => assertValidInstanceDataset(d)).toThrow(/imageSrc/);
+  });
+
+  it('options[i].imageAlt 非字串 → parse 錯誤', () => {
+    const d = makeDatasetWithQuestion({
+      type: 'single-choice',
+      options: [{ id: 'opt-1', label: 'A', imageAlt: 123 }],
+    });
+    expect(() => assertValidInstanceDataset(d)).toThrow(/imageAlt/);
+  });
+});
+
 describe('isValidInstanceDataset', () => {
   it('合法 → true', () => {
     expect(isValidInstanceDataset(makeValidDataset())).toBe(true);

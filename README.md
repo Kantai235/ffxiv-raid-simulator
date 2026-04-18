@@ -338,12 +338,12 @@ GitHub Actions workflow 位於 [`.github/workflows/deploy.yml`](./.github/workfl
 
 ```bash
 npm test                          # 全 workspace
-cd packages/shared && npm test    # shared 純函數（80 tests）
-cd apps/player && npm test        # Player stores/views/components（228 tests）
-cd apps/editor && npm test        # Editor stores/services/utils（202 tests）
+cd packages/shared && npm test    # shared 純函數（105 tests）
+cd apps/player && npm test        # Player stores/views/components（237 tests）
+cd apps/editor && npm test        # Editor stores/services/utils（207 tests）
 ```
 
-總計 500 個單元測試，涵蓋：
+總計 549 個單元測試，涵蓋：
 
 - 幾何命中判定（圓/矩形/多邊形，含邊界情境）
 - Boss-relative 座標轉換
@@ -372,3 +372,12 @@ cd apps/editor && npm test        # Editor stores/services/utils（202 tests）
 - 圖片載入失敗時會顯示替代提示，不影響答題流程。
 - Editor 可直接貼上圖片 URL，也可在本機開發模式上傳到 `apps/player/public/assets/questions/`。
 - `referenceImages[].src` 可使用相對路徑如 `assets/questions/foo.png`，也可使用外部圖片 URL。
+
+## 圖文選項
+
+選擇題與排序題的 `Question.options[]` 也可附帶圖片，適合做「看哪張站位圖正確」、「辨識哪個場地圖樣是安全區」這種更貼近攻略閱讀方式的題目。
+
+- `options[].imageSrc` 可貼 `assets/questions/...` 或外部圖片 URL。
+- `options[].imageAlt` 可補上替代文字，讓 Player 在圖片載入失敗時仍保有語意。
+- Player 的作答頁與復盤頁都會顯示圖文選項；圖片壞掉時只會顯示 Placeholder，不會影響判定。
+- Editor 的選項管理區可直接編輯圖文欄位，也能在本機模式直接上傳圖片。

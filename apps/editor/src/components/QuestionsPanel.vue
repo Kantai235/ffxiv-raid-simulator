@@ -145,6 +145,8 @@ const options = computed(() => {
 
 /** 新增選項時的暫態輸入字串 */
 const newOptionLabel = ref('');
+const optionImageInputRef = ref<HTMLInputElement | null>(null);
+const pendingOptionImageUploadId = ref<string | null>(null);
 
 function onAddOption(): void {
   const label = newOptionLabel.value.trim();
@@ -153,8 +155,15 @@ function onAddOption(): void {
   newOptionLabel.value = '';
 }
 
-function onUpdateOptionLabel(optionId: string, label: string): void {
-  store.updateQuestionOption(optionId, label);
+function onUpdateOption(
+  optionId: string,
+  patch: {
+    label?: string;
+    imageSrc?: string;
+    imageAlt?: string;
+  },
+): void {
+  store.updateQuestionOption(optionId, patch);
 }
 
 function onRemoveOption(optionId: string): void {
@@ -172,6 +181,31 @@ function isFirstOption(optionId: string): boolean {
 
 function isLastOption(optionId: string): boolean {
   return options.value[options.value.length - 1]?.id === optionId;
+}
+
+function triggerOptionImageUpload(optionId: string): void {
+  pendingOptionImageUploadId.value = optionId;
+  optionImageInputRef.value?.click();
+}
+
+async function onSelectOptionImage(event: Event): Promise<void> {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+  const optionId = pendingOptionImageUploadId.value;
+
+  if (!file || !optionId) {
+    input.value = '';
+    pendingOptionImageUploadId.value = null;
+    return;
+  }
+
+  const uploadedPath = await store.uploadQuestionImageAsset(file);
+  if (uploadedPath) {
+    onUpdateOption(optionId, { imageSrc: uploadedPath });
+  }
+
+  input.value = '';
+  pendingOptionImageUploadId.value = null;
 }
 
 // ----------------------------------------------------------------------
@@ -235,7 +269,7 @@ async function onSelectReferenceImage(event: Event): Promise<void> {
     return;
   }
 
-  const uploadedPath = await store.uploadQuestionReferenceImageAsset(file);
+  const uploadedPath = await store.uploadQuestionImageAsset(file);
   if (uploadedPath) {
     updateReferenceImage(index, { src: uploadedPath });
   }
@@ -593,46 +627,99 @@ function onRemoveTether(idx: number): void {
           <label class="text-xs text-gray-400 block mb-1">
             選項（{{ options.length }}）
           </label>
+          <p class="text-xs text-gray-500 mb-2 leading-relaxed">
+            每個選項都可只用文字，也可補上 `imageSrc` / `imageAlt` 做成圖文選項。
+          </p>
+          <input
+            ref="optionImageInputRef"
+            type="file"
+            accept="image/png,image/jpeg,image/webp,image/gif"
+            class="hidden"
+            data-testid="option-image-input"
+            @change="onSelectOptionImage"
+          />
           <ul v-if="options.length > 0" class="space-y-1 mb-2" data-testid="options-list">
             <li
               v-for="opt in options"
               :key="opt.id"
               :data-option-id="opt.id"
-              class="flex items-center gap-1 p-1.5 rounded border border-gray-700 bg-editor-bg/40"
+              class="rounded border border-gray-700 bg-editor-bg/40 p-2 space-y-2"
             >
-              <input
-                type="text"
-                :value="opt.label"
-                :data-option-label="opt.id"
-                class="flex-1 bg-transparent border border-transparent rounded px-1 py-0.5 text-xs
-                       focus:border-editor-accent focus:bg-editor-bg outline-none"
-                @change="onUpdateOptionLabel(opt.id, ($event.target as HTMLInputElement).value)"
-              />
-              <button
-                type="button"
-                :data-option-up="opt.id"
-                :disabled="isFirstOption(opt.id)"
-                class="px-1.5 py-0.5 text-xs rounded hover:bg-editor-panel/60
-                       disabled:opacity-30 disabled:cursor-not-allowed"
-                @click="onMoveOption(opt.id, 'up')"
-                title="上移"
-              >↑</button>
-              <button
-                type="button"
-                :data-option-down="opt.id"
-                :disabled="isLastOption(opt.id)"
-                class="px-1.5 py-0.5 text-xs rounded hover:bg-editor-panel/60
-                       disabled:opacity-30 disabled:cursor-not-allowed"
-                @click="onMoveOption(opt.id, 'down')"
-                title="下移"
-              >↓</button>
-              <button
-                type="button"
-                :data-option-remove="opt.id"
-                class="px-1.5 py-0.5 text-xs text-red-400 hover:bg-red-500/20 rounded"
-                @click="onRemoveOption(opt.id)"
-                title="刪除"
-              >✕</button>
+              <div class="flex items-center gap-1">
+                <input
+                  type="text"
+                  :value="opt.label"
+                  :data-option-label="opt.id"
+                  class="flex-1 bg-transparent border border-transparent rounded px-1 py-0.5 text-xs
+                         focus:border-editor-accent focus:bg-editor-bg outline-none"
+                  @change="
+                    onUpdateOption(opt.id, {
+                      label: ($event.target as HTMLInputElement).value,
+                    })
+                  "
+                />
+                <button
+                  type="button"
+                  :data-option-up="opt.id"
+                  :disabled="isFirstOption(opt.id)"
+                  class="px-1.5 py-0.5 text-xs rounded hover:bg-editor-panel/60
+                         disabled:opacity-30 disabled:cursor-not-allowed"
+                  @click="onMoveOption(opt.id, 'up')"
+                  title="上移"
+                >↑</button>
+                <button
+                  type="button"
+                  :data-option-down="opt.id"
+                  :disabled="isLastOption(opt.id)"
+                  class="px-1.5 py-0.5 text-xs rounded hover:bg-editor-panel/60
+                         disabled:opacity-30 disabled:cursor-not-allowed"
+                  @click="onMoveOption(opt.id, 'down')"
+                  title="下移"
+                >↓</button>
+                <button
+                  type="button"
+                  :data-option-remove="opt.id"
+                  class="px-1.5 py-0.5 text-xs text-red-400 hover:bg-red-500/20 rounded"
+                  @click="onRemoveOption(opt.id)"
+                  title="刪除"
+                >✕</button>
+              </div>
+
+              <div class="grid gap-2 md:grid-cols-[2fr_1fr_auto]">
+                <input
+                  type="text"
+                  :value="opt.imageSrc ?? ''"
+                  :data-option-image-src="opt.id"
+                  placeholder="選項圖片路徑或 URL（選填）"
+                  class="bg-editor-bg border border-gray-600 rounded px-2 py-1 text-xs"
+                  @change="
+                    onUpdateOption(opt.id, {
+                      imageSrc: ($event.target as HTMLInputElement).value || undefined,
+                    })
+                  "
+                />
+                <input
+                  type="text"
+                  :value="opt.imageAlt ?? ''"
+                  :data-option-image-alt="opt.id"
+                  placeholder="圖片替代文字（選填）"
+                  class="bg-editor-bg border border-gray-600 rounded px-2 py-1 text-xs"
+                  @change="
+                    onUpdateOption(opt.id, {
+                      imageAlt: ($event.target as HTMLInputElement).value || undefined,
+                    })
+                  "
+                />
+                <button
+                  v-if="isLocalApiAvailable"
+                  type="button"
+                  :data-option-image-upload="opt.id"
+                  class="px-2 py-1 text-xs bg-editor-bg hover:bg-editor-panel/60 rounded whitespace-nowrap"
+                  @click="triggerOptionImageUpload(opt.id)"
+                >
+                  上傳圖片
+                </button>
+              </div>
             </li>
           </ul>
 
