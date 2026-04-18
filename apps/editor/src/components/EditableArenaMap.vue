@@ -67,7 +67,15 @@ import type {
   Tether,
   WaymarkId,
 } from '@ffxiv-sim/shared';
-import { ROLE_IDS, WAYMARK_COLOR, WAYMARK_IDS, facingToCssRotation } from '@ffxiv-sim/shared';
+import {
+  ROLE_IDS,
+  WAYMARK_COLOR,
+  WAYMARK_IDS,
+  facingToCssRotation,
+  getTetherEndIconRotation,
+  resolveTetherKind,
+  resolveTetherShowEndIcon,
+} from '@ffxiv-sim/shared';
 import { useEditorStore } from '@/stores/editor';
 import {
   calculateRadius,
@@ -523,28 +531,6 @@ const endIconHref = computed(() => {
 });
 
 /**
- * Tether kind / showEndIcon 預設 fallback - 與 player 同套規則。
- */
-function effectiveTetherKind(t: Tether): 'tether' | 'movement' {
-  return t.kind ?? 'tether';
-}
-function effectiveTetherShowIcon(t: Tether): boolean {
-  if (t.showEndIcon !== undefined) return t.showEndIcon;
-  return effectiveTetherKind(t) === 'movement';
-}
-
-/**
- * 計算「從 start 指向 end」的 CSS rotation 角度（度）。
- * 公式同 player ArenaMap：atan2(dx, -dy) → deg。素材正面朝北（與 boss-marker 一致）。
- */
-function tetherIconRotation(start: Point2D, end: Point2D): number {
-  const dx = end.x - start.x;
-  const dy = end.y - start.y;
-  if (dx === 0 && dy === 0) return 0;
-  return (Math.atan2(dx, -dy) * 180) / Math.PI;
-}
-
-/**
  * 可渲染的連線資料 - 過濾任一端無法解析者。
  *
  * Phase 3.6 擴充：附帶 kind / showIcon / iconRotation。
@@ -559,8 +545,8 @@ const renderableTethers = computed(() =>
       const src = resolveEntityPosition(t.sourceId);
       const tgt = resolveEntityPosition(t.targetId);
       if (!src || !tgt) return null;
-      const kind = effectiveTetherKind(t);
-      const showIcon = effectiveTetherShowIcon(t);
+      const kind = resolveTetherKind(t);
+      const showIcon = resolveTetherShowEndIcon(t);
       return {
         key: `${idx}-${t.sourceId}-${t.targetId}`,
         x1: src.x,
@@ -570,7 +556,7 @@ const renderableTethers = computed(() =>
         color: TETHER_COLOR_MAP[t.color],
         kind,
         showIcon,
-        iconRotation: tetherIconRotation(src, tgt),
+        iconRotation: getTetherEndIconRotation(src, tgt),
         isRoleEndpoint: isRoleId(t.sourceId) || isRoleId(t.targetId),
       };
     })

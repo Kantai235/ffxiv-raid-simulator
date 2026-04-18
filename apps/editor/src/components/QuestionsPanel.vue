@@ -10,7 +10,12 @@
 import { computed, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import type { ChoiceQuestion, QuestionType, Tether } from '@ffxiv-sim/shared';
-import { ROLE_IDS, WAYMARK_IDS } from '@ffxiv-sim/shared';
+import {
+  ROLE_IDS,
+  WAYMARK_IDS,
+  resolveTetherKind,
+  resolveTetherShowEndIcon,
+} from '@ffxiv-sim/shared';
 import { useEditorStore, type QuestionSubMode } from '@/stores/editor';
 
 const store = useEditorStore();
@@ -328,21 +333,6 @@ function onUpdateTether(idx: number, updates: Partial<Tether>): void {
 
 function onRemoveTether(idx: number): void {
   store.removeTether(idx);
-}
-
-/** kind 預設 fallback - 與 schema/Tether 註解保持一致 */
-function effectiveKind(t: Tether): 'tether' | 'movement' {
-  return t.kind ?? 'tether';
-}
-
-/**
- * showEndIcon 的 effective 值 - schema 預設行為：
- *   - 未明確指定 → kind=movement 預設 true、tether 預設 false
- *   - 明確指定 → 直接用該值
- */
-function effectiveShowEndIcon(t: Tether): boolean {
-  if (t.showEndIcon !== undefined) return t.showEndIcon;
-  return effectiveKind(t) === 'movement';
 }
 </script>
 
@@ -854,7 +844,7 @@ function effectiveShowEndIcon(t: Tether): boolean {
             <div class="flex items-center gap-2">
               <label class="text-xs text-gray-500">種類</label>
               <select
-                :value="effectiveKind(t)"
+                :value="resolveTetherKind(t)"
                 :data-tether-kind="idx"
                 class="flex-1 bg-editor-bg border border-gray-600 rounded px-2 py-1 text-xs"
                 @change="onUpdateTether(idx, { kind: ($event.target as HTMLSelectElement).value as 'tether' | 'movement' })"
@@ -868,7 +858,7 @@ function effectiveShowEndIcon(t: Tether): boolean {
             <label class="flex items-center gap-2 text-xs text-gray-500">
               <input
                 type="checkbox"
-                :checked="effectiveShowEndIcon(t)"
+                :checked="resolveTetherShowEndIcon(t)"
                 :data-tether-show-end-icon="idx"
                 class="cursor-pointer"
                 @change="onUpdateTether(idx, { showEndIcon: ($event.target as HTMLInputElement).checked })"

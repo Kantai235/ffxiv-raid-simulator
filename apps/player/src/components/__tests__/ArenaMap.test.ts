@@ -47,9 +47,7 @@ function stubSvgRect(
 }
 
 describe('ArenaMap - 模式差異', () => {
-  const safeAreas: SafeArea[] = [
-    { shape: 'circle', center: { x: 500, y: 500 }, radius: 100 },
-  ];
+  const safeAreas: SafeArea[] = [{ shape: 'circle', center: { x: 500, y: 500 }, radius: 100 }];
 
   it('readonly 模式：不應渲染安全區，cursor 不應為 crosshair', () => {
     const wrapper = mount(ArenaMap, {
@@ -453,6 +451,48 @@ describe('ArenaMap - 連線（tethers）', () => {
       },
     });
     expect(wrapper.find('[data-layer="tethers"]').findAll('line')).toHaveLength(1);
+  });
+
+  it('kind=movement 未明示 showEndIcon 時，會套用移動樣式並顯示終點箭頭', () => {
+    const wrapper = mount(ArenaMap, {
+      props: {
+        mode: 'readonly',
+        arena: mockArena,
+        bossFacing: 0,
+        waymarks: { A: { x: 700, y: 300 } },
+        tethers: [{ sourceId: 'boss', targetId: 'A', color: 'yellow', kind: 'movement' }],
+      },
+    });
+
+    const line = wrapper.find('[data-layer="tethers"] line');
+    const icon = wrapper.find('[data-tether-end-icon="true"]');
+
+    expect(line.attributes('stroke-width')).toBe('5');
+    expect(line.attributes('stroke-dasharray')).toBe('14 4');
+    expect(icon.exists()).toBe(true);
+    expect(icon.attributes('transform')).toBe('rotate(45 700 300)');
+  });
+
+  it('showEndIcon=false 會覆蓋 movement 的預設箭頭', () => {
+    const wrapper = mount(ArenaMap, {
+      props: {
+        mode: 'readonly',
+        arena: mockArena,
+        bossFacing: 0,
+        waymarks: { A: { x: 700, y: 300 } },
+        tethers: [
+          {
+            sourceId: 'boss',
+            targetId: 'A',
+            color: 'yellow',
+            kind: 'movement',
+            showEndIcon: false,
+          },
+        ],
+      },
+    });
+
+    expect(wrapper.find('[data-tether-end-icon="true"]').exists()).toBe(false);
   });
 
   it('任一端 ID 無法解析 → 該條 tether 被過濾不渲染（優雅降級）', () => {

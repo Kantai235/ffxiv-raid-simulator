@@ -48,7 +48,14 @@ import type {
   Tether,
   WaymarkId,
 } from '@ffxiv-sim/shared';
-import { WAYMARK_COLOR, WAYMARK_IDS, facingToCssRotation } from '@ffxiv-sim/shared';
+import {
+  WAYMARK_COLOR,
+  WAYMARK_IDS,
+  facingToCssRotation,
+  getTetherEndIconRotation,
+  resolveTetherKind,
+  resolveTetherShowEndIcon,
+} from '@ffxiv-sim/shared';
 
 type ArenaMapMode = 'interactive' | 'review' | 'readonly';
 
@@ -370,35 +377,6 @@ const END_ICON_HREF = 'assets/icons/arrow-end.png';
 const END_ICON_SIZE = 40; // 邏輯單位
 
 /**
- * 計算「從 start 指向 end」的 CSS rotation 角度（度）。
- *
- * 數學極座標 atan2 給的是「東 0°、逆時針正」；本專案 facing 採「北 0°、順時針正」，
- * 與 boss-marker 一致 - 所以箭頭素材設計成朝北、套這套換算公式即可指對方向。
- *
- * 公式推導：
- *   螢幕座標 dx = end.x - start.x、dy = end.y - start.y（y 軸向下）
- *   想讓素材的「北方」對齊向量方向 → 旋轉角 = atan2(dx, -dy)（rad），轉度。
- */
-function tetherIconRotation(start: { x: number; y: number }, end: { x: number; y: number }): number {
-  const dx = end.x - start.x;
-  const dy = end.y - start.y;
-  if (dx === 0 && dy === 0) return 0;
-  return (Math.atan2(dx, -dy) * 180) / Math.PI;
-}
-
-/**
- * 推導 tether 的 effective kind / showEndIcon（schema 預設 fallback）。
- * 與 editor QuestionsPanel 的 effectiveKind / effectiveShowEndIcon 同邏輯。
- */
-function effectiveTetherKind(t: Tether): 'tether' | 'movement' {
-  return t.kind ?? 'tether';
-}
-function effectiveTetherShowIcon(t: Tether): boolean {
-  if (t.showEndIcon !== undefined) return t.showEndIcon;
-  return effectiveTetherKind(t) === 'movement';
-}
-
-/**
  * 可渲染的連線列表 - 過濾掉任一端無法解析的條目。
  *
  * Phase 3.6 擴充：附帶 kind / showEndIcon / iconRotation，view 層依此切換樣式：
@@ -411,8 +389,8 @@ const renderableTethers = computed(() =>
       const src = resolveEntityPosition(t.sourceId);
       const tgt = resolveEntityPosition(t.targetId);
       if (!src || !tgt) return null;
-      const kind = effectiveTetherKind(t);
-      const showIcon = effectiveTetherShowIcon(t);
+      const kind = resolveTetherKind(t);
+      const showIcon = resolveTetherShowEndIcon(t);
       return {
         key: `${idx}-${t.sourceId}-${t.targetId}`,
         x1: src.x,
@@ -422,7 +400,7 @@ const renderableTethers = computed(() =>
         color: TETHER_COLOR_MAP[t.color],
         kind,
         showIcon,
-        iconRotation: tetherIconRotation(src, tgt),
+        iconRotation: getTetherEndIconRotation(src, tgt),
       };
     })
     .filter((t): t is NonNullable<typeof t> => t !== null),
