@@ -317,6 +317,7 @@ Editor 會在啟動時自動探測環境（fetch `/api/dataset/list` 測試）�
 4. 開發者 `git diff` 確認後 commit
 5. Push 到 `main` 分支 → GitHub Actions 自動執行測試 + build + 部署到 GitHub Pages
 6. 玩家前台啟動時先 fetch `assets/data/index.json` 取副本列表，選定後懶載入對應副本 JSON
+7. Player 的 dataset 載入層固定使用 `fetch(..., { cache: 'no-store' })`，避免 GitHub Pages 對 JSON 的 10 分鐘快取讓剛部署的新題庫延遲出現在 Setup 畫面
 
 ---
 
@@ -327,6 +328,7 @@ GitHub Actions workflow 位於 [`.github/workflows/deploy.yml`](./.github/workfl
 - **觸發**：push 到 `main` 分支
 - **流程**：install → test（跑全 workspace）→ build:player → 部署到 GitHub Pages
 - **只部署 Player**：Editor 工具含寫檔 API，僅限本機使用
+- **題庫快取策略**：GitHub Pages 會替 `index.json` / 各副本 JSON 回 `Cache-Control: max-age=600`，Player 前台因此在 fetch 題庫時一律指定 `cache: 'no-store'`，避免部署完成後 Setup 還停留在舊副本列表
 
 若要啟用 Pages 部署，需在 repo Settings → Pages → Source 選「GitHub Actions」。
 首次使用前，請將 [`apps/player/vite.config.ts`](./apps/player/vite.config.ts) 中的 `VITE_BASE_PATH`

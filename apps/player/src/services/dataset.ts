@@ -93,11 +93,17 @@ function resolveInstancePath(dataPath: string): string {
  *
  * 注意：此函數不驗證資料 shape，shape 驗證由呼叫端（檢查 schemaVersion）負責。
  *      Why: shape validation 屬於業務邏輯，與「能否成功讀到 JSON」是兩件事。
+ *
+ * 快取策略：
+ *   GitHub Pages / Fastly 對靜態檔預設會回 `Cache-Control: max-age=600`。
+ *   若使用瀏覽器預設快取，部署後的前 10 分鐘內可能仍拿到舊版 index.json /
+ *   副本 JSON，造成「Action 已完成，但 Setup 還只看到舊題庫」的假象。
+ *   因此這裡明確使用 `cache: 'no-store'`，每次都向網路取最新題庫。
  */
 async function safeFetchJson<T>(path: string): Promise<T> {
   let response: Response;
   try {
-    response = await fetch(path);
+    response = await fetch(path, { cache: 'no-store' });
   } catch (cause) {
     throw new DatasetLoadError(
       'network',

@@ -57,6 +57,10 @@ describe('fetchIndex', () => {
 
     const result = await fetchIndex();
     expect(result).toEqual(mockIndex);
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining('assets/data/index.json'),
+      { cache: 'no-store' },
+    );
   });
 
   it('網路錯誤 → 拋出 DatasetLoadError reason=network', async () => {
@@ -125,6 +129,10 @@ describe('fetchInstanceData', () => {
 
     const result = await fetchInstanceData(validEntry);
     expect(result).toEqual(mockData);
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining('assets/data/m1s.json'),
+      { cache: 'no-store' },
+    );
   });
 
   it('index 宣告版本不相容 → 不應發出 fetch（預檢擋下）', async () => {
