@@ -307,6 +307,49 @@
       ]
     },
     {
+      "id": "m4s-2-game8-q06b",
+      "instanceId": "m4s-2",
+      "strategyId": "m4s-2-game8",
+      "name": "P2 - 火焰斬 + 劍雨（先分左右，再進自己的塔）",
+      "phase": 3,
+      "order": 6.5,
+      "boss": {
+        "skillName": "火焰斬 + 劍雨",
+        "castTime": 8,
+        "facing": 0
+      },
+      "type": "map-click",
+      "clickCount": 2,
+      "roleSolutions": {
+        "MT": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 250, "y": 110, "width": 200, "height": 780 }, { "shape": "circle", "center": { "x": 380, "y": 220 }, "radius": 70 }], "note": "先被火焰斬分到左側待命，再依劍雨巨集進最上方的 MT 塔。" },
+        "ST": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 550, "y": 110, "width": 200, "height": 780 }, { "shape": "circle", "center": { "x": 620, "y": 220 }, "radius": 70 }], "note": "先被火焰斬分到右側待命，再依劍雨巨集進最上方的 ST 塔。" },
+        "H1": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 250, "y": 110, "width": 200, "height": 780 }, { "shape": "circle", "center": { "x": 380, "y": 620 }, "radius": 70 }], "note": "先進左側半場，等劍雨出塔後再往第 3 座 H1 塔移動。" },
+        "H2": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 550, "y": 110, "width": 200, "height": 780 }, { "shape": "circle", "center": { "x": 620, "y": 620 }, "radius": 70 }], "note": "先進右側半場，等劍雨出塔後再往第 3 座 H2 塔移動。" },
+        "D1": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 250, "y": 110, "width": 200, "height": 780 }, { "shape": "circle", "center": { "x": 380, "y": 420 }, "radius": 70 }], "note": "先進左側半場，等劍雨出塔後再往第 2 座 D1 塔移動。" },
+        "D2": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 550, "y": 110, "width": 200, "height": 780 }, { "shape": "circle", "center": { "x": 620, "y": 420 }, "radius": 70 }], "note": "先進右側半場，等劍雨出塔後再往第 2 座 D2 塔移動。" },
+        "D3": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 250, "y": 110, "width": 200, "height": 780 }, { "shape": "circle", "center": { "x": 380, "y": 820 }, "radius": 70 }], "note": "先進左側半場，等劍雨出塔後再往最下方的 D3 塔移動。" },
+        "D4": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 550, "y": 110, "width": 200, "height": 780 }, { "shape": "circle", "center": { "x": 620, "y": 820 }, "radius": 70 }], "note": "先進右側半場，等劍雨出塔後再往最下方的 D4 塔移動。" }
+      },
+      "referenceImages": [
+        {
+          "id": "m4s-2-game8-q06b-ref-1",
+          "src": "assets/questions/m4s-2/fire-slash-1.png",
+          "alt": "火焰斬把場地分成左右兩半",
+          "caption": "火焰斬先把隊伍切成左 MT 組、右 ST 組，所以第一步要先回到正確半場。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m4s-2/",
+          "sourceLabel": "M4S 後半攻略"
+        },
+        {
+          "id": "m4s-2-game8-q06b-ref-2",
+          "src": "assets/questions/m4s-2/fire-slash-2.png",
+          "alt": "劍雨左右各四座塔",
+          "caption": "第二步才是依巨集由上到下進塔，剛好很適合用 2 段走位題練習。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m4s-2/",
+          "sourceLabel": "M4S 後半攻略"
+        }
+      ]
+    },
+    {
       "id": "m4s-2-game8-q07",
       "instanceId": "m4s-2",
       "strategyId": "m4s-2-game8",
