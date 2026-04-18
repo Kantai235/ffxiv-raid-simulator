@@ -1,0 +1,455 @@
+{
+  "schemaVersion": "1.0",
+  "instance": {
+    "id": "m4s-2",
+    "name": "阿卡迪亞零式輕量級 M4S（後半）",
+    "shortName": "M4S 後半",
+    "arena": {
+      "shape": "square",
+      "backgroundImage": "assets/arenas/m4s-stage.svg",
+      "size": {
+        "width": 1000,
+        "height": 1000
+      },
+      "center": {
+        "x": 500,
+        "y": 500
+      },
+      "lines": []
+    },
+    "tags": [
+      "零式",
+      "輕量級",
+      "7.x"
+    ]
+  },
+  "strategies": [
+    {
+      "id": "m4s-2-game8",
+      "instanceId": "m4s-2",
+      "name": "Game8 攻略（後半）",
+      "author": "Game8",
+      "description": "以後半的狡詭特技、黑色安息日、火焰斬、雷光鏈、日出與劍舞整理成可練的判讀題組。",
+      "waymarks": {
+        "A": { "x": 500, "y": 130 },
+        "B": { "x": 870, "y": 500 },
+        "C": { "x": 500, "y": 870 },
+        "D": { "x": 130, "y": 500 },
+        "1": { "x": 770, "y": 230 },
+        "2": { "x": 770, "y": 770 },
+        "3": { "x": 230, "y": 770 },
+        "4": { "x": 230, "y": 230 }
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "m4s-2-game8-q01",
+      "instanceId": "m4s-2",
+      "strategyId": "m4s-2-game8",
+      "name": "P2 - 狡詭特技（哪個圖例是外側安全）",
+      "phase": 1,
+      "order": 1,
+      "boss": {
+        "skillName": "狡詭特技",
+        "castTime": 8,
+        "facing": 0
+      },
+      "type": "single-choice",
+      "options": [
+        {
+          "id": "m4s-2-trick-central",
+          "label": "中央直線範圍：外側安全",
+          "imageSrc": "assets/questions/m4s-2/trick-central.jpeg",
+          "imageAlt": "中央直線範圍攻擊"
+        },
+        {
+          "id": "m4s-2-trick-sides",
+          "label": "左右直線範圍：外側安全",
+          "imageSrc": "assets/questions/m4s-2/trick-sides.jpeg",
+          "imageAlt": "左右直線範圍攻擊"
+        }
+      ],
+      "roleSolutions": {
+        "MT": { "debuffs": [], "correctOptionIds": ["m4s-2-trick-central"], "note": "狡詭特技若是中央直線，就往外側躲；左右直線時反而要站內側。" },
+        "ST": { "debuffs": [], "correctOptionIds": ["m4s-2-trick-central"], "note": "狡詭特技若是中央直線，就往外側躲；左右直線時反而要站內側。" },
+        "H1": { "debuffs": [], "correctOptionIds": ["m4s-2-trick-central"], "note": "狡詭特技若是中央直線，就往外側躲；左右直線時反而要站內側。" },
+        "H2": { "debuffs": [], "correctOptionIds": ["m4s-2-trick-central"], "note": "狡詭特技若是中央直線，就往外側躲；左右直線時反而要站內側。" },
+        "D1": { "debuffs": [], "correctOptionIds": ["m4s-2-trick-central"], "note": "狡詭特技若是中央直線，就往外側躲；左右直線時反而要站內側。" },
+        "D2": { "debuffs": [], "correctOptionIds": ["m4s-2-trick-central"], "note": "狡詭特技若是中央直線，就往外側躲；左右直線時反而要站內側。" },
+        "D3": { "debuffs": [], "correctOptionIds": ["m4s-2-trick-central"], "note": "狡詭特技若是中央直線，就往外側躲；左右直線時反而要站內側。" },
+        "D4": { "debuffs": [], "correctOptionIds": ["m4s-2-trick-central"], "note": "狡詭特技若是中央直線，就往外側躲；左右直線時反而要站內側。" }
+      }
+    },
+    {
+      "id": "m4s-2-game8-q02",
+      "instanceId": "m4s-2",
+      "strategyId": "m4s-2-game8",
+      "name": "P2 - 芥末炸彈（誰要去和坦克重疊接減益）",
+      "phase": 1,
+      "order": 2,
+      "boss": {
+        "skillName": "芥末炸彈",
+        "castTime": 8,
+        "facing": 0
+      },
+      "type": "single-choice",
+      "options": [
+        { "id": "m4s-2-mustard-untargeted", "label": "沒有被圓形範圍點名的 2 人" },
+        { "id": "m4s-2-mustard-healers", "label": "固定由 2 位補師去接" },
+        { "id": "m4s-2-mustard-dps", "label": "固定由 4 位 DPS 去接" },
+        { "id": "m4s-2-mustard-targeted", "label": "被圓形範圍點名的 4 人" }
+      ],
+      "roleSolutions": {
+        "MT": { "debuffs": [], "correctOptionIds": ["m4s-2-mustard-untargeted"], "note": "芥末炸彈要先看自己有沒有被圓形範圍點名；沒被點名的 2 人才去和坦克重疊接減益。" },
+        "ST": { "debuffs": [], "correctOptionIds": ["m4s-2-mustard-untargeted"], "note": "芥末炸彈要先看自己有沒有被圓形範圍點名；沒被點名的 2 人才去和坦克重疊接減益。" },
+        "H1": { "debuffs": [], "correctOptionIds": ["m4s-2-mustard-untargeted"], "note": "芥末炸彈要先看自己有沒有被圓形範圍點名；沒被點名的 2 人才去和坦克重疊接減益。" },
+        "H2": { "debuffs": [], "correctOptionIds": ["m4s-2-mustard-untargeted"], "note": "芥末炸彈要先看自己有沒有被圓形範圍點名；沒被點名的 2 人才去和坦克重疊接減益。" },
+        "D1": { "debuffs": [], "correctOptionIds": ["m4s-2-mustard-untargeted"], "note": "芥末炸彈要先看自己有沒有被圓形範圍點名；沒被點名的 2 人才去和坦克重疊接減益。" },
+        "D2": { "debuffs": [], "correctOptionIds": ["m4s-2-mustard-untargeted"], "note": "芥末炸彈要先看自己有沒有被圓形範圍點名；沒被點名的 2 人才去和坦克重疊接減益。" },
+        "D3": { "debuffs": [], "correctOptionIds": ["m4s-2-mustard-untargeted"], "note": "芥末炸彈要先看自己有沒有被圓形範圍點名；沒被點名的 2 人才去和坦克重疊接減益。" },
+        "D4": { "debuffs": [], "correctOptionIds": ["m4s-2-mustard-untargeted"], "note": "芥末炸彈要先看自己有沒有被圓形範圍點名；沒被點名的 2 人才去和坦克重疊接減益。" }
+      },
+      "referenceImages": [
+        {
+          "id": "m4s-2-game8-q02-ref-1",
+          "src": "assets/questions/m4s-2/mustard-1.png",
+          "alt": "芥末炸彈第一步點名示意",
+          "caption": "先確認自己是否被圓形範圍點名；沒被點名的人等等要去和坦克疊。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m4s-2/",
+          "sourceLabel": "M4S 後半攻略"
+        },
+        {
+          "id": "m4s-2-game8-q02-ref-2",
+          "src": "assets/questions/m4s-2/mustard-4.png",
+          "alt": "芥末炸彈最後接減益示意",
+          "caption": "最後由沒有被圓形範圍點到的人去和坦克重疊，完成減益傳遞。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m4s-2/",
+          "sourceLabel": "M4S 後半攻略"
+        }
+      ]
+    },
+    {
+      "id": "m4s-2-game8-q03",
+      "instanceId": "m4s-2",
+      "strategyId": "m4s-2-game8",
+      "name": "P2 - 水屬性尖尾刺（擊退起點看哪裡）",
+      "phase": 1,
+      "order": 3,
+      "boss": {
+        "skillName": "屬性變換 + 尖尾刺",
+        "castTime": 8,
+        "facing": 0
+      },
+      "type": "single-choice",
+      "options": [
+        { "id": "m4s-2-red-marker", "label": "看場地左右兩側的紅點標記" },
+        { "id": "m4s-2-boss-feet", "label": "只看 BOSS 腳邊亮點" },
+        { "id": "m4s-2-center-circle", "label": "看場中央圓環哪邊發光" },
+        { "id": "m4s-2-fire-side", "label": "只看哪邊冒火就往哪邊站" }
+      ],
+      "roleSolutions": {
+        "MT": { "debuffs": [], "correctOptionIds": ["m4s-2-red-marker"], "note": "水屬性尖尾刺的擊退飛行起點是左右紅點，不能只看觸腕特效。" },
+        "ST": { "debuffs": [], "correctOptionIds": ["m4s-2-red-marker"], "note": "水屬性尖尾刺的擊退飛行起點是左右紅點，不能只看觸腕特效。" },
+        "H1": { "debuffs": [], "correctOptionIds": ["m4s-2-red-marker"], "note": "水屬性尖尾刺的擊退飛行起點是左右紅點，不能只看觸腕特效。" },
+        "H2": { "debuffs": [], "correctOptionIds": ["m4s-2-red-marker"], "note": "水屬性尖尾刺的擊退飛行起點是左右紅點，不能只看觸腕特效。" },
+        "D1": { "debuffs": [], "correctOptionIds": ["m4s-2-red-marker"], "note": "水屬性尖尾刺的擊退飛行起點是左右紅點，不能只看觸腕特效。" },
+        "D2": { "debuffs": [], "correctOptionIds": ["m4s-2-red-marker"], "note": "水屬性尖尾刺的擊退飛行起點是左右紅點，不能只看觸腕特效。" },
+        "D3": { "debuffs": [], "correctOptionIds": ["m4s-2-red-marker"], "note": "水屬性尖尾刺的擊退飛行起點是左右紅點，不能只看觸腕特效。" },
+        "D4": { "debuffs": [], "correctOptionIds": ["m4s-2-red-marker"], "note": "水屬性尖尾刺的擊退飛行起點是左右紅點，不能只看觸腕特效。" }
+      },
+      "referenceImages": [
+        {
+          "id": "m4s-2-game8-q03-ref-1",
+          "src": "assets/questions/m4s-2/water-attribute.jpeg",
+          "alt": "水屬性附加示意",
+          "caption": "水屬性尖尾刺會依附加順序造成擊退，但實際飛行起點要看紅點。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m4s-2/",
+          "sourceLabel": "M4S 後半攻略"
+        },
+        {
+          "id": "m4s-2-game8-q03-ref-2",
+          "src": "assets/questions/m4s-2/red-marker.jpeg",
+          "alt": "水屬性擊退紅點標記",
+          "caption": "紅點標記才是水屬性擊退的真正起點，站位要以這個為準。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m4s-2/",
+          "sourceLabel": "M4S 後半攻略"
+        }
+      ]
+    },
+    {
+      "id": "m4s-2-game8-q04",
+      "instanceId": "m4s-2",
+      "strategyId": "m4s-2-game8",
+      "name": "P2 - 黑色安息日的日落（處理順序）",
+      "phase": 2,
+      "order": 4,
+      "boss": {
+        "skillName": "黑色安息日的日落",
+        "castTime": 8,
+        "facing": 0
+      },
+      "type": "ordering",
+      "options": [
+        { "id": "m4s-2-sunset-center", "label": "先在中央集合等待第一個圓形範圍" },
+        { "id": "m4s-2-sunset-first-safe", "label": "邊把圓形範圍留在中央邊移去第一組側電安全區" },
+        { "id": "m4s-2-sunset-second-check", "label": "確認剩餘兩個分身實體化後的安全區" },
+        { "id": "m4s-2-sunset-in-out", "label": "在側電安全區內再判狡詭特技是內側或外側安全" }
+      ],
+      "roleSolutions": {
+        "MT": { "debuffs": [], "correctOptionIds": ["m4s-2-sunset-center", "m4s-2-sunset-first-safe", "m4s-2-sunset-second-check", "m4s-2-sunset-in-out"], "note": "日落是先找第一組側電安全區，再在同一塊安全區內處理第二次分身與狡詭特技。" },
+        "ST": { "debuffs": [], "correctOptionIds": ["m4s-2-sunset-center", "m4s-2-sunset-first-safe", "m4s-2-sunset-second-check", "m4s-2-sunset-in-out"], "note": "日落是先找第一組側電安全區，再在同一塊安全區內處理第二次分身與狡詭特技。" },
+        "H1": { "debuffs": [], "correctOptionIds": ["m4s-2-sunset-center", "m4s-2-sunset-first-safe", "m4s-2-sunset-second-check", "m4s-2-sunset-in-out"], "note": "日落是先找第一組側電安全區，再在同一塊安全區內處理第二次分身與狡詭特技。" },
+        "H2": { "debuffs": [], "correctOptionIds": ["m4s-2-sunset-center", "m4s-2-sunset-first-safe", "m4s-2-sunset-second-check", "m4s-2-sunset-in-out"], "note": "日落是先找第一組側電安全區，再在同一塊安全區內處理第二次分身與狡詭特技。" },
+        "D1": { "debuffs": [], "correctOptionIds": ["m4s-2-sunset-center", "m4s-2-sunset-first-safe", "m4s-2-sunset-second-check", "m4s-2-sunset-in-out"], "note": "日落是先找第一組側電安全區，再在同一塊安全區內處理第二次分身與狡詭特技。" },
+        "D2": { "debuffs": [], "correctOptionIds": ["m4s-2-sunset-center", "m4s-2-sunset-first-safe", "m4s-2-sunset-second-check", "m4s-2-sunset-in-out"], "note": "日落是先找第一組側電安全區，再在同一塊安全區內處理第二次分身與狡詭特技。" },
+        "D3": { "debuffs": [], "correctOptionIds": ["m4s-2-sunset-center", "m4s-2-sunset-first-safe", "m4s-2-sunset-second-check", "m4s-2-sunset-in-out"], "note": "日落是先找第一組側電安全區，再在同一塊安全區內處理第二次分身與狡詭特技。" },
+        "D4": { "debuffs": [], "correctOptionIds": ["m4s-2-sunset-center", "m4s-2-sunset-first-safe", "m4s-2-sunset-second-check", "m4s-2-sunset-in-out"], "note": "日落是先找第一組側電安全區，再在同一塊安全區內處理第二次分身與狡詭特技。" }
+      },
+      "referenceImages": [
+        {
+          "id": "m4s-2-game8-q04-ref-1",
+          "src": "assets/questions/m4s-2/sunset-1.png",
+          "alt": "黑色安息日的日落第一步",
+          "caption": "開頭全員先在中央等圓形範圍，之後才往第一組側電安全區走。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m4s-2/",
+          "sourceLabel": "M4S 後半攻略"
+        },
+        {
+          "id": "m4s-2-game8-q04-ref-2",
+          "src": "assets/questions/m4s-2/sunset-4-out.png",
+          "alt": "黑色安息日的日落外側安全範例",
+          "caption": "第二次分身與狡詭特技會疊在一起，必須在側電安全區內再判一次內外。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m4s-2/",
+          "sourceLabel": "M4S 後半攻略"
+        }
+      ]
+    },
+    {
+      "id": "m4s-2-game8-q05",
+      "instanceId": "m4s-2",
+      "strategyId": "m4s-2-game8",
+      "name": "P2 - 黑色安息日的午夜（哪個是散集式衝擊砲）",
+      "phase": 2,
+      "order": 5,
+      "boss": {
+        "skillName": "黑色安息日的午夜 + 散集/集散式衝擊砲",
+        "castTime": 8,
+        "facing": 0
+      },
+      "type": "single-choice",
+      "options": [
+        {
+          "id": "m4s-2-scatter-stack",
+          "label": "散集式：先散開再 2 人分攤",
+          "imageSrc": "assets/questions/m4s-2/scatter-stack-3.png",
+          "imageAlt": "散集式衝擊砲圖例"
+        },
+        {
+          "id": "m4s-2-stack-scatter",
+          "label": "集散式：先 2 人分攤再散開",
+          "imageSrc": "assets/questions/m4s-2/stack-scatter-3.png",
+          "imageAlt": "集散式衝擊砲圖例"
+        }
+      ],
+      "roleSolutions": {
+        "MT": { "debuffs": [], "correctOptionIds": ["m4s-2-scatter-stack"], "note": "散集式的關鍵詞就是先散開、後分攤；集散式剛好相反。" },
+        "ST": { "debuffs": [], "correctOptionIds": ["m4s-2-scatter-stack"], "note": "散集式的關鍵詞就是先散開、後分攤；集散式剛好相反。" },
+        "H1": { "debuffs": [], "correctOptionIds": ["m4s-2-scatter-stack"], "note": "散集式的關鍵詞就是先散開、後分攤；集散式剛好相反。" },
+        "H2": { "debuffs": [], "correctOptionIds": ["m4s-2-scatter-stack"], "note": "散集式的關鍵詞就是先散開、後分攤；集散式剛好相反。" },
+        "D1": { "debuffs": [], "correctOptionIds": ["m4s-2-scatter-stack"], "note": "散集式的關鍵詞就是先散開、後分攤；集散式剛好相反。" },
+        "D2": { "debuffs": [], "correctOptionIds": ["m4s-2-scatter-stack"], "note": "散集式的關鍵詞就是先散開、後分攤；集散式剛好相反。" },
+        "D3": { "debuffs": [], "correctOptionIds": ["m4s-2-scatter-stack"], "note": "散集式的關鍵詞就是先散開、後分攤；集散式剛好相反。" },
+        "D4": { "debuffs": [], "correctOptionIds": ["m4s-2-scatter-stack"], "note": "散集式的關鍵詞就是先散開、後分攤；集散式剛好相反。" }
+      }
+    },
+    {
+      "id": "m4s-2-game8-q06",
+      "instanceId": "m4s-2",
+      "strategyId": "m4s-2-game8",
+      "name": "P2 - 火焰斬 + 劍雨（你的塔位置）",
+      "phase": 3,
+      "order": 6,
+      "boss": {
+        "skillName": "火焰斬 + 劍雨",
+        "castTime": 8,
+        "facing": 0
+      },
+      "type": "map-click",
+      "clickCount": 1,
+      "roleSolutions": {
+        "MT": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 380, "y": 220 }, "radius": 70 }], "note": "劍雨塔位是左列 MT、D1、H1、D3；右列 ST、D2、H2、D4。" },
+        "ST": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 620, "y": 220 }, "radius": 70 }], "note": "劍雨塔位是左列 MT、D1、H1、D3；右列 ST、D2、H2、D4。" },
+        "H1": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 380, "y": 620 }, "radius": 70 }], "note": "劍雨塔位是左列 MT、D1、H1、D3；右列 ST、D2、H2、D4。" },
+        "H2": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 620, "y": 620 }, "radius": 70 }], "note": "劍雨塔位是左列 MT、D1、H1、D3；右列 ST、D2、H2、D4。" },
+        "D1": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 380, "y": 420 }, "radius": 70 }], "note": "劍雨塔位是左列 MT、D1、H1、D3；右列 ST、D2、H2、D4。" },
+        "D2": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 620, "y": 420 }, "radius": 70 }], "note": "劍雨塔位是左列 MT、D1、H1、D3；右列 ST、D2、H2、D4。" },
+        "D3": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 380, "y": 820 }, "radius": 70 }], "note": "劍雨塔位是左列 MT、D1、H1、D3；右列 ST、D2、H2、D4。" },
+        "D4": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 620, "y": 820 }, "radius": 70 }], "note": "劍雨塔位是左列 MT、D1、H1、D3；右列 ST、D2、H2、D4。" }
+      },
+      "referenceImages": [
+        {
+          "id": "m4s-2-game8-q06-ref-1",
+          "src": "assets/questions/m4s-2/fire-slash-1.png",
+          "alt": "火焰斬把場地分成左右兩半",
+          "caption": "火焰斬會先把場地中央直線切開，隊伍分成左 MT 組、右 ST 組。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m4s-2/",
+          "sourceLabel": "M4S 後半攻略"
+        },
+        {
+          "id": "m4s-2-game8-q06-ref-2",
+          "src": "assets/questions/m4s-2/fire-slash-2.png",
+          "alt": "劍雨左右各四座塔",
+          "caption": "分斷後左右各 4 座塔，照巨集由上到下進塔。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m4s-2/",
+          "sourceLabel": "M4S 後半攻略"
+        }
+      ]
+    },
+    {
+      "id": "m4s-2-game8-q07",
+      "instanceId": "m4s-2",
+      "strategyId": "m4s-2-game8",
+      "name": "P2 - 雷光鏈（第一個安全區怎麼找）",
+      "phase": 3,
+      "order": 7,
+      "boss": {
+        "skillName": "雷光鏈",
+        "castTime": 8,
+        "facing": 0
+      },
+      "type": "single-choice",
+      "options": [
+        { "id": "m4s-2-chain-unlinked", "label": "先找沒有被連線的塔，該塔旁的橫向就是第一個安全區" },
+        { "id": "m4s-2-chain-first-linked", "label": "先站到第一個被連線的塔正下方等它炸" },
+        { "id": "m4s-2-chain-outside", "label": "永遠往外圈沒有人的塔後面跑" },
+        { "id": "m4s-2-chain-center", "label": "先回場中央，等第一個爆炸再決定" }
+      ],
+      "roleSolutions": {
+        "MT": { "debuffs": [], "correctOptionIds": ["m4s-2-chain-unlinked"], "note": "雷光鏈的第一個安全區，是沒有被連線的那座塔旁橫向位置。" },
+        "ST": { "debuffs": [], "correctOptionIds": ["m4s-2-chain-unlinked"], "note": "雷光鏈的第一個安全區，是沒有被連線的那座塔旁橫向位置。" },
+        "H1": { "debuffs": [], "correctOptionIds": ["m4s-2-chain-unlinked"], "note": "雷光鏈的第一個安全區，是沒有被連線的那座塔旁橫向位置。" },
+        "H2": { "debuffs": [], "correctOptionIds": ["m4s-2-chain-unlinked"], "note": "雷光鏈的第一個安全區，是沒有被連線的那座塔旁橫向位置。" },
+        "D1": { "debuffs": [], "correctOptionIds": ["m4s-2-chain-unlinked"], "note": "雷光鏈的第一個安全區，是沒有被連線的那座塔旁橫向位置。" },
+        "D2": { "debuffs": [], "correctOptionIds": ["m4s-2-chain-unlinked"], "note": "雷光鏈的第一個安全區，是沒有被連線的那座塔旁橫向位置。" },
+        "D3": { "debuffs": [], "correctOptionIds": ["m4s-2-chain-unlinked"], "note": "雷光鏈的第一個安全區，是沒有被連線的那座塔旁橫向位置。" },
+        "D4": { "debuffs": [], "correctOptionIds": ["m4s-2-chain-unlinked"], "note": "雷光鏈的第一個安全區，是沒有被連線的那座塔旁橫向位置。" }
+      },
+      "referenceImages": [
+        {
+          "id": "m4s-2-game8-q07-ref-1",
+          "src": "assets/questions/m4s-2/lightning-chain-1.png",
+          "alt": "雷光鏈第一輪連線示意",
+          "caption": "先看哪座塔完全沒有線，那一側就是第一個能站的位置。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m4s-2/",
+          "sourceLabel": "M4S 後半攻略"
+        },
+        {
+          "id": "m4s-2-game8-q07-ref-2",
+          "src": "assets/questions/m4s-2/lightning-chain-3.png",
+          "alt": "雷光鏈第一個爆炸時的安全點",
+          "caption": "第一個爆炸從被連到的塔開始，沒線塔的橫向才是安全區。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m4s-2/",
+          "sourceLabel": "M4S 後半攻略"
+        }
+      ]
+    },
+    {
+      "id": "m4s-2-game8-q08",
+      "instanceId": "m4s-2",
+      "strategyId": "m4s-2-game8",
+      "name": "P2 - 離子簇 + 黑色安息日的日出（短減益負責什麼）",
+      "phase": 4,
+      "order": 8,
+      "boss": {
+        "skillName": "離子簇 + 黑色安息日的日出",
+        "castTime": 8,
+        "facing": 0
+      },
+      "type": "single-choice",
+      "options": [
+        { "id": "m4s-2-sunrise-beam", "label": "引導光束到塔不出現的方向" },
+        { "id": "m4s-2-sunrise-tower", "label": "進入指定的 2 人塔" },
+        { "id": "m4s-2-sunrise-center", "label": "回場中央等狡詭特技" },
+        { "id": "m4s-2-sunrise-idle", "label": "只要站在原地不動" }
+      ],
+      "roleSolutions": {
+        "MT": { "debuffs": [], "correctOptionIds": ["m4s-2-sunrise-beam"], "note": "日出固定是短減益引導光束、長減益踩塔；先分清楚自己的職責。" },
+        "ST": { "debuffs": [], "correctOptionIds": ["m4s-2-sunrise-beam"], "note": "日出固定是短減益引導光束、長減益踩塔；先分清楚自己的職責。" },
+        "H1": { "debuffs": [], "correctOptionIds": ["m4s-2-sunrise-beam"], "note": "日出固定是短減益引導光束、長減益踩塔；先分清楚自己的職責。" },
+        "H2": { "debuffs": [], "correctOptionIds": ["m4s-2-sunrise-beam"], "note": "日出固定是短減益引導光束、長減益踩塔；先分清楚自己的職責。" },
+        "D1": { "debuffs": [], "correctOptionIds": ["m4s-2-sunrise-beam"], "note": "日出固定是短減益引導光束、長減益踩塔；先分清楚自己的職責。" },
+        "D2": { "debuffs": [], "correctOptionIds": ["m4s-2-sunrise-beam"], "note": "日出固定是短減益引導光束、長減益踩塔；先分清楚自己的職責。" },
+        "D3": { "debuffs": [], "correctOptionIds": ["m4s-2-sunrise-beam"], "note": "日出固定是短減益引導光束、長減益踩塔；先分清楚自己的職責。" },
+        "D4": { "debuffs": [], "correctOptionIds": ["m4s-2-sunrise-beam"], "note": "日出固定是短減益引導光束、長減益踩塔；先分清楚自己的職責。" }
+      },
+      "referenceImages": [
+        {
+          "id": "m4s-2-game8-q08-ref-1",
+          "src": "assets/questions/m4s-2/sunrise-1.png",
+          "alt": "日出第一輪短長減益分工",
+          "caption": "第 1 輪先看減益長短：短的人負責光束，長的人負責踩塔。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m4s-2/",
+          "sourceLabel": "M4S 後半攻略"
+        },
+        {
+          "id": "m4s-2-game8-q08-ref-2",
+          "src": "assets/questions/m4s-2/sunrise-4.png",
+          "alt": "日出第一輪引導與踩塔示意",
+          "caption": "短減益要把光束帶去塔不出現的方向，長減益才進塔。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m4s-2/",
+          "sourceLabel": "M4S 後半攻略"
+        },
+        {
+          "id": "m4s-2-game8-q08-ref-3",
+          "src": "assets/questions/m4s-2/sunrise-guide.jpeg",
+          "alt": "日出光束引導站位參考",
+          "caption": "日出的光束非常寬，短減益的人要先站到巨集指定引導點，不能臨時亂補。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m4s-2/",
+          "sourceLabel": "M4S 後半攻略"
+        }
+      ]
+    },
+    {
+      "id": "m4s-2-game8-q09",
+      "instanceId": "m4s-2",
+      "strategyId": "m4s-2-game8",
+      "name": "P2 - 劍舞（你的固定分攤搭檔）",
+      "phase": 4,
+      "order": 9,
+      "boss": {
+        "skillName": "劍舞",
+        "castTime": 8,
+        "facing": 0
+      },
+      "type": "single-choice",
+      "options": [
+        { "id": "m4s-2-pair-mt-d1", "label": "MT + D1" },
+        { "id": "m4s-2-pair-st-d2", "label": "ST + D2" },
+        { "id": "m4s-2-pair-h1-d3", "label": "H1 + D3" },
+        { "id": "m4s-2-pair-h2-d4", "label": "H2 + D4" }
+      ],
+      "roleSolutions": {
+        "MT": { "debuffs": [], "correctOptionIds": ["m4s-2-pair-mt-d1"], "note": "劍舞固定分攤配對是 MT/D1、ST/D2、H1/D3、H2/D4。" },
+        "ST": { "debuffs": [], "correctOptionIds": ["m4s-2-pair-st-d2"], "note": "劍舞固定分攤配對是 MT/D1、ST/D2、H1/D3、H2/D4。" },
+        "H1": { "debuffs": [], "correctOptionIds": ["m4s-2-pair-h1-d3"], "note": "劍舞固定分攤配對是 MT/D1、ST/D2、H1/D3、H2/D4。" },
+        "H2": { "debuffs": [], "correctOptionIds": ["m4s-2-pair-h2-d4"], "note": "劍舞固定分攤配對是 MT/D1、ST/D2、H1/D3、H2/D4。" },
+        "D1": { "debuffs": [], "correctOptionIds": ["m4s-2-pair-mt-d1"], "note": "劍舞固定分攤配對是 MT/D1、ST/D2、H1/D3、H2/D4。" },
+        "D2": { "debuffs": [], "correctOptionIds": ["m4s-2-pair-st-d2"], "note": "劍舞固定分攤配對是 MT/D1、ST/D2、H1/D3、H2/D4。" },
+        "D3": { "debuffs": [], "correctOptionIds": ["m4s-2-pair-h1-d3"], "note": "劍舞固定分攤配對是 MT/D1、ST/D2、H1/D3、H2/D4。" },
+        "D4": { "debuffs": [], "correctOptionIds": ["m4s-2-pair-h2-d4"], "note": "劍舞固定分攤配對是 MT/D1、ST/D2、H1/D3、H2/D4。" }
+      },
+      "referenceImages": [
+        {
+          "id": "m4s-2-game8-q09-ref-1",
+          "src": "assets/questions/m4s-2/sword-dance-1.png",
+          "alt": "劍舞安全區與分攤站位圖",
+          "caption": "劍舞的 2 人分攤固定配對不變，先把搭檔記熟，實戰只要看安全區輪替。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m4s-2/",
+          "sourceLabel": "M4S 後半攻略"
+        }
+      ]
+    }
+  ],
+  "debuffLibrary": []
+}
