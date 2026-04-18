@@ -24,6 +24,14 @@
       "dataPath": "assets/data/m3s.json",
       "schemaVersion": "1.0",
       "tags": ["零式", "輕量級", "7.x"]
+    },
+    {
+      "id": "m4s-1",
+      "name": "阿卡迪亞零式輕量級 M4S（前半）",
+      "shortName": "M4S 前半",
+      "dataPath": "assets/data/m4s-1.json",
+      "schemaVersion": "1.0",
+      "tags": ["零式", "輕量級", "7.x"]
     }
   ]
 }

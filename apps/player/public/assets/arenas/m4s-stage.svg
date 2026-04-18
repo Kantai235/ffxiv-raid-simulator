@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" role="img" aria-labelledby="title desc">
+  <title id="title">M4S Arena</title>
+  <desc id="desc">阿卡迪亞零式輕量級 M4S 用的方形場地，含 4x4 參考格線。</desc>
+
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#20252f" />
+      <stop offset="100%" stop-color="#11161f" />
+    </linearGradient>
+    <linearGradient id="edge" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#66d9ff" stop-opacity="0.75" />
+      <stop offset="100%" stop-color="#8b6dff" stop-opacity="0.55" />
+    </linearGradient>
+    <pattern id="floor-grid" width="250" height="250" patternUnits="userSpaceOnUse">
+      <rect width="250" height="250" fill="none" />
+      <path d="M250 0H0V250" fill="none" stroke="#cbd5e1" stroke-opacity="0.11" stroke-width="3" />
+    </pattern>
+  </defs>
+
+  <rect x="24" y="24" width="952" height="952" rx="28" fill="url(#bg)" />
+  <rect x="24" y="24" width="952" height="952" rx="28" fill="url(#floor-grid)" />
+
+  <path d="M500 110V890M110 500H890" stroke="#dbeafe" stroke-opacity="0.18" stroke-width="6" />
+  <path d="M250 110V890M750 110V890M110 250H890M110 750H890" stroke="#dbeafe" stroke-opacity="0.12" stroke-width="4" />
+
+  <circle cx="500" cy="500" r="120" fill="none" stroke="#f8fafc" stroke-opacity="0.12" stroke-width="6" />
+  <circle cx="500" cy="500" r="34" fill="#f8fafc" fill-opacity="0.06" stroke="#f8fafc" stroke-opacity="0.18" stroke-width="4" />
+
+  <path d="M170 170L830 830M830 170L170 830" stroke="#a5b4fc" stroke-opacity="0.06" stroke-width="4" />
+
+  <rect x="24" y="24" width="952" height="952" rx="28" fill="none" stroke="url(#edge)" stroke-width="12" />
+</svg>

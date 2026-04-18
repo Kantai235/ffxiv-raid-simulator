@@ -1,0 +1,433 @@
+{
+  "schemaVersion": "1.0",
+  "instance": {
+    "id": "m4s-1",
+    "name": "阿卡迪亞零式輕量級 M4S（前半）",
+    "shortName": "M4S 前半",
+    "arena": {
+      "shape": "square",
+      "backgroundImage": "assets/arenas/m4s-stage.svg",
+      "size": {
+        "width": 1000,
+        "height": 1000
+      },
+      "center": {
+        "x": 500,
+        "y": 500
+      },
+      "grid": {
+        "rows": 4,
+        "cols": 4
+      },
+      "lines": []
+    },
+    "tags": [
+      "零式",
+      "輕量級",
+      "7.x"
+    ]
+  },
+  "strategies": [
+    {
+      "id": "m4s-1-game8",
+      "instanceId": "m4s-1",
+      "name": "Game8 攻略（前半）",
+      "author": "Game8",
+      "description": "以前半的魔女狩獵、雷轉質展開、離子簇與雷轉質移植做成可練判讀的題組，並加入圖文選項與場地破壞示意。",
+      "waymarks": {
+        "A": { "x": 500, "y": 130 },
+        "B": { "x": 870, "y": 500 },
+        "C": { "x": 500, "y": 870 },
+        "D": { "x": 130, "y": 500 },
+        "1": { "x": 770, "y": 230 },
+        "2": { "x": 770, "y": 770 },
+        "3": { "x": 230, "y": 770 },
+        "4": { "x": 230, "y": 230 }
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "m4s-1-game8-q01",
+      "instanceId": "m4s-1",
+      "strategyId": "m4s-1-game8",
+      "name": "P1 - BOSS 菱形預兆（哪個代表遠 4 人引導）",
+      "phase": 1,
+      "order": 1,
+      "boss": {
+        "skillName": "驚電魔女狩獵 → 魔女狩獵",
+        "castTime": 8,
+        "facing": 0
+      },
+      "type": "single-choice",
+      "options": [
+        {
+          "id": "m4s-1-diamond-purple",
+          "label": "紫色菱形：遠 4 人引導，要遠離 BOSS",
+          "imageSrc": "assets/questions/m4s-1/magic-hunt-purple.png",
+          "imageAlt": "紫色菱形預兆"
+        },
+        {
+          "id": "m4s-1-diamond-pink",
+          "label": "粉色菱形：近 4 人引導，要靠近 BOSS",
+          "imageSrc": "assets/questions/m4s-1/magic-hunt-pink.png",
+          "imageAlt": "粉色菱形預兆"
+        }
+      ],
+      "roleSolutions": {
+        "MT": { "debuffs": [], "correctOptionIds": ["m4s-1-diamond-purple"], "note": "紫色菱形是遠 4 人引導；粉色才是近 4 人引導。" },
+        "ST": { "debuffs": [], "correctOptionIds": ["m4s-1-diamond-purple"], "note": "紫色菱形是遠 4 人引導；粉色才是近 4 人引導。" },
+        "H1": { "debuffs": [], "correctOptionIds": ["m4s-1-diamond-purple"], "note": "紫色菱形是遠 4 人引導；粉色才是近 4 人引導。" },
+        "H2": { "debuffs": [], "correctOptionIds": ["m4s-1-diamond-purple"], "note": "紫色菱形是遠 4 人引導；粉色才是近 4 人引導。" },
+        "D1": { "debuffs": [], "correctOptionIds": ["m4s-1-diamond-purple"], "note": "紫色菱形是遠 4 人引導；粉色才是近 4 人引導。" },
+        "D2": { "debuffs": [], "correctOptionIds": ["m4s-1-diamond-purple"], "note": "紫色菱形是遠 4 人引導；粉色才是近 4 人引導。" },
+        "D3": { "debuffs": [], "correctOptionIds": ["m4s-1-diamond-purple"], "note": "紫色菱形是遠 4 人引導；粉色才是近 4 人引導。" },
+        "D4": { "debuffs": [], "correctOptionIds": ["m4s-1-diamond-purple"], "note": "紫色菱形是遠 4 人引導；粉色才是近 4 人引導。" }
+      }
+    },
+    {
+      "id": "m4s-1-game8-q02",
+      "instanceId": "m4s-1",
+      "strategyId": "m4s-1-game8",
+      "name": "P1 - 環形魔女狩獵（環形的進出節奏）",
+      "phase": 1,
+      "order": 2,
+      "boss": {
+        "skillName": "環形魔女狩獵",
+        "castTime": 8,
+        "facing": 0
+      },
+      "type": "ordering",
+      "options": [
+        { "id": "m4s-1-ring-out-1", "label": "第 1 下先遠離 BOSS" },
+        { "id": "m4s-1-ring-in-1", "label": "第 2 下再靠近 BOSS" },
+        { "id": "m4s-1-ring-out-2", "label": "第 3 下再次遠離" },
+        { "id": "m4s-1-ring-in-2", "label": "第 4 下最後靠近" }
+      ],
+      "roleSolutions": {
+        "MT": { "debuffs": [], "correctOptionIds": ["m4s-1-ring-out-1", "m4s-1-ring-in-1", "m4s-1-ring-out-2", "m4s-1-ring-in-2"], "note": "環形是圓 → 甜甜圈 → 圓 → 甜甜圈，所以節奏是遠、近、遠、近。" },
+        "ST": { "debuffs": [], "correctOptionIds": ["m4s-1-ring-out-1", "m4s-1-ring-in-1", "m4s-1-ring-out-2", "m4s-1-ring-in-2"], "note": "環形是圓 → 甜甜圈 → 圓 → 甜甜圈，所以節奏是遠、近、遠、近。" },
+        "H1": { "debuffs": [], "correctOptionIds": ["m4s-1-ring-out-1", "m4s-1-ring-in-1", "m4s-1-ring-out-2", "m4s-1-ring-in-2"], "note": "環形是圓 → 甜甜圈 → 圓 → 甜甜圈，所以節奏是遠、近、遠、近。" },
+        "H2": { "debuffs": [], "correctOptionIds": ["m4s-1-ring-out-1", "m4s-1-ring-in-1", "m4s-1-ring-out-2", "m4s-1-ring-in-2"], "note": "環形是圓 → 甜甜圈 → 圓 → 甜甜圈，所以節奏是遠、近、遠、近。" },
+        "D1": { "debuffs": [], "correctOptionIds": ["m4s-1-ring-out-1", "m4s-1-ring-in-1", "m4s-1-ring-out-2", "m4s-1-ring-in-2"], "note": "環形是圓 → 甜甜圈 → 圓 → 甜甜圈，所以節奏是遠、近、遠、近。" },
+        "D2": { "debuffs": [], "correctOptionIds": ["m4s-1-ring-out-1", "m4s-1-ring-in-1", "m4s-1-ring-out-2", "m4s-1-ring-in-2"], "note": "環形是圓 → 甜甜圈 → 圓 → 甜甜圈，所以節奏是遠、近、遠、近。" },
+        "D3": { "debuffs": [], "correctOptionIds": ["m4s-1-ring-out-1", "m4s-1-ring-in-1", "m4s-1-ring-out-2", "m4s-1-ring-in-2"], "note": "環形是圓 → 甜甜圈 → 圓 → 甜甜圈，所以節奏是遠、近、遠、近。" },
+        "D4": { "debuffs": [], "correctOptionIds": ["m4s-1-ring-out-1", "m4s-1-ring-in-1", "m4s-1-ring-out-2", "m4s-1-ring-in-2"], "note": "環形是圓 → 甜甜圈 → 圓 → 甜甜圈，所以節奏是遠、近、遠、近。" }
+      },
+      "referenceImages": [
+        {
+          "id": "m4s-1-game8-q02-ref-1",
+          "src": "assets/questions/m4s-1/ring-hunt-1.png",
+          "alt": "環形魔女狩獵第 1 下遠離",
+          "caption": "環形的第 1 下是圓形範圍，所以起手先站遠。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m4s-1/",
+          "sourceLabel": "M4S 前半攻略"
+        },
+        {
+          "id": "m4s-1-game8-q02-ref-2",
+          "src": "assets/questions/m4s-1/ring-hunt-2.png",
+          "alt": "環形魔女狩獵第 2 下靠近",
+          "caption": "第 2 下變成甜甜圈，立刻回到靠近 BOSS 的指定點。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m4s-1/",
+          "sourceLabel": "M4S 前半攻略"
+        },
+        {
+          "id": "m4s-1-game8-q02-ref-3",
+          "src": "assets/questions/m4s-1/ring-hunt-3.png",
+          "alt": "環形魔女狩獵第 3 下遠離",
+          "caption": "第 3 下又回到圓形，所以節奏會再往外一次。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m4s-1/",
+          "sourceLabel": "M4S 前半攻略"
+        },
+        {
+          "id": "m4s-1-game8-q02-ref-4",
+          "src": "assets/questions/m4s-1/ring-hunt-4.png",
+          "alt": "環形魔女狩獵第 4 下靠近",
+          "caption": "收尾再靠近一次，完成遠 → 近 → 遠 → 近。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m4s-1/",
+          "sourceLabel": "M4S 前半攻略"
+        }
+      ]
+    },
+    {
+      "id": "m4s-1-game8-q03",
+      "instanceId": "m4s-1",
+      "strategyId": "m4s-1-game8",
+      "name": "P1 - 雷轉質展開第 1 次（圖例最終安全側）",
+      "phase": 2,
+      "order": 3,
+      "boss": {
+        "skillName": "雷轉質展開 第 1 次",
+        "castTime": 8,
+        "facing": 0
+      },
+      "type": "single-choice",
+      "options": [
+        { "id": "m4s-1-expand-safe-12", "label": "1、2 號側安全" },
+        { "id": "m4s-1-expand-safe-23", "label": "2、3 號側安全" },
+        { "id": "m4s-1-expand-safe-34", "label": "3、4 號側安全" },
+        { "id": "m4s-1-expand-safe-41", "label": "4、1 號側安全" }
+      ],
+      "roleSolutions": {
+        "MT": { "debuffs": [], "correctOptionIds": ["m4s-1-expand-safe-23"], "note": "Game8 這個範例中 1、4 號各被打 2 次，最終留下 2、3 號側安全。" },
+        "ST": { "debuffs": [], "correctOptionIds": ["m4s-1-expand-safe-23"], "note": "Game8 這個範例中 1、4 號各被打 2 次，最終留下 2、3 號側安全。" },
+        "H1": { "debuffs": [], "correctOptionIds": ["m4s-1-expand-safe-23"], "note": "Game8 這個範例中 1、4 號各被打 2 次，最終留下 2、3 號側安全。" },
+        "H2": { "debuffs": [], "correctOptionIds": ["m4s-1-expand-safe-23"], "note": "Game8 這個範例中 1、4 號各被打 2 次，最終留下 2、3 號側安全。" },
+        "D1": { "debuffs": [], "correctOptionIds": ["m4s-1-expand-safe-23"], "note": "Game8 這個範例中 1、4 號各被打 2 次，最終留下 2、3 號側安全。" },
+        "D2": { "debuffs": [], "correctOptionIds": ["m4s-1-expand-safe-23"], "note": "Game8 這個範例中 1、4 號各被打 2 次，最終留下 2、3 號側安全。" },
+        "D3": { "debuffs": [], "correctOptionIds": ["m4s-1-expand-safe-23"], "note": "Game8 這個範例中 1、4 號各被打 2 次，最終留下 2、3 號側安全。" },
+        "D4": { "debuffs": [], "correctOptionIds": ["m4s-1-expand-safe-23"], "note": "Game8 這個範例中 1、4 號各被打 2 次，最終留下 2、3 號側安全。" }
+      },
+      "referenceImages": [
+        {
+          "id": "m4s-1-game8-q03-ref-1",
+          "src": "assets/questions/m4s-1/expand-1-safe.png",
+          "alt": "雷轉質展開第 1 次最終安全側圖例",
+          "caption": "這張範例圖最後保留下來的是 2、3 號側，半場攻擊後也在這裡處理。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m4s-1/",
+          "sourceLabel": "M4S 前半攻略"
+        }
+      ]
+    },
+    {
+      "id": "m4s-1-game8-q04",
+      "instanceId": "m4s-1",
+      "strategyId": "m4s-1-game8",
+      "name": "P1 - 雷轉質展開第 1 次（看到 4 顆球要怎麼處理）",
+      "phase": 2,
+      "order": 4,
+      "boss": {
+        "skillName": "閃耀電火花 + 側方電火花",
+        "castTime": 8,
+        "facing": 0
+      },
+      "type": "single-choice",
+      "options": [
+        {
+          "id": "m4s-1-expand-pair",
+          "label": "配對分攤",
+          "imageSrc": "assets/questions/m4s-1/expand-1-pair.jpeg",
+          "imageAlt": "配對分攤圖例"
+        },
+        {
+          "id": "m4s-1-expand-spread",
+          "label": "8 人散開",
+          "imageSrc": "assets/questions/m4s-1/expand-1-spread.jpeg",
+          "imageAlt": "散開圖例"
+        }
+      ],
+      "roleSolutions": {
+        "MT": { "debuffs": [], "correctOptionIds": ["m4s-1-expand-pair"], "note": "BOSS 周圍只有 4 顆雷球時，代表後續要做配對分攤。" },
+        "ST": { "debuffs": [], "correctOptionIds": ["m4s-1-expand-pair"], "note": "BOSS 周圍只有 4 顆雷球時，代表後續要做配對分攤。" },
+        "H1": { "debuffs": [], "correctOptionIds": ["m4s-1-expand-pair"], "note": "BOSS 周圍只有 4 顆雷球時，代表後續要做配對分攤。" },
+        "H2": { "debuffs": [], "correctOptionIds": ["m4s-1-expand-pair"], "note": "BOSS 周圍只有 4 顆雷球時，代表後續要做配對分攤。" },
+        "D1": { "debuffs": [], "correctOptionIds": ["m4s-1-expand-pair"], "note": "BOSS 周圍只有 4 顆雷球時，代表後續要做配對分攤。" },
+        "D2": { "debuffs": [], "correctOptionIds": ["m4s-1-expand-pair"], "note": "BOSS 周圍只有 4 顆雷球時，代表後續要做配對分攤。" },
+        "D3": { "debuffs": [], "correctOptionIds": ["m4s-1-expand-pair"], "note": "BOSS 周圍只有 4 顆雷球時，代表後續要做配對分攤。" },
+        "D4": { "debuffs": [], "correctOptionIds": ["m4s-1-expand-pair"], "note": "BOSS 周圍只有 4 顆雷球時，代表後續要做配對分攤。" }
+      }
+    },
+    {
+      "id": "m4s-1-game8-q05",
+      "instanceId": "m4s-1",
+      "strategyId": "m4s-1-game8",
+      "name": "P1 - 雷轉質展開第 2 次（命中多時你的大方向）",
+      "phase": 2,
+      "order": 5,
+      "boss": {
+        "skillName": "雷轉質展開 第 2 次",
+        "castTime": 8,
+        "facing": 0
+      },
+      "type": "single-choice",
+      "options": [
+        { "id": "m4s-1-expand2-west", "label": "西側四角" },
+        { "id": "m4s-1-expand2-east", "label": "東側四角" },
+        { "id": "m4s-1-expand2-around", "label": "BOSS 周圍 8 向散開" },
+        { "id": "m4s-1-expand2-center", "label": "中間靠王集合" }
+      ],
+      "roleSolutions": {
+        "MT": { "debuffs": [], "correctOptionIds": ["m4s-1-expand2-west"], "note": "命中多的一側會去四角，TH 固定去西側四角。" },
+        "ST": { "debuffs": [], "correctOptionIds": ["m4s-1-expand2-west"], "note": "命中多的一側會去四角，TH 固定去西側四角。" },
+        "H1": { "debuffs": [], "correctOptionIds": ["m4s-1-expand2-west"], "note": "命中多的一側會去四角，TH 固定去西側四角。" },
+        "H2": { "debuffs": [], "correctOptionIds": ["m4s-1-expand2-west"], "note": "命中多的一側會去四角，TH 固定去西側四角。" },
+        "D1": { "debuffs": [], "correctOptionIds": ["m4s-1-expand2-east"], "note": "命中多的一側會去四角，DPS 固定去東側四角。" },
+        "D2": { "debuffs": [], "correctOptionIds": ["m4s-1-expand2-east"], "note": "命中多的一側會去四角，DPS 固定去東側四角。" },
+        "D3": { "debuffs": [], "correctOptionIds": ["m4s-1-expand2-east"], "note": "命中多的一側會去四角，DPS 固定去東側四角。" },
+        "D4": { "debuffs": [], "correctOptionIds": ["m4s-1-expand2-east"], "note": "命中多的一側會去四角，DPS 固定去東側四角。" }
+      },
+      "referenceImages": [
+        {
+          "id": "m4s-1-game8-q05-ref-1",
+          "src": "assets/questions/m4s-1/expand-2-cage.jpeg",
+          "alt": "雷轉質展開第 2 次電牢籠配置圖",
+          "caption": "命中多的人先去四角，TH 西、DPS 東；命中少的人才留在圖中的散開位。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m4s-1/",
+          "sourceLabel": "M4S 前半攻略"
+        }
+      ]
+    },
+    {
+      "id": "m4s-1-game8-q06",
+      "instanceId": "m4s-1",
+      "strategyId": "m4s-1-game8",
+      "name": "P1 - 離子簇（先撤到安全列）",
+      "phase": 3,
+      "order": 6,
+      "boss": {
+        "skillName": "離子簇",
+        "castTime": 8,
+        "facing": 0
+      },
+      "type": "map-click",
+      "clickCount": 1,
+      "arenaMask": [0, 1, 2, 4, 5, 6, 8, 9, 10, 12, 13, 14],
+      "roleSolutions": {
+        "MT": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 760, "y": 40, "width": 180, "height": 920 }], "note": "這個範例是西側 3 列被劈開，只剩最東側 1 列可先撤進去。" },
+        "ST": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 760, "y": 40, "width": 180, "height": 920 }], "note": "這個範例是西側 3 列被劈開，只剩最東側 1 列可先撤進去。" },
+        "H1": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 760, "y": 40, "width": 180, "height": 920 }], "note": "這個範例是西側 3 列被劈開，只剩最東側 1 列可先撤進去。" },
+        "H2": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 760, "y": 40, "width": 180, "height": 920 }], "note": "這個範例是西側 3 列被劈開，只剩最東側 1 列可先撤進去。" },
+        "D1": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 760, "y": 40, "width": 180, "height": 920 }], "note": "這個範例是西側 3 列被劈開，只剩最東側 1 列可先撤進去。" },
+        "D2": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 760, "y": 40, "width": 180, "height": 920 }], "note": "這個範例是西側 3 列被劈開，只剩最東側 1 列可先撤進去。" },
+        "D3": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 760, "y": 40, "width": 180, "height": 920 }], "note": "這個範例是西側 3 列被劈開，只剩最東側 1 列可先撤進去。" },
+        "D4": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 760, "y": 40, "width": 180, "height": 920 }], "note": "這個範例是西側 3 列被劈開，只剩最東側 1 列可先撤進去。" }
+      },
+      "referenceImages": [
+        {
+          "id": "m4s-1-game8-q06-ref-1",
+          "src": "assets/questions/m4s-1/ion-cluster-1.png",
+          "alt": "離子簇第一輪安全列圖例",
+          "caption": "離子簇先看 BOSS 持槍劈掉哪 3 列，立刻撤進剩下的 1 列安全區。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m4s-1/",
+          "sourceLabel": "M4S 前半攻略"
+        }
+      ]
+    },
+    {
+      "id": "m4s-1-game8-q07",
+      "instanceId": "m4s-1",
+      "strategyId": "m4s-1-game8",
+      "name": "P1 - 離子簇 + 電子流（處理順序）",
+      "phase": 3,
+      "order": 7,
+      "boss": {
+        "skillName": "離子簇 + 電子流",
+        "castTime": 8,
+        "facing": 0
+      },
+      "type": "ordering",
+      "options": [
+        { "id": "m4s-1-electron-safe-lane", "label": "先撤到唯一安全列" },
+        { "id": "m4s-1-electron-color", "label": "看砲身顏色並往自己減益的反色方向移動" },
+        { "id": "m4s-1-electron-tank-front", "label": "坦克站最前方承接光束" },
+        { "id": "m4s-1-electron-reset", "label": "承接後再依新減益回到指定站位" }
+      ],
+      "roleSolutions": {
+        "MT": { "debuffs": [], "correctOptionIds": ["m4s-1-electron-safe-lane", "m4s-1-electron-color", "m4s-1-electron-tank-front", "m4s-1-electron-reset"], "note": "電子流的關鍵是先撤安全列，再看反色；坦克一定要站最前方吃光束。" },
+        "ST": { "debuffs": [], "correctOptionIds": ["m4s-1-electron-safe-lane", "m4s-1-electron-color", "m4s-1-electron-tank-front", "m4s-1-electron-reset"], "note": "電子流的關鍵是先撤安全列，再看反色；坦克一定要站最前方吃光束。" },
+        "H1": { "debuffs": [], "correctOptionIds": ["m4s-1-electron-safe-lane", "m4s-1-electron-color", "m4s-1-electron-tank-front", "m4s-1-electron-reset"], "note": "電子流的關鍵是先撤安全列，再看反色；坦克一定要站最前方吃光束。" },
+        "H2": { "debuffs": [], "correctOptionIds": ["m4s-1-electron-safe-lane", "m4s-1-electron-color", "m4s-1-electron-tank-front", "m4s-1-electron-reset"], "note": "電子流的關鍵是先撤安全列，再看反色；坦克一定要站最前方吃光束。" },
+        "D1": { "debuffs": [], "correctOptionIds": ["m4s-1-electron-safe-lane", "m4s-1-electron-color", "m4s-1-electron-tank-front", "m4s-1-electron-reset"], "note": "電子流的關鍵是先撤安全列，再看反色；坦克一定要站最前方吃光束。" },
+        "D2": { "debuffs": [], "correctOptionIds": ["m4s-1-electron-safe-lane", "m4s-1-electron-color", "m4s-1-electron-tank-front", "m4s-1-electron-reset"], "note": "電子流的關鍵是先撤安全列，再看反色；坦克一定要站最前方吃光束。" },
+        "D3": { "debuffs": [], "correctOptionIds": ["m4s-1-electron-safe-lane", "m4s-1-electron-color", "m4s-1-electron-tank-front", "m4s-1-electron-reset"], "note": "電子流的關鍵是先撤安全列，再看反色；坦克一定要站最前方吃光束。" },
+        "D4": { "debuffs": [], "correctOptionIds": ["m4s-1-electron-safe-lane", "m4s-1-electron-color", "m4s-1-electron-tank-front", "m4s-1-electron-reset"], "note": "電子流的關鍵是先撤安全列，再看反色；坦克一定要站最前方吃光束。" }
+      },
+      "referenceImages": [
+        {
+          "id": "m4s-1-game8-q07-ref-1",
+          "src": "assets/questions/m4s-1/electron-flow-position.jpeg",
+          "alt": "電子流站位參考圖",
+          "caption": "先進安全列，再依黃色／白色減益的反色去接；坦克站最前方。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m4s-1/",
+          "sourceLabel": "M4S 前半攻略"
+        }
+      ]
+    },
+    {
+      "id": "m4s-1-game8-q08",
+      "instanceId": "m4s-1",
+      "strategyId": "m4s-1-game8",
+      "name": "P1 - 雷轉質移植（開場 X 字配對散開位）",
+      "phase": 4,
+      "order": 8,
+      "boss": {
+        "skillName": "雷轉質移植",
+        "castTime": 8,
+        "facing": 0
+      },
+      "type": "map-click",
+      "clickCount": 1,
+      "roleSolutions": {
+        "MT": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 350, "y": 350 }, "radius": 80 }], "note": "雷轉質移植開場以 BOSS 為基準 X 字配對散開，MT 和 D3 在左上。" },
+        "ST": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 650, "y": 350 }, "radius": 80 }], "note": "ST 和 D4 在右上。" },
+        "H1": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 350, "y": 650 }, "radius": 80 }], "note": "H1 和 D1 在左下。" },
+        "H2": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 650, "y": 650 }, "radius": 80 }], "note": "H2 和 D2 在右下。" },
+        "D1": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 350, "y": 650 }, "radius": 80 }], "note": "H1 和 D1 在左下。" },
+        "D2": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 650, "y": 650 }, "radius": 80 }], "note": "H2 和 D2 在右下。" },
+        "D3": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 350, "y": 350 }, "radius": 80 }], "note": "MT 和 D3 在左上。" },
+        "D4": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 650, "y": 350 }, "radius": 80 }], "note": "ST 和 D4 在右上。" }
+      },
+      "referenceImages": [
+        {
+          "id": "m4s-1-game8-q08-ref-1",
+          "src": "assets/questions/m4s-1/transfer-1.png",
+          "alt": "雷轉質移植開場 X 字配對散開圖",
+          "caption": "開場先站成 X 字四組配對：左上 D3/MT、右上 ST/D4、左下 H1/D1、右下 D2/H2。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m4s-1/",
+          "sourceLabel": "M4S 前半攻略"
+        }
+      ]
+    },
+    {
+      "id": "m4s-1-game8-q09",
+      "instanceId": "m4s-1",
+      "strategyId": "m4s-1-game8",
+      "name": "P1 - 雷轉質移植（整體節奏）",
+      "phase": 4,
+      "order": 9,
+      "boss": {
+        "skillName": "雷轉質移植",
+        "castTime": 8,
+        "facing": 0
+      },
+      "type": "ordering",
+      "options": [
+        { "id": "m4s-1-transfer-x", "label": "先以 BOSS 為基準站成 X 字配對散開" },
+        { "id": "m4s-1-transfer-cw", "label": "第一下扇形後順時針撤退" },
+        { "id": "m4s-1-transfer-ccw", "label": "第二下扇形後逆時針撤退" },
+        { "id": "m4s-1-transfer-lightning", "label": "第 5 次扇形時 4 人吃閃電定點" },
+        { "id": "m4s-1-transfer-beam", "label": "第 6 次極粗光束由沒有定點的人站前承接" },
+        { "id": "m4s-1-transfer-last", "label": "第 7 次扇形仍要照節奏確實閃完" }
+      ],
+      "roleSolutions": {
+        "MT": { "debuffs": [], "correctOptionIds": ["m4s-1-transfer-x", "m4s-1-transfer-cw", "m4s-1-transfer-ccw", "m4s-1-transfer-lightning", "m4s-1-transfer-beam", "m4s-1-transfer-last"], "note": "雷轉質移植是順時針、逆時針交錯橫跳；第 5 次先定點，第 6 次換沒定點的人上前接電流。" },
+        "ST": { "debuffs": [], "correctOptionIds": ["m4s-1-transfer-x", "m4s-1-transfer-cw", "m4s-1-transfer-ccw", "m4s-1-transfer-lightning", "m4s-1-transfer-beam", "m4s-1-transfer-last"], "note": "雷轉質移植是順時針、逆時針交錯橫跳；第 5 次先定點，第 6 次換沒定點的人上前接電流。" },
+        "H1": { "debuffs": [], "correctOptionIds": ["m4s-1-transfer-x", "m4s-1-transfer-cw", "m4s-1-transfer-ccw", "m4s-1-transfer-lightning", "m4s-1-transfer-beam", "m4s-1-transfer-last"], "note": "雷轉質移植是順時針、逆時針交錯橫跳；第 5 次先定點，第 6 次換沒定點的人上前接電流。" },
+        "H2": { "debuffs": [], "correctOptionIds": ["m4s-1-transfer-x", "m4s-1-transfer-cw", "m4s-1-transfer-ccw", "m4s-1-transfer-lightning", "m4s-1-transfer-beam", "m4s-1-transfer-last"], "note": "雷轉質移植是順時針、逆時針交錯橫跳；第 5 次先定點，第 6 次換沒定點的人上前接電流。" },
+        "D1": { "debuffs": [], "correctOptionIds": ["m4s-1-transfer-x", "m4s-1-transfer-cw", "m4s-1-transfer-ccw", "m4s-1-transfer-lightning", "m4s-1-transfer-beam", "m4s-1-transfer-last"], "note": "雷轉質移植是順時針、逆時針交錯橫跳；第 5 次先定點，第 6 次換沒定點的人上前接電流。" },
+        "D2": { "debuffs": [], "correctOptionIds": ["m4s-1-transfer-x", "m4s-1-transfer-cw", "m4s-1-transfer-ccw", "m4s-1-transfer-lightning", "m4s-1-transfer-beam", "m4s-1-transfer-last"], "note": "雷轉質移植是順時針、逆時針交錯橫跳；第 5 次先定點，第 6 次換沒定點的人上前接電流。" },
+        "D3": { "debuffs": [], "correctOptionIds": ["m4s-1-transfer-x", "m4s-1-transfer-cw", "m4s-1-transfer-ccw", "m4s-1-transfer-lightning", "m4s-1-transfer-beam", "m4s-1-transfer-last"], "note": "雷轉質移植是順時針、逆時針交錯橫跳；第 5 次先定點，第 6 次換沒定點的人上前接電流。" },
+        "D4": { "debuffs": [], "correctOptionIds": ["m4s-1-transfer-x", "m4s-1-transfer-cw", "m4s-1-transfer-ccw", "m4s-1-transfer-lightning", "m4s-1-transfer-beam", "m4s-1-transfer-last"], "note": "雷轉質移植是順時針、逆時針交錯橫跳；第 5 次先定點，第 6 次換沒定點的人上前接電流。" }
+      },
+      "referenceImages": [
+        {
+          "id": "m4s-1-game8-q09-ref-1",
+          "src": "assets/questions/m4s-1/transfer-1.png",
+          "alt": "雷轉質移植開場配對散開",
+          "caption": "先以 X 字四組配對散開，後面才有空間做順逆時針橫跳。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m4s-1/",
+          "sourceLabel": "M4S 前半攻略"
+        },
+        {
+          "id": "m4s-1-game8-q09-ref-2",
+          "src": "assets/questions/m4s-1/transfer-4.png",
+          "alt": "雷轉質移植第 6 次極粗光束",
+          "caption": "第 5 次先出定點，第 6 次再由沒有定點的人上前承接極粗光束。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m4s-1/",
+          "sourceLabel": "M4S 前半攻略"
+        }
+      ]
+    }
+  ],
+  "debuffLibrary": []
+}
