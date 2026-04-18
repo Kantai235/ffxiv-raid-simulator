@@ -1,0 +1,318 @@
+{
+  "schemaVersion": "1.0",
+  "instance": {
+    "id": "m3s",
+    "name": "阿卡迪亞零式輕量級 M3S",
+    "shortName": "M3S",
+    "arena": {
+      "shape": "square",
+      "backgroundImage": "assets/arenas/m3s-stage.png",
+      "size": {
+        "width": 1000,
+        "height": 1000
+      },
+      "center": {
+        "x": 500,
+        "y": 500
+      },
+      "lines": []
+    },
+    "tags": [
+      "零式",
+      "輕量級",
+      "7.x"
+    ]
+  },
+  "strategies": [
+    {
+      "id": "m3s-game8",
+      "instanceId": "m3s",
+      "name": "Game8 攻略",
+      "author": "Game8",
+      "description": "先以四分 / 八分、塔擊退、鎖鏈生死戰、引信區域與超豪華野蠻大亂擊等核心判讀建立 M3S 題庫。",
+      "waymarks": {
+        "A": { "x": 500, "y": 130 },
+        "B": { "x": 870, "y": 500 },
+        "C": { "x": 500, "y": 870 },
+        "D": { "x": 130, "y": 500 },
+        "1": { "x": 770, "y": 230 },
+        "2": { "x": 770, "y": 770 },
+        "3": { "x": 230, "y": 770 },
+        "4": { "x": 230, "y": 230 }
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "m3s-game8-q01",
+      "instanceId": "m3s",
+      "strategyId": "m3s-game8",
+      "name": "P1 - 四分雙重金臂鉤（你屬於哪一組配對）",
+      "phase": 1,
+      "order": 1,
+      "boss": {
+        "skillName": "四分雙重金臂鉤",
+        "castTime": 8,
+        "facing": 0
+      },
+      "type": "single-choice",
+      "options": [
+        { "id": "m3s-pair-mt-d3", "label": "MT + D3" },
+        { "id": "m3s-pair-st-d2", "label": "ST + D2" },
+        { "id": "m3s-pair-h1-d1", "label": "H1 + D1" },
+        { "id": "m3s-pair-h2-d4", "label": "H2 + D4" }
+      ],
+      "roleSolutions": {
+        "MT": { "debuffs": [], "correctOptionIds": ["m3s-pair-mt-d3"], "note": "四分雙重金臂鉤依攻略固定配對：MT+D3、ST+D2、H1+D1、H2+D4。" },
+        "ST": { "debuffs": [], "correctOptionIds": ["m3s-pair-st-d2"], "note": "四分雙重金臂鉤依攻略固定配對：MT+D3、ST+D2、H1+D1、H2+D4。" },
+        "H1": { "debuffs": [], "correctOptionIds": ["m3s-pair-h1-d1"], "note": "四分雙重金臂鉤依攻略固定配對：MT+D3、ST+D2、H1+D1、H2+D4。" },
+        "H2": { "debuffs": [], "correctOptionIds": ["m3s-pair-h2-d4"], "note": "四分雙重金臂鉤依攻略固定配對：MT+D3、ST+D2、H1+D1、H2+D4。" },
+        "D1": { "debuffs": [], "correctOptionIds": ["m3s-pair-h1-d1"], "note": "四分雙重金臂鉤依攻略固定配對：MT+D3、ST+D2、H1+D1、H2+D4。" },
+        "D2": { "debuffs": [], "correctOptionIds": ["m3s-pair-st-d2"], "note": "四分雙重金臂鉤依攻略固定配對：MT+D3、ST+D2、H1+D1、H2+D4。" },
+        "D3": { "debuffs": [], "correctOptionIds": ["m3s-pair-mt-d3"], "note": "四分雙重金臂鉤依攻略固定配對：MT+D3、ST+D2、H1+D1、H2+D4。" },
+        "D4": { "debuffs": [], "correctOptionIds": ["m3s-pair-h2-d4"], "note": "四分雙重金臂鉤依攻略固定配對：MT+D3、ST+D2、H1+D1、H2+D4。" }
+      },
+      "referenceImages": [
+        {
+          "id": "m3s-game8-q01-ref-1",
+          "src": "assets/questions/m3s/double-hook-four.png",
+          "alt": "四分雙重金臂鉤配對站位",
+          "caption": "四分模式是細窄的配對扇形，必須和固定搭檔完全重疊。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m3s/",
+          "sourceLabel": "M3S 攻略"
+        }
+      ]
+    },
+    {
+      "id": "m3s-game8-q02",
+      "instanceId": "m3s",
+      "strategyId": "m3s-game8",
+      "name": "P1 - 四分強震衝（你屬於哪一組配對）",
+      "phase": 1,
+      "order": 2,
+      "boss": {
+        "skillName": "四分強震衝",
+        "castTime": 8,
+        "facing": 0
+      },
+      "type": "single-choice",
+      "options": [
+        { "id": "m3s-impact-mt-d1", "label": "MT + D1" },
+        { "id": "m3s-impact-st-d2", "label": "ST + D2" },
+        { "id": "m3s-impact-h1-d3", "label": "H1 + D3" },
+        { "id": "m3s-impact-h2-d4", "label": "H2 + D4" }
+      ],
+      "roleSolutions": {
+        "MT": { "debuffs": [], "correctOptionIds": ["m3s-impact-mt-d1"], "note": "四分強震衝是 MTD1 / STD2 / H1D3 / H2D4 配對分攤。" },
+        "ST": { "debuffs": [], "correctOptionIds": ["m3s-impact-st-d2"], "note": "四分強震衝是 MTD1 / STD2 / H1D3 / H2D4 配對分攤。" },
+        "H1": { "debuffs": [], "correctOptionIds": ["m3s-impact-h1-d3"], "note": "四分強震衝是 MTD1 / STD2 / H1D3 / H2D4 配對分攤。" },
+        "H2": { "debuffs": [], "correctOptionIds": ["m3s-impact-h2-d4"], "note": "四分強震衝是 MTD1 / STD2 / H1D3 / H2D4 配對分攤。" },
+        "D1": { "debuffs": [], "correctOptionIds": ["m3s-impact-mt-d1"], "note": "四分強震衝是 MTD1 / STD2 / H1D3 / H2D4 配對分攤。" },
+        "D2": { "debuffs": [], "correctOptionIds": ["m3s-impact-st-d2"], "note": "四分強震衝是 MTD1 / STD2 / H1D3 / H2D4 配對分攤。" },
+        "D3": { "debuffs": [], "correctOptionIds": ["m3s-impact-h1-d3"], "note": "四分強震衝是 MTD1 / STD2 / H1D3 / H2D4 配對分攤。" },
+        "D4": { "debuffs": [], "correctOptionIds": ["m3s-impact-h2-d4"], "note": "四分強震衝是 MTD1 / STD2 / H1D3 / H2D4 配對分攤。" }
+      },
+      "referenceImages": [
+        {
+          "id": "m3s-game8-q02-ref-1",
+          "src": "assets/questions/m3s/impact-four.png",
+          "alt": "四分強震衝配對站位",
+          "caption": "距離衰減後立刻接四分分攤，配對和雙重金臂鉤不同，容易混淆。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m3s/",
+          "sourceLabel": "M3S 攻略"
+        }
+      ]
+    },
+    {
+      "id": "m3s-game8-q03",
+      "instanceId": "m3s",
+      "strategyId": "m3s-game8",
+      "name": "P1 - 野蠻爆炸 → 致命毒霧（處理順序）",
+      "phase": 1,
+      "order": 3,
+      "boss": {
+        "skillName": "野蠻爆炸 → 致命毒霧",
+        "castTime": 8,
+        "facing": 0
+      },
+      "type": "ordering",
+      "options": [
+        { "id": "m3s-tower-four", "label": "先依近戰 / 遠程分組處理 4 人塔" },
+        { "id": "m3s-tower-corner", "label": "面向中央被擊退到四角 2 人塔" },
+        { "id": "m3s-tower-center", "label": "再從中央塔朝 BOSS 方向被擊退" },
+        { "id": "m3s-behind-boss", "label": "最後到 BOSS 背面躲致命毒霧" }
+      ],
+      "roleSolutions": {
+        "MT": { "debuffs": [], "correctOptionIds": ["m3s-tower-four", "m3s-tower-corner", "m3s-tower-center", "m3s-behind-boss"], "note": "塔機制的收尾是站到 BOSS 背面躲 270 度毒霧。" },
+        "ST": { "debuffs": [], "correctOptionIds": ["m3s-tower-four", "m3s-tower-corner", "m3s-tower-center", "m3s-behind-boss"], "note": "塔機制的收尾是站到 BOSS 背面躲 270 度毒霧。" },
+        "H1": { "debuffs": [], "correctOptionIds": ["m3s-tower-four", "m3s-tower-corner", "m3s-tower-center", "m3s-behind-boss"], "note": "塔機制的收尾是站到 BOSS 背面躲 270 度毒霧。" },
+        "H2": { "debuffs": [], "correctOptionIds": ["m3s-tower-four", "m3s-tower-corner", "m3s-tower-center", "m3s-behind-boss"], "note": "塔機制的收尾是站到 BOSS 背面躲 270 度毒霧。" },
+        "D1": { "debuffs": [], "correctOptionIds": ["m3s-tower-four", "m3s-tower-corner", "m3s-tower-center", "m3s-behind-boss"], "note": "塔機制的收尾是站到 BOSS 背面躲 270 度毒霧。" },
+        "D2": { "debuffs": [], "correctOptionIds": ["m3s-tower-four", "m3s-tower-corner", "m3s-tower-center", "m3s-behind-boss"], "note": "塔機制的收尾是站到 BOSS 背面躲 270 度毒霧。" },
+        "D3": { "debuffs": [], "correctOptionIds": ["m3s-tower-four", "m3s-tower-corner", "m3s-tower-center", "m3s-behind-boss"], "note": "塔機制的收尾是站到 BOSS 背面躲 270 度毒霧。" },
+        "D4": { "debuffs": [], "correctOptionIds": ["m3s-tower-four", "m3s-tower-corner", "m3s-tower-center", "m3s-behind-boss"], "note": "塔機制的收尾是站到 BOSS 背面躲 270 度毒霧。" }
+      },
+      "referenceImages": [
+        {
+          "id": "m3s-game8-q03-ref-1",
+          "src": "assets/questions/m3s/tower-1.png",
+          "alt": "野蠻爆炸第一輪 4 人塔",
+          "caption": "第 1 步先以近戰 / 遠程分組處理 4 人塔。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m3s/",
+          "sourceLabel": "M3S 攻略"
+        },
+        {
+          "id": "m3s-game8-q03-ref-2",
+          "src": "assets/questions/m3s/tower-5.png",
+          "alt": "野蠻爆炸最後躲毒霧",
+          "caption": "最後由中央塔朝 BOSS 方向被擊退後，立刻到 BOSS 背面避開致命毒霧。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m3s/",
+          "sourceLabel": "M3S 攻略"
+        }
+      ]
+    },
+    {
+      "id": "m3s-game8-q04",
+      "instanceId": "m3s",
+      "strategyId": "m3s-game8",
+      "name": "P2 - 組隊戰 + 鎖鏈生死戰（處理順序）",
+      "phase": 2,
+      "order": 4,
+      "boss": {
+        "skillName": "組隊戰 + 鎖鏈生死戰",
+        "castTime": 8,
+        "facing": 0
+      },
+      "type": "ordering",
+      "options": [
+        { "id": "m3s-chain-identify", "label": "先看自己被鎖鏈連到哪一個分身" },
+        { "id": "m3s-chain-hit", "label": "第 1 次故意讓被連線的分身金臂鉤命中" },
+        { "id": "m3s-chain-diagonal", "label": "第 2 次往第一次安全區的對角衝過去" }
+      ],
+      "roleSolutions": {
+        "MT": { "debuffs": [], "correctOptionIds": ["m3s-chain-identify", "m3s-chain-hit", "m3s-chain-diagonal"], "note": "鎖鏈生死戰的關鍵是第一次故意吃連線分身，第二次轉去第一次安全區對角。" },
+        "ST": { "debuffs": [], "correctOptionIds": ["m3s-chain-identify", "m3s-chain-hit", "m3s-chain-diagonal"], "note": "鎖鏈生死戰的關鍵是第一次故意吃連線分身，第二次轉去第一次安全區對角。" },
+        "H1": { "debuffs": [], "correctOptionIds": ["m3s-chain-identify", "m3s-chain-hit", "m3s-chain-diagonal"], "note": "鎖鏈生死戰的關鍵是第一次故意吃連線分身，第二次轉去第一次安全區對角。" },
+        "H2": { "debuffs": [], "correctOptionIds": ["m3s-chain-identify", "m3s-chain-hit", "m3s-chain-diagonal"], "note": "鎖鏈生死戰的關鍵是第一次故意吃連線分身，第二次轉去第一次安全區對角。" },
+        "D1": { "debuffs": [], "correctOptionIds": ["m3s-chain-identify", "m3s-chain-hit", "m3s-chain-diagonal"], "note": "鎖鏈生死戰的關鍵是第一次故意吃連線分身，第二次轉去第一次安全區對角。" },
+        "D2": { "debuffs": [], "correctOptionIds": ["m3s-chain-identify", "m3s-chain-hit", "m3s-chain-diagonal"], "note": "鎖鏈生死戰的關鍵是第一次故意吃連線分身，第二次轉去第一次安全區對角。" },
+        "D3": { "debuffs": [], "correctOptionIds": ["m3s-chain-identify", "m3s-chain-hit", "m3s-chain-diagonal"], "note": "鎖鏈生死戰的關鍵是第一次故意吃連線分身，第二次轉去第一次安全區對角。" },
+        "D4": { "debuffs": [], "correctOptionIds": ["m3s-chain-identify", "m3s-chain-hit", "m3s-chain-diagonal"], "note": "鎖鏈生死戰的關鍵是第一次故意吃連線分身，第二次轉去第一次安全區對角。" }
+      },
+      "referenceImages": [
+        {
+          "id": "m3s-game8-q04-ref-1",
+          "src": "assets/questions/m3s/chain-1.png",
+          "alt": "鎖鏈生死戰第一輪示意",
+          "caption": "先辨認自己被鎖鏈連到哪個分身，第一輪要故意吃到那個分身的金臂鉤。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m3s/",
+          "sourceLabel": "M3S 攻略"
+        }
+      ]
+    },
+    {
+      "id": "m3s-game8-q05",
+      "instanceId": "m3s",
+      "strategyId": "m3s-game8",
+      "name": "P3 - 設置引信 + 野蠻旋火（初始散開位）",
+      "phase": 3,
+      "order": 5,
+      "boss": {
+        "skillName": "設置引信 + 野蠻旋火",
+        "castTime": 8,
+        "facing": 0
+      },
+      "type": "map-click",
+      "clickCount": 1,
+      "roleSolutions": {
+        "MT": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 300, "y": 250 }, "radius": 70 }], "note": "旋火後回到基本散開位附近微調，MT 在左上內側。" },
+        "ST": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 700, "y": 680 }, "radius": 70 }], "note": "旋火後回到基本散開位附近微調，ST 在右下內側。" },
+        "H1": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 260, "y": 660 }, "radius": 70 }], "note": "H1 在左下內側。" },
+        "H2": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 790, "y": 300 }, "radius": 70 }], "note": "H2 在右上外側。" },
+        "D1": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 340, "y": 720 }, "radius": 70 }], "note": "D1 在左下外側。" },
+        "D2": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 760, "y": 640 }, "radius": 70 }], "note": "D2 在右下外側。" },
+        "D3": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 250, "y": 190 }, "radius": 70 }], "note": "D3 在左上外側。" },
+        "D4": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 720, "y": 190 }, "radius": 70 }], "note": "D4 在右上外側。" }
+      }
+    },
+    {
+      "id": "m3s-game8-q06",
+      "instanceId": "m3s",
+      "strategyId": "m3s-game8",
+      "name": "P3 - 引信區域（減益與導火線對應）",
+      "phase": 3,
+      "order": 6,
+      "boss": {
+        "skillName": "引信區域 + 野蠻火焰",
+        "castTime": 8,
+        "facing": 0
+      },
+      "type": "single-choice",
+      "options": [
+        { "id": "m3s-fuse-correct", "label": "25 秒負責短導火線，44 秒負責長導火線" },
+        { "id": "m3s-fuse-reverse", "label": "25 秒踩長導火線，44 秒踩短導火線" },
+        { "id": "m3s-fuse-nearest", "label": "不看秒數，誰近誰先踩" },
+        { "id": "m3s-fuse-a-only", "label": "全員只要看 A 點附近的導火線" }
+      ],
+      "roleSolutions": {
+        "MT": { "debuffs": [], "correctOptionIds": ["m3s-fuse-correct"], "note": "引信區域固定是 25 秒踩短導火線、44 秒踩長導火線，並依優先順序順時針找。" },
+        "ST": { "debuffs": [], "correctOptionIds": ["m3s-fuse-correct"], "note": "引信區域固定是 25 秒踩短導火線、44 秒踩長導火線，並依優先順序順時針找。" },
+        "H1": { "debuffs": [], "correctOptionIds": ["m3s-fuse-correct"], "note": "引信區域固定是 25 秒踩短導火線、44 秒踩長導火線，並依優先順序順時針找。" },
+        "H2": { "debuffs": [], "correctOptionIds": ["m3s-fuse-correct"], "note": "引信區域固定是 25 秒踩短導火線、44 秒踩長導火線，並依優先順序順時針找。" },
+        "D1": { "debuffs": [], "correctOptionIds": ["m3s-fuse-correct"], "note": "引信區域固定是 25 秒踩短導火線、44 秒踩長導火線，並依優先順序順時針找。" },
+        "D2": { "debuffs": [], "correctOptionIds": ["m3s-fuse-correct"], "note": "引信區域固定是 25 秒踩短導火線、44 秒踩長導火線，並依優先順序順時針找。" },
+        "D3": { "debuffs": [], "correctOptionIds": ["m3s-fuse-correct"], "note": "引信區域固定是 25 秒踩短導火線、44 秒踩長導火線，並依優先順序順時針找。" },
+        "D4": { "debuffs": [], "correctOptionIds": ["m3s-fuse-correct"], "note": "引信區域固定是 25 秒踩短導火線、44 秒踩長導火線，並依優先順序順時針找。" }
+      }
+    },
+    {
+      "id": "m3s-game8-q07",
+      "instanceId": "m3s",
+      "strategyId": "m3s-game8",
+      "name": "P3 - 超豪華野蠻大亂擊（後半順序）",
+      "phase": 3,
+      "order": 7,
+      "boss": {
+        "skillName": "超豪華野蠻大亂擊",
+        "castTime": 8,
+        "facing": 0
+      },
+      "type": "ordering",
+      "options": [
+        { "id": "m3s-special-out", "label": "第 6 擊圓形範圍時先遠離 BOSS" },
+        { "id": "m3s-special-in", "label": "第 7 擊甜甜圈時立刻進王腳下" },
+        { "id": "m3s-special-x", "label": "擊退預兆時到 X 字位等待，準備飛向四角" },
+        { "id": "m3s-special-impact", "label": "落地後處理最後的四分 / 八分衝擊" }
+      ],
+      "roleSolutions": {
+        "MT": { "debuffs": [], "correctOptionIds": ["m3s-special-out", "m3s-special-in", "m3s-special-x", "m3s-special-impact"], "note": "超豪華野蠻大亂擊的擊退一定要飛向四角，十字方向會直接出場。" },
+        "ST": { "debuffs": [], "correctOptionIds": ["m3s-special-out", "m3s-special-in", "m3s-special-x", "m3s-special-impact"], "note": "超豪華野蠻大亂擊的擊退一定要飛向四角，十字方向會直接出場。" },
+        "H1": { "debuffs": [], "correctOptionIds": ["m3s-special-out", "m3s-special-in", "m3s-special-x", "m3s-special-impact"], "note": "超豪華野蠻大亂擊的擊退一定要飛向四角，十字方向會直接出場。" },
+        "H2": { "debuffs": [], "correctOptionIds": ["m3s-special-out", "m3s-special-in", "m3s-special-x", "m3s-special-impact"], "note": "超豪華野蠻大亂擊的擊退一定要飛向四角，十字方向會直接出場。" },
+        "D1": { "debuffs": [], "correctOptionIds": ["m3s-special-out", "m3s-special-in", "m3s-special-x", "m3s-special-impact"], "note": "超豪華野蠻大亂擊的擊退一定要飛向四角，十字方向會直接出場。" },
+        "D2": { "debuffs": [], "correctOptionIds": ["m3s-special-out", "m3s-special-in", "m3s-special-x", "m3s-special-impact"], "note": "超豪華野蠻大亂擊的擊退一定要飛向四角，十字方向會直接出場。" },
+        "D3": { "debuffs": [], "correctOptionIds": ["m3s-special-out", "m3s-special-in", "m3s-special-x", "m3s-special-impact"], "note": "超豪華野蠻大亂擊的擊退一定要飛向四角，十字方向會直接出場。" },
+        "D4": { "debuffs": [], "correctOptionIds": ["m3s-special-out", "m3s-special-in", "m3s-special-x", "m3s-special-impact"], "note": "超豪華野蠻大亂擊的擊退一定要飛向四角，十字方向會直接出場。" }
+      },
+      "referenceImages": [
+        {
+          "id": "m3s-game8-q07-ref-1",
+          "src": "assets/questions/m3s/special-1.jpeg",
+          "alt": "超豪華野蠻大亂擊第六擊前",
+          "caption": "先把第 6 擊圓形範圍的遠離動作記熟，後面才不會被連續節奏帶走。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m3s/",
+          "sourceLabel": "M3S 攻略"
+        },
+        {
+          "id": "m3s-game8-q07-ref-2",
+          "src": "assets/questions/m3s/special-5.jpeg",
+          "alt": "超豪華野蠻大亂擊最後衝擊",
+          "caption": "飛向四角後，最後再接四分或八分衝擊；圖例是四分配對的情況。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m3s/",
+          "sourceLabel": "M3S 攻略"
+        }
+      ]
+    }
+  ],
+  "debuffLibrary": []
+}

@@ -16,6 +16,14 @@
       "dataPath": "assets/data/m2s.json",
       "schemaVersion": "1.0",
       "tags": ["零式", "輕量級", "7.x"]
+    },
+    {
+      "id": "m3s",
+      "name": "阿卡迪亞零式輕量級 M3S",
+      "shortName": "M3S",
+      "dataPath": "assets/data/m3s.json",
+      "schemaVersion": "1.0",
+      "tags": ["零式", "輕量級", "7.x"]
     }
   ]
 }
