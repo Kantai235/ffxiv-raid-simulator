@@ -1,0 +1,717 @@
+{
+  "schemaVersion": "1.0",
+  "instance": {
+    "id": "m2s",
+    "name": "阿卡迪亞零式輕量級 M2S",
+    "shortName": "M2S",
+    "arena": {
+      "shape": "circle",
+      "backgroundImage": "assets/arenas/m2s-stage.png",
+      "size": {
+        "width": 1000,
+        "height": 1000
+      },
+      "center": {
+        "x": 500,
+        "y": 500
+      },
+      "lines": []
+    },
+    "tags": [
+      "零式",
+      "輕量級",
+      "7.x"
+    ]
+  },
+  "strategies": [
+    {
+      "id": "m2s-game8",
+      "instanceId": "m2s",
+      "name": "Game8 攻略",
+      "author": "Game8",
+      "description": "基於 M2S 繁中攻略整理，先以甜心旋風 / 烈風、首演、再演、警示費洛蒙、三演與黑心等核心機制為主。",
+      "waymarks": {
+        "A": { "x": 500, "y": 170 },
+        "B": { "x": 830, "y": 500 },
+        "C": { "x": 500, "y": 830 },
+        "D": { "x": 170, "y": 500 },
+        "1": { "x": 710, "y": 290 },
+        "2": { "x": 710, "y": 710 },
+        "3": { "x": 290, "y": 710 },
+        "4": { "x": 290, "y": 290 }
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "m2s-game8-q01",
+      "instanceId": "m2s",
+      "strategyId": "m2s-game8",
+      "name": "P1 - 毒液滴落 / 雨 → 甜心旋風 / 烈風（處理順序）",
+      "phase": 1,
+      "order": 1,
+      "boss": {
+        "skillName": "毒液滴落 / 雨 → 甜心旋風 / 烈風",
+        "castTime": 8,
+        "facing": 0
+      },
+      "type": "ordering",
+      "options": [
+        {
+          "id": "m2s-poison-start",
+          "label": "先確認是甜心旋風還是甜心烈風，躲到對應起始安全位置"
+        },
+        {
+          "id": "m2s-poison-safe",
+          "label": "看旋風 / 烈風後留下的安全格"
+        },
+        {
+          "id": "m2s-poison-resolve",
+          "label": "依毒液滴落或毒液雨處理 2 人分攤或散開"
+        }
+      ],
+      "roleSolutions": {
+        "MT": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-poison-start", "m2s-poison-safe", "m2s-poison-resolve"],
+          "note": "先看旋風或烈風的初始範圍，再利用留下的安全區處理毒液滴落或毒液雨。"
+        },
+        "ST": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-poison-start", "m2s-poison-safe", "m2s-poison-resolve"],
+          "note": "先看旋風或烈風的初始範圍，再利用留下的安全區處理毒液滴落或毒液雨。"
+        },
+        "H1": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-poison-start", "m2s-poison-safe", "m2s-poison-resolve"],
+          "note": "先看旋風或烈風的初始範圍，再利用留下的安全區處理毒液滴落或毒液雨。"
+        },
+        "H2": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-poison-start", "m2s-poison-safe", "m2s-poison-resolve"],
+          "note": "先看旋風或烈風的初始範圍，再利用留下的安全區處理毒液滴落或毒液雨。"
+        },
+        "D1": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-poison-start", "m2s-poison-safe", "m2s-poison-resolve"],
+          "note": "先看旋風或烈風的初始範圍，再利用留下的安全區處理毒液滴落或毒液雨。"
+        },
+        "D2": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-poison-start", "m2s-poison-safe", "m2s-poison-resolve"],
+          "note": "先看旋風或烈風的初始範圍，再利用留下的安全區處理毒液滴落或毒液雨。"
+        },
+        "D3": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-poison-start", "m2s-poison-safe", "m2s-poison-resolve"],
+          "note": "先看旋風或烈風的初始範圍，再利用留下的安全區處理毒液滴落或毒液雨。"
+        },
+        "D4": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-poison-start", "m2s-poison-safe", "m2s-poison-resolve"],
+          "note": "先看旋風或烈風的初始範圍，再利用留下的安全區處理毒液滴落或毒液雨。"
+        }
+      },
+      "referenceImages": [
+        {
+          "id": "m2s-game8-q01-ref-1",
+          "src": "assets/questions/m2s/poison-whirlwind-safe.png",
+          "alt": "甜心旋風後安全區",
+          "caption": "旋風後會形成 4 個安全區，再依毒液滴落或毒液雨做分攤或散開。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m2s/",
+          "sourceLabel": "M2S 攻略"
+        },
+        {
+          "id": "m2s-game8-q01-ref-2",
+          "src": "assets/questions/m2s/poison-gale-safe.png",
+          "alt": "甜心烈風後安全區",
+          "caption": "烈風模式是左右直列安全，先躲烈風再處理後續毒液機制。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m2s/",
+          "sourceLabel": "M2S 攻略"
+        }
+      ]
+    },
+    {
+      "id": "m2s-game8-q02",
+      "instanceId": "m2s",
+      "strategyId": "m2s-game8",
+      "name": "P1 - 殺人斬（你的職能該做什麼）",
+      "phase": 1,
+      "order": 2,
+      "boss": {
+        "skillName": "殺人斬 / 殺人針",
+        "castTime": 6,
+        "facing": 0
+      },
+      "type": "single-choice",
+      "options": [
+        {
+          "id": "m2s-tank-top-two",
+          "label": "坦克維持前二仇恨，站北側對角承接"
+        },
+        {
+          "id": "m2s-non-tank-south",
+          "label": "非坦克留在南側，避免吃到扇形"
+        },
+        {
+          "id": "m2s-all-center",
+          "label": "八人都先到王腳下集合"
+        },
+        {
+          "id": "m2s-eight-way",
+          "label": "全員八方向散開"
+        }
+      ],
+      "roleSolutions": {
+        "MT": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-tank-top-two"],
+          "note": "殺人斬時兩坦要維持前二仇恨並站在北側兩個對角承接。"
+        },
+        "ST": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-tank-top-two"],
+          "note": "ST 必須先開姿態維持第 2 仇，才能正確承接殺人斬。"
+        },
+        "H1": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-non-tank-south"],
+          "note": "非坦克留在南側即可避開北側兩個 90 度扇形。"
+        },
+        "H2": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-non-tank-south"],
+          "note": "非坦克留在南側即可避開北側兩個 90 度扇形。"
+        },
+        "D1": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-non-tank-south"],
+          "note": "非坦克留在南側即可避開北側兩個 90 度扇形。"
+        },
+        "D2": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-non-tank-south"],
+          "note": "非坦克留在南側即可避開北側兩個 90 度扇形。"
+        },
+        "D3": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-non-tank-south"],
+          "note": "非坦克留在南側即可避開北側兩個 90 度扇形。"
+        },
+        "D4": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-non-tank-south"],
+          "note": "非坦克留在南側即可避開北側兩個 90 度扇形。"
+        }
+      ]
+    },
+    {
+      "id": "m2s-game8-q03",
+      "instanceId": "m2s",
+      "strategyId": "m2s-game8",
+      "name": "P1 - 環環心連心（移動順序）",
+      "phase": 1,
+      "order": 3,
+      "boss": {
+        "skillName": "環環心連心",
+        "castTime": 8,
+        "facing": 0
+      },
+      "type": "ordering",
+      "options": [
+        {
+          "id": "m2s-heart-inner",
+          "label": "先往 BOSS 內側斜角躲第一次範圍"
+        },
+        {
+          "id": "m2s-heart-number",
+          "label": "到數字標記等待，躲十字範圍"
+        },
+        {
+          "id": "m2s-heart-outer",
+          "label": "最後移到 BOSS 外側十字方向"
+        }
+      ],
+      "roleSolutions": {
+        "MT": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-heart-inner", "m2s-heart-number", "m2s-heart-outer"],
+          "note": "環環是內側斜角 → 數字標記 → 外側十字；圓圓則完全反過來。"
+        },
+        "ST": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-heart-inner", "m2s-heart-number", "m2s-heart-outer"],
+          "note": "環環是內側斜角 → 數字標記 → 外側十字；圓圓則完全反過來。"
+        },
+        "H1": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-heart-inner", "m2s-heart-number", "m2s-heart-outer"],
+          "note": "環環是內側斜角 → 數字標記 → 外側十字；圓圓則完全反過來。"
+        },
+        "H2": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-heart-inner", "m2s-heart-number", "m2s-heart-outer"],
+          "note": "環環是內側斜角 → 數字標記 → 外側十字；圓圓則完全反過來。"
+        },
+        "D1": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-heart-inner", "m2s-heart-number", "m2s-heart-outer"],
+          "note": "環環是內側斜角 → 數字標記 → 外側十字；圓圓則完全反過來。"
+        },
+        "D2": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-heart-inner", "m2s-heart-number", "m2s-heart-outer"],
+          "note": "環環是內側斜角 → 數字標記 → 外側十字；圓圓則完全反過來。"
+        },
+        "D3": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-heart-inner", "m2s-heart-number", "m2s-heart-outer"],
+          "note": "環環是內側斜角 → 數字標記 → 外側十字；圓圓則完全反過來。"
+        },
+        "D4": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-heart-inner", "m2s-heart-number", "m2s-heart-outer"],
+          "note": "環環是內側斜角 → 數字標記 → 外側十字；圓圓則完全反過來。"
+        }
+      },
+      "referenceImages": [
+        {
+          "id": "m2s-game8-q03-ref-1",
+          "src": "assets/questions/m2s/ring-heart-1.png",
+          "alt": "環環心連心第一步",
+          "caption": "第一段先往 BOSS 內側斜角鑽進去。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m2s/",
+          "sourceLabel": "M2S 攻略"
+        },
+        {
+          "id": "m2s-game8-q03-ref-2",
+          "src": "assets/questions/m2s/ring-heart-3.png",
+          "alt": "環環心連心第三步",
+          "caption": "最後移到 BOSS 外側十字位，完成環環的第三段移動。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m2s/",
+          "sourceLabel": "M2S 攻略"
+        }
+      ]
+    },
+    {
+      "id": "m2s-game8-q04",
+      "instanceId": "m2s",
+      "strategyId": "m2s-game8",
+      "name": "P1 - 溫柔地愛我（第一次分攤由誰處理）",
+      "phase": 1,
+      "order": 4,
+      "boss": {
+        "skillName": "溫柔地愛我 → 求愛 → 溫柔地愛我",
+        "castTime": 8,
+        "facing": 0
+      },
+      "type": "single-choice",
+      "options": [
+        {
+          "id": "m2s-love-melee",
+          "label": "愛心 2 的近戰組"
+        },
+        {
+          "id": "m2s-love-ranged",
+          "label": "愛心 3 的遠程組"
+        },
+        {
+          "id": "m2s-love-tanks",
+          "label": "只由兩坦承接"
+        },
+        {
+          "id": "m2s-love-lowest",
+          "label": "愛心最少的全體一起承接"
+        }
+      ],
+      "roleSolutions": {
+        "MT": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-love-melee"],
+          "note": "首演第一次溫柔地愛我，是調整到愛心 2 的近戰組在 BOSS 周圍分攤。"
+        },
+        "ST": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-love-melee"],
+          "note": "首演第一次溫柔地愛我，是調整到愛心 2 的近戰組在 BOSS 周圍分攤。"
+        },
+        "H1": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-love-melee"],
+          "note": "首演第一次溫柔地愛我，是調整到愛心 2 的近戰組在 BOSS 周圍分攤。"
+        },
+        "H2": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-love-melee"],
+          "note": "首演第一次溫柔地愛我，是調整到愛心 2 的近戰組在 BOSS 周圍分攤。"
+        },
+        "D1": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-love-melee"],
+          "note": "首演第一次溫柔地愛我，是調整到愛心 2 的近戰組在 BOSS 周圍分攤。"
+        },
+        "D2": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-love-melee"],
+          "note": "首演第一次溫柔地愛我，是調整到愛心 2 的近戰組在 BOSS 周圍分攤。"
+        },
+        "D3": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-love-melee"],
+          "note": "首演第一次溫柔地愛我，是調整到愛心 2 的近戰組在 BOSS 周圍分攤。"
+        },
+        "D4": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-love-melee"],
+          "note": "首演第一次溫柔地愛我，是調整到愛心 2 的近戰組在 BOSS 周圍分攤。"
+        }
+      },
+      "referenceImages": [
+        {
+          "id": "m2s-game8-q04-ref-1",
+          "src": "assets/questions/m2s/love-me-1.png",
+          "alt": "溫柔地愛我首演示意",
+          "caption": "內側塔由近戰優先踩到愛心 2，再由近戰組在 BOSS 周圍承接第一次分攤。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m2s/",
+          "sourceLabel": "M2S 攻略"
+        }
+      ]
+    },
+    {
+      "id": "m2s-game8-q05",
+      "instanceId": "m2s",
+      "strategyId": "m2s-game8",
+      "name": "P2 - 蜂蜂演唱會再演（♡1 組沒被點名的人踩哪邊的塔）",
+      "phase": 2,
+      "order": 5,
+      "boss": {
+        "skillName": "蜂蜂演唱會〖再演〗",
+        "castTime": 8,
+        "facing": 0
+      },
+      "type": "single-choice",
+      "options": [
+        {
+          "id": "m2s-reprise-th",
+          "label": "北 / 西的塔"
+        },
+        {
+          "id": "m2s-reprise-dps",
+          "label": "南 / 東的塔"
+        },
+        {
+          "id": "m2s-reprise-center",
+          "label": "留在中央，不踩塔"
+        },
+        {
+          "id": "m2s-reprise-opposite",
+          "label": "去對面的遠塔"
+        }
+      ],
+      "roleSolutions": {
+        "MT": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-reprise-th"],
+          "note": "再演中 ♡1 組沒被點名的人，TH 去踩北 / 西的塔。"
+        },
+        "ST": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-reprise-th"],
+          "note": "再演中 ♡1 組沒被點名的人，TH 去踩北 / 西的塔。"
+        },
+        "H1": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-reprise-th"],
+          "note": "再演中 ♡1 組沒被點名的人，TH 去踩北 / 西的塔。"
+        },
+        "H2": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-reprise-th"],
+          "note": "再演中 ♡1 組沒被點名的人，TH 去踩北 / 西的塔。"
+        },
+        "D1": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-reprise-dps"],
+          "note": "再演中 ♡1 組沒被點名的人，DPS 去踩南 / 東的塔。"
+        },
+        "D2": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-reprise-dps"],
+          "note": "再演中 ♡1 組沒被點名的人，DPS 去踩南 / 東的塔。"
+        },
+        "D3": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-reprise-dps"],
+          "note": "再演中 ♡1 組沒被點名的人，DPS 去踩南 / 東的塔。"
+        },
+        "D4": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-reprise-dps"],
+          "note": "再演中 ♡1 組沒被點名的人，DPS 去踩南 / 東的塔。"
+        }
+      },
+      "referenceImages": [
+        {
+          "id": "m2s-game8-q05-ref-1",
+          "src": "assets/questions/m2s/reprise-opening.png",
+          "alt": "再演開幕站位",
+          "caption": "♡1 組先往南側待命，♡0 組在 BOSS 腳下集合並開始處理範圍。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m2s/",
+          "sourceLabel": "M2S 攻略"
+        },
+        {
+          "id": "m2s-game8-q05-ref-2",
+          "src": "assets/questions/m2s/reprise-tower.png",
+          "alt": "再演塔位分配",
+          "caption": "♡1 組沒被點名的人去踩塔，TH 踩北 / 西，DPS 踩南 / 東。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m2s/",
+          "sourceLabel": "M2S 攻略"
+        }
+      ]
+    },
+    {
+      "id": "m2s-game8-q06",
+      "instanceId": "m2s",
+      "strategyId": "m2s-game8",
+      "name": "P2 - 警示費洛蒙第 2 次（初始集合位置）",
+      "phase": 2,
+      "order": 6,
+      "boss": {
+        "skillName": "警示費洛蒙 第 2 次",
+        "castTime": 8,
+        "facing": 0
+      },
+      "type": "map-click",
+      "clickCount": 1,
+      "roleSolutions": {
+        "MT": {
+          "debuffs": [],
+          "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 280 }, "radius": 110 }],
+          "note": "第 2 次警示費洛蒙開場時 TH 先集合北側。"
+        },
+        "ST": {
+          "debuffs": [],
+          "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 280 }, "radius": 110 }],
+          "note": "第 2 次警示費洛蒙開場時 TH 先集合北側。"
+        },
+        "H1": {
+          "debuffs": [],
+          "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 280 }, "radius": 110 }],
+          "note": "第 2 次警示費洛蒙開場時 TH 先集合北側。"
+        },
+        "H2": {
+          "debuffs": [],
+          "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 280 }, "radius": 110 }],
+          "note": "第 2 次警示費洛蒙開場時 TH 先集合北側。"
+        },
+        "D1": {
+          "debuffs": [],
+          "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 720 }, "radius": 110 }],
+          "note": "第 2 次警示費洛蒙開場時 DPS 先集合南側。"
+        },
+        "D2": {
+          "debuffs": [],
+          "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 720 }, "radius": 110 }],
+          "note": "第 2 次警示費洛蒙開場時 DPS 先集合南側。"
+        },
+        "D3": {
+          "debuffs": [],
+          "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 720 }, "radius": 110 }],
+          "note": "第 2 次警示費洛蒙開場時 DPS 先集合南側。"
+        },
+        "D4": {
+          "debuffs": [],
+          "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 720 }, "radius": 110 }],
+          "note": "第 2 次警示費洛蒙開場時 DPS 先集合南側。"
+        }
+      },
+      "referenceImages": [
+        {
+          "id": "m2s-game8-q06-ref-1",
+          "src": "assets/questions/m2s/pheromone-2-1.png",
+          "alt": "警示費洛蒙第 2 次開場站位",
+          "caption": "第 2 次警示費洛蒙開場時，TH 集合北側、DPS 集合南側，準備往外圈安全區丟毒。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m2s/",
+          "sourceLabel": "M2S 攻略"
+        }
+      ]
+    },
+    {
+      "id": "m2s-game8-q07",
+      "instanceId": "m2s",
+      "strategyId": "m2s-game8",
+      "name": "P3 - 蜂蜂演唱會三演（第一輪出塔前你的待命方式）",
+      "phase": 3,
+      "order": 7,
+      "boss": {
+        "skillName": "蜂蜂演唱會〖三演〗",
+        "castTime": 8,
+        "facing": 0
+      },
+      "type": "single-choice",
+      "options": [
+        {
+          "id": "m2s-three-act-slow",
+          "label": "慢組先在中央待命，等快組爆炸後再去踩第一輪塔"
+        },
+        {
+          "id": "m2s-three-act-fast",
+          "label": "快組先到外圈邊緣待命，先處理自己的爆炸"
+        },
+        {
+          "id": "m2s-three-act-center",
+          "label": "八人都留在中央等塔出現再說"
+        },
+        {
+          "id": "m2s-three-act-immediate",
+          "label": "看到塔就直接踩，不用等減益爆炸"
+        }
+      ],
+      "roleSolutions": {
+        "MT": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-three-act-slow"],
+          "note": "本題採用攻略圖例：TH 是慢組、DPS 是快組，所以 TH 先在中央待命。"
+        },
+        "ST": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-three-act-slow"],
+          "note": "本題採用攻略圖例：TH 是慢組、DPS 是快組，所以 TH 先在中央待命。"
+        },
+        "H1": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-three-act-slow"],
+          "note": "本題採用攻略圖例：TH 是慢組、DPS 是快組，所以 TH 先在中央待命。"
+        },
+        "H2": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-three-act-slow"],
+          "note": "本題採用攻略圖例：TH 是慢組、DPS 是快組，所以 TH 先在中央待命。"
+        },
+        "D1": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-three-act-fast"],
+          "note": "本題採用攻略圖例：DPS 是快組，第一輪先去外圈邊緣等自己的減益爆炸。"
+        },
+        "D2": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-three-act-fast"],
+          "note": "本題採用攻略圖例：DPS 是快組，第一輪先去外圈邊緣等自己的減益爆炸。"
+        },
+        "D3": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-three-act-fast"],
+          "note": "本題採用攻略圖例：DPS 是快組，第一輪先去外圈邊緣等自己的減益爆炸。"
+        },
+        "D4": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-three-act-fast"],
+          "note": "本題採用攻略圖例：DPS 是快組，第一輪先去外圈邊緣等自己的減益爆炸。"
+        }
+      },
+      "referenceImages": [
+        {
+          "id": "m2s-game8-q07-ref-1",
+          "src": "assets/questions/m2s/three-act-opening.png",
+          "alt": "三演開幕站位",
+          "caption": "本題採用圖例：TH 為慢組、DPS 為快組，出塔前慢組在中央、快組靠外圈。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m2s/",
+          "sourceLabel": "M2S 攻略"
+        },
+        {
+          "id": "m2s-game8-q07-ref-2",
+          "src": "assets/questions/m2s/three-act-tower.png",
+          "alt": "三演第一輪塔節奏",
+          "caption": "快組先爆炸，之後中央的慢組立刻進去踩第一輪塔。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m2s/",
+          "sourceLabel": "M2S 攻略"
+        }
+      ]
+    },
+    {
+      "id": "m2s-game8-q08",
+      "instanceId": "m2s",
+      "strategyId": "m2s-game8",
+      "name": "P4 - 黑心（中和時機）",
+      "phase": 4,
+      "order": 8,
+      "boss": {
+        "skillName": "黑心",
+        "castTime": 8,
+        "facing": 0
+      },
+      "type": "single-choice",
+      "options": [
+        {
+          "id": "m2s-black-heart-timing",
+          "label": "自己的減益剩 5～6 秒時進中央中和"
+        },
+        {
+          "id": "m2s-black-heart-immediate",
+          "label": "拿到減益後立刻進中央碰撞"
+        },
+        {
+          "id": "m2s-black-heart-aoe",
+          "label": "甜蜜應援全體攻擊途中去中和"
+        },
+        {
+          "id": "m2s-black-heart-last-second",
+          "label": "等到剩 1 秒才去撞，最大化輸出"
+        }
+      ],
+      "roleSolutions": {
+        "MT": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-black-heart-timing"],
+          "note": "黑心的原則是等自己的 α / β 減益剩 5～6 秒時再去中央中和。"
+        },
+        "ST": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-black-heart-timing"],
+          "note": "黑心的原則是等自己的 α / β 減益剩 5～6 秒時再去中央中和。"
+        },
+        "H1": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-black-heart-timing"],
+          "note": "黑心的原則是等自己的 α / β 減益剩 5～6 秒時再去中央中和。"
+        },
+        "H2": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-black-heart-timing"],
+          "note": "黑心的原則是等自己的 α / β 減益剩 5～6 秒時再去中央中和。"
+        },
+        "D1": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-black-heart-timing"],
+          "note": "黑心的原則是等自己的 α / β 減益剩 5～6 秒時再去中央中和。"
+        },
+        "D2": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-black-heart-timing"],
+          "note": "黑心的原則是等自己的 α / β 減益剩 5～6 秒時再去中央中和。"
+        },
+        "D3": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-black-heart-timing"],
+          "note": "黑心的原則是等自己的 α / β 減益剩 5～6 秒時再去中央中和。"
+        },
+        "D4": {
+          "debuffs": [],
+          "correctOptionIds": ["m2s-black-heart-timing"],
+          "note": "黑心的原則是等自己的 α / β 減益剩 5～6 秒時再去中央中和。"
+        }
+      },
+      "referenceImages": [
+        {
+          "id": "m2s-game8-q08-ref-1",
+          "src": "assets/questions/m2s/black-heart-1.png",
+          "alt": "黑心第一輪中和示意",
+          "caption": "黑心不是看 α / β 顏色對答案，而是統一在自己減益剩 5～6 秒時進中央中和。",
+          "sourceUrl": "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m2s/",
+          "sourceLabel": "M2S 攻略"
+        }
+      ]
+    }
+  ],
+  "debuffLibrary": []
+}
