@@ -181,7 +181,7 @@
       "id": "m4s-2-game8-q04",
       "instanceId": "m4s-2",
       "strategyId": "m4s-2-game8",
-      "name": "P2 - 黑色安息日的日落（處理順序）",
+      "name": "P2 - 黑色安息日的日落（第一組側電後的兩段走位）",
       "phase": 2,
       "order": 4,
       "boss": {
@@ -189,22 +189,17 @@
         "castTime": 8,
         "facing": 0
       },
-      "type": "ordering",
-      "options": [
-        { "id": "m4s-2-sunset-center", "label": "先在中央集合等待第一個圓形範圍" },
-        { "id": "m4s-2-sunset-first-safe", "label": "邊把圓形範圍留在中央邊移去第一組側電安全區" },
-        { "id": "m4s-2-sunset-second-check", "label": "確認剩餘兩個分身實體化後的安全區" },
-        { "id": "m4s-2-sunset-in-out", "label": "在側電安全區內再判狡詭特技是內側或外側安全" }
-      ],
+      "type": "map-click",
+      "clickCount": 2,
       "roleSolutions": {
-        "MT": { "debuffs": [], "correctOptionIds": ["m4s-2-sunset-center", "m4s-2-sunset-first-safe", "m4s-2-sunset-second-check", "m4s-2-sunset-in-out"], "note": "日落是先找第一組側電安全區，再在同一塊安全區內處理第二次分身與狡詭特技。" },
-        "ST": { "debuffs": [], "correctOptionIds": ["m4s-2-sunset-center", "m4s-2-sunset-first-safe", "m4s-2-sunset-second-check", "m4s-2-sunset-in-out"], "note": "日落是先找第一組側電安全區，再在同一塊安全區內處理第二次分身與狡詭特技。" },
-        "H1": { "debuffs": [], "correctOptionIds": ["m4s-2-sunset-center", "m4s-2-sunset-first-safe", "m4s-2-sunset-second-check", "m4s-2-sunset-in-out"], "note": "日落是先找第一組側電安全區，再在同一塊安全區內處理第二次分身與狡詭特技。" },
-        "H2": { "debuffs": [], "correctOptionIds": ["m4s-2-sunset-center", "m4s-2-sunset-first-safe", "m4s-2-sunset-second-check", "m4s-2-sunset-in-out"], "note": "日落是先找第一組側電安全區，再在同一塊安全區內處理第二次分身與狡詭特技。" },
-        "D1": { "debuffs": [], "correctOptionIds": ["m4s-2-sunset-center", "m4s-2-sunset-first-safe", "m4s-2-sunset-second-check", "m4s-2-sunset-in-out"], "note": "日落是先找第一組側電安全區，再在同一塊安全區內處理第二次分身與狡詭特技。" },
-        "D2": { "debuffs": [], "correctOptionIds": ["m4s-2-sunset-center", "m4s-2-sunset-first-safe", "m4s-2-sunset-second-check", "m4s-2-sunset-in-out"], "note": "日落是先找第一組側電安全區，再在同一塊安全區內處理第二次分身與狡詭特技。" },
-        "D3": { "debuffs": [], "correctOptionIds": ["m4s-2-sunset-center", "m4s-2-sunset-first-safe", "m4s-2-sunset-second-check", "m4s-2-sunset-in-out"], "note": "日落是先找第一組側電安全區，再在同一塊安全區內處理第二次分身與狡詭特技。" },
-        "D4": { "debuffs": [], "correctOptionIds": ["m4s-2-sunset-center", "m4s-2-sunset-first-safe", "m4s-2-sunset-second-check", "m4s-2-sunset-in-out"], "note": "日落是先找第一組側電安全區，再在同一塊安全區內處理第二次分身與狡詭特技。" }
+        "MT": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 650, "y": 260, "width": 170, "height": 420 }, { "shape": "rect", "x": 790, "y": 160, "width": 130, "height": 600 }], "note": "本題用的是外側安全範例。先移到右側第一組側電安全區，再在同一塊安全區內往外側貼邊。" },
+        "ST": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 650, "y": 260, "width": 170, "height": 420 }, { "shape": "rect", "x": 790, "y": 160, "width": 130, "height": 600 }], "note": "本題用的是外側安全範例。先移到右側第一組側電安全區，再在同一塊安全區內往外側貼邊。" },
+        "H1": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 650, "y": 260, "width": 170, "height": 420 }, { "shape": "rect", "x": 790, "y": 160, "width": 130, "height": 600 }], "note": "本題用的是外側安全範例。先移到右側第一組側電安全區，再在同一塊安全區內往外側貼邊。" },
+        "H2": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 650, "y": 260, "width": 170, "height": 420 }, { "shape": "rect", "x": 790, "y": 160, "width": 130, "height": 600 }], "note": "本題用的是外側安全範例。先移到右側第一組側電安全區，再在同一塊安全區內往外側貼邊。" },
+        "D1": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 650, "y": 260, "width": 170, "height": 420 }, { "shape": "rect", "x": 790, "y": 160, "width": 130, "height": 600 }], "note": "本題用的是外側安全範例。先移到右側第一組側電安全區，再在同一塊安全區內往外側貼邊。" },
+        "D2": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 650, "y": 260, "width": 170, "height": 420 }, { "shape": "rect", "x": 790, "y": 160, "width": 130, "height": 600 }], "note": "本題用的是外側安全範例。先移到右側第一組側電安全區，再在同一塊安全區內往外側貼邊。" },
+        "D3": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 650, "y": 260, "width": 170, "height": 420 }, { "shape": "rect", "x": 790, "y": 160, "width": 130, "height": 600 }], "note": "本題用的是外側安全範例。先移到右側第一組側電安全區，再在同一塊安全區內往外側貼邊。" },
+        "D4": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 650, "y": 260, "width": 170, "height": 420 }, { "shape": "rect", "x": 790, "y": 160, "width": 130, "height": 600 }], "note": "本題用的是外側安全範例。先移到右側第一組側電安全區，再在同一塊安全區內往外側貼邊。" }
       },
       "referenceImages": [
         {
@@ -353,7 +348,7 @@
       "id": "m4s-2-game8-q07",
       "instanceId": "m4s-2",
       "strategyId": "m4s-2-game8",
-      "name": "P2 - 雷光鏈（第一個安全區怎麼找）",
+      "name": "P2 - 雷光鏈（圖例中的第一個安全區）",
       "phase": 3,
       "order": 7,
       "boss": {
@@ -361,22 +356,17 @@
         "castTime": 8,
         "facing": 0
       },
-      "type": "single-choice",
-      "options": [
-        { "id": "m4s-2-chain-unlinked", "label": "先找沒有被連線的塔，該塔旁的橫向就是第一個安全區" },
-        { "id": "m4s-2-chain-first-linked", "label": "先站到第一個被連線的塔正下方等它炸" },
-        { "id": "m4s-2-chain-outside", "label": "永遠往外圈沒有人的塔後面跑" },
-        { "id": "m4s-2-chain-center", "label": "先回場中央，等第一個爆炸再決定" }
-      ],
+      "type": "map-click",
+      "clickCount": 1,
       "roleSolutions": {
-        "MT": { "debuffs": [], "correctOptionIds": ["m4s-2-chain-unlinked"], "note": "雷光鏈的第一個安全區，是沒有被連線的那座塔旁橫向位置。" },
-        "ST": { "debuffs": [], "correctOptionIds": ["m4s-2-chain-unlinked"], "note": "雷光鏈的第一個安全區，是沒有被連線的那座塔旁橫向位置。" },
-        "H1": { "debuffs": [], "correctOptionIds": ["m4s-2-chain-unlinked"], "note": "雷光鏈的第一個安全區，是沒有被連線的那座塔旁橫向位置。" },
-        "H2": { "debuffs": [], "correctOptionIds": ["m4s-2-chain-unlinked"], "note": "雷光鏈的第一個安全區，是沒有被連線的那座塔旁橫向位置。" },
-        "D1": { "debuffs": [], "correctOptionIds": ["m4s-2-chain-unlinked"], "note": "雷光鏈的第一個安全區，是沒有被連線的那座塔旁橫向位置。" },
-        "D2": { "debuffs": [], "correctOptionIds": ["m4s-2-chain-unlinked"], "note": "雷光鏈的第一個安全區，是沒有被連線的那座塔旁橫向位置。" },
-        "D3": { "debuffs": [], "correctOptionIds": ["m4s-2-chain-unlinked"], "note": "雷光鏈的第一個安全區，是沒有被連線的那座塔旁橫向位置。" },
-        "D4": { "debuffs": [], "correctOptionIds": ["m4s-2-chain-unlinked"], "note": "雷光鏈的第一個安全區，是沒有被連線的那座塔旁橫向位置。" }
+        "MT": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 320, "y": 650, "width": 240, "height": 180 }], "note": "這個範例是左列上 3 座塔被連線，最下方那座沒被連到；第一個安全區是它右側的橫向位置。" },
+        "ST": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 320, "y": 650, "width": 240, "height": 180 }], "note": "這個範例是左列上 3 座塔被連線，最下方那座沒被連到；第一個安全區是它右側的橫向位置。" },
+        "H1": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 320, "y": 650, "width": 240, "height": 180 }], "note": "這個範例是左列上 3 座塔被連線，最下方那座沒被連到；第一個安全區是它右側的橫向位置。" },
+        "H2": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 320, "y": 650, "width": 240, "height": 180 }], "note": "這個範例是左列上 3 座塔被連線，最下方那座沒被連到；第一個安全區是它右側的橫向位置。" },
+        "D1": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 320, "y": 650, "width": 240, "height": 180 }], "note": "這個範例是左列上 3 座塔被連線，最下方那座沒被連到；第一個安全區是它右側的橫向位置。" },
+        "D2": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 320, "y": 650, "width": 240, "height": 180 }], "note": "這個範例是左列上 3 座塔被連線，最下方那座沒被連到；第一個安全區是它右側的橫向位置。" },
+        "D3": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 320, "y": 650, "width": 240, "height": 180 }], "note": "這個範例是左列上 3 座塔被連線，最下方那座沒被連到；第一個安全區是它右側的橫向位置。" },
+        "D4": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 320, "y": 650, "width": 240, "height": 180 }], "note": "這個範例是左列上 3 座塔被連線，最下方那座沒被連到；第一個安全區是它右側的橫向位置。" }
       },
       "referenceImages": [
         {
@@ -401,7 +391,7 @@
       "id": "m4s-2-game8-q08",
       "instanceId": "m4s-2",
       "strategyId": "m4s-2-game8",
-      "name": "P2 - 離子簇 + 黑色安息日的日出（依你的減益先做什麼）",
+      "name": "P2 - 離子簇 + 黑色安息日的日出（依減益先去第一站）",
       "phase": 4,
       "order": 8,
       "boss": {
@@ -409,22 +399,17 @@
         "castTime": 8,
         "facing": 0
       },
-      "type": "single-choice",
-      "options": [
-        { "id": "m4s-2-sunrise-beam", "label": "引導光束到塔不出現的方向" },
-        { "id": "m4s-2-sunrise-tower", "label": "進入指定的 2 人塔" },
-        { "id": "m4s-2-sunrise-center", "label": "回場中央等狡詭特技" },
-        { "id": "m4s-2-sunrise-idle", "label": "只要站在原地不動" }
-      ],
+      "type": "map-click",
+      "clickCount": 1,
       "roleSolutions": {
-        "MT": { "debuffs": ["m4s-sunrise-short"], "correctOptionIds": ["m4s-2-sunrise-beam"], "note": "短減益的人先去引導光束。你是 TH 的光束組，往 11 點鐘方向逆時針展開。" },
-        "ST": { "debuffs": ["m4s-sunrise-long"], "correctOptionIds": ["m4s-2-sunrise-tower"], "note": "長減益的人先踩塔。你是 TH 的踩塔組，先去西側或南側對應的 2 人塔。" },
-        "H1": { "debuffs": ["m4s-sunrise-short"], "correctOptionIds": ["m4s-2-sunrise-beam"], "note": "短減益的人先去引導光束。你是 TH 的光束組，往 11 點鐘方向逆時針展開。" },
-        "H2": { "debuffs": ["m4s-sunrise-long"], "correctOptionIds": ["m4s-2-sunrise-tower"], "note": "長減益的人先踩塔。你是 TH 的踩塔組，先去西側或南側對應的 2 人塔。" },
-        "D1": { "debuffs": ["m4s-sunrise-long"], "correctOptionIds": ["m4s-2-sunrise-tower"], "note": "長減益的人先踩塔。你是 DPS 的踩塔組，先去北側或東側對應的 2 人塔。" },
-        "D2": { "debuffs": ["m4s-sunrise-short"], "correctOptionIds": ["m4s-2-sunrise-beam"], "note": "短減益的人先去引導光束。你是 DPS 的光束組，往 12 點鐘方向順時針展開。" },
-        "D3": { "debuffs": ["m4s-sunrise-long"], "correctOptionIds": ["m4s-2-sunrise-tower"], "note": "長減益的人先踩塔。你是 DPS 的踩塔組，先去北側或東側對應的 2 人塔。" },
-        "D4": { "debuffs": ["m4s-sunrise-short"], "correctOptionIds": ["m4s-2-sunrise-beam"], "note": "短減益的人先去引導光束。你是 DPS 的光束組，往 12 點鐘方向順時針展開。" }
+        "MT": { "debuffs": ["m4s-sunrise-short"], "safeAreas": [{ "shape": "circle", "center": { "x": 250, "y": 730 }, "radius": 75 }], "note": "這題採北 / 南塔範例。短減益先引導光束，MT 屬於 TH 光束組，去左下第一站。" },
+        "ST": { "debuffs": ["m4s-sunrise-long"], "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 845 }, "radius": 80 }], "note": "這題採北 / 南塔範例。長減益先踩塔，ST 與 H2 先進南側 2 人塔。" },
+        "H1": { "debuffs": ["m4s-sunrise-short"], "safeAreas": [{ "shape": "circle", "center": { "x": 250, "y": 270 }, "radius": 75 }], "note": "這題採北 / 南塔範例。短減益先引導光束，H1 屬於 TH 光束組，去左上第一站。" },
+        "H2": { "debuffs": ["m4s-sunrise-long"], "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 845 }, "radius": 80 }], "note": "這題採北 / 南塔範例。長減益先踩塔，H2 與 ST 先進南側 2 人塔。" },
+        "D1": { "debuffs": ["m4s-sunrise-long"], "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 155 }, "radius": 80 }], "note": "這題採北 / 南塔範例。長減益先踩塔，D1 與 D3 先進北側 2 人塔。" },
+        "D2": { "debuffs": ["m4s-sunrise-short"], "safeAreas": [{ "shape": "circle", "center": { "x": 750, "y": 270 }, "radius": 75 }], "note": "這題採北 / 南塔範例。短減益先引導光束，D2 屬於 DPS 光束組，去右上第一站。" },
+        "D3": { "debuffs": ["m4s-sunrise-long"], "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 155 }, "radius": 80 }], "note": "這題採北 / 南塔範例。長減益先踩塔，D3 與 D1 先進北側 2 人塔。" },
+        "D4": { "debuffs": ["m4s-sunrise-short"], "safeAreas": [{ "shape": "circle", "center": { "x": 750, "y": 730 }, "radius": 75 }], "note": "這題採北 / 南塔範例。短減益先引導光束，D4 屬於 DPS 光束組，去右下第一站。" }
       },
       "referenceImages": [
         {
@@ -457,7 +442,7 @@
       "id": "m4s-2-game8-q09",
       "instanceId": "m4s-2",
       "strategyId": "m4s-2-game8",
-      "name": "P2 - 劍舞（你的固定分攤搭檔）",
+      "name": "P2 - 劍舞（你的 2 人分攤站位）",
       "phase": 4,
       "order": 9,
       "boss": {
@@ -465,22 +450,17 @@
         "castTime": 8,
         "facing": 0
       },
-      "type": "single-choice",
-      "options": [
-        { "id": "m4s-2-pair-mt-d1", "label": "MT + D1" },
-        { "id": "m4s-2-pair-st-d2", "label": "ST + D2" },
-        { "id": "m4s-2-pair-h1-d3", "label": "H1 + D3" },
-        { "id": "m4s-2-pair-h2-d4", "label": "H2 + D4" }
-      ],
+      "type": "map-click",
+      "clickCount": 1,
       "roleSolutions": {
-        "MT": { "debuffs": [], "correctOptionIds": ["m4s-2-pair-mt-d1"], "note": "劍舞固定分攤配對是 MT/D1、ST/D2、H1/D3、H2/D4。" },
-        "ST": { "debuffs": [], "correctOptionIds": ["m4s-2-pair-st-d2"], "note": "劍舞固定分攤配對是 MT/D1、ST/D2、H1/D3、H2/D4。" },
-        "H1": { "debuffs": [], "correctOptionIds": ["m4s-2-pair-h1-d3"], "note": "劍舞固定分攤配對是 MT/D1、ST/D2、H1/D3、H2/D4。" },
-        "H2": { "debuffs": [], "correctOptionIds": ["m4s-2-pair-h2-d4"], "note": "劍舞固定分攤配對是 MT/D1、ST/D2、H1/D3、H2/D4。" },
-        "D1": { "debuffs": [], "correctOptionIds": ["m4s-2-pair-mt-d1"], "note": "劍舞固定分攤配對是 MT/D1、ST/D2、H1/D3、H2/D4。" },
-        "D2": { "debuffs": [], "correctOptionIds": ["m4s-2-pair-st-d2"], "note": "劍舞固定分攤配對是 MT/D1、ST/D2、H1/D3、H2/D4。" },
-        "D3": { "debuffs": [], "correctOptionIds": ["m4s-2-pair-h1-d3"], "note": "劍舞固定分攤配對是 MT/D1、ST/D2、H1/D3、H2/D4。" },
-        "D4": { "debuffs": [], "correctOptionIds": ["m4s-2-pair-h2-d4"], "note": "劍舞固定分攤配對是 MT/D1、ST/D2、H1/D3、H2/D4。" }
+        "MT": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 150, "y": 500 }, "radius": 75 }], "note": "劍舞的固定 2 人分攤是 MT + D1；這題用左側安全區當作 MT / D1 的站位。" },
+        "ST": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 850, "y": 500 }, "radius": 75 }], "note": "劍舞的固定 2 人分攤是 ST + D2；這題用右側安全區當作 ST / D2 的站位。" },
+        "H1": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 360, "y": 820 }, "radius": 75 }], "note": "劍舞的固定 2 人分攤是 H1 + D3；這題用左下安全區當作 H1 / D3 的站位。" },
+        "H2": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 640, "y": 820 }, "radius": 75 }], "note": "劍舞的固定 2 人分攤是 H2 + D4；這題用右下安全區當作 H2 / D4 的站位。" },
+        "D1": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 150, "y": 500 }, "radius": 75 }], "note": "劍舞的固定 2 人分攤是 MT + D1；這題用左側安全區當作 MT / D1 的站位。" },
+        "D2": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 850, "y": 500 }, "radius": 75 }], "note": "劍舞的固定 2 人分攤是 ST + D2；這題用右側安全區當作 ST / D2 的站位。" },
+        "D3": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 360, "y": 820 }, "radius": 75 }], "note": "劍舞的固定 2 人分攤是 H1 + D3；這題用左下安全區當作 H1 / D3 的站位。" },
+        "D4": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 640, "y": 820 }, "radius": 75 }], "note": "劍舞的固定 2 人分攤是 H2 + D4；這題用右下安全區當作 H2 / D4 的站位。" }
       },
       "referenceImages": [
         {

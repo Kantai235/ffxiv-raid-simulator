@@ -89,7 +89,7 @@
       "id": "m4s-1-game8-q02",
       "instanceId": "m4s-1",
       "strategyId": "m4s-1-game8",
-      "name": "P1 - 環形魔女狩獵（環形的進出節奏）",
+      "name": "P1 - 環形魔女狩獵（依你的固定點做 4 段進出）",
       "phase": 1,
       "order": 2,
       "boss": {
@@ -97,22 +97,17 @@
         "castTime": 8,
         "facing": 0
       },
-      "type": "ordering",
-      "options": [
-        { "id": "m4s-1-ring-out-1", "label": "第 1 下先遠離 BOSS" },
-        { "id": "m4s-1-ring-in-1", "label": "第 2 下再靠近 BOSS" },
-        { "id": "m4s-1-ring-out-2", "label": "第 3 下再次遠離" },
-        { "id": "m4s-1-ring-in-2", "label": "第 4 下最後靠近" }
-      ],
+      "type": "map-click",
+      "clickCount": 4,
       "roleSolutions": {
-        "MT": { "debuffs": [], "correctOptionIds": ["m4s-1-ring-out-1", "m4s-1-ring-in-1", "m4s-1-ring-out-2", "m4s-1-ring-in-2"], "note": "環形是圓 → 甜甜圈 → 圓 → 甜甜圈，所以節奏是遠、近、遠、近。" },
-        "ST": { "debuffs": [], "correctOptionIds": ["m4s-1-ring-out-1", "m4s-1-ring-in-1", "m4s-1-ring-out-2", "m4s-1-ring-in-2"], "note": "環形是圓 → 甜甜圈 → 圓 → 甜甜圈，所以節奏是遠、近、遠、近。" },
-        "H1": { "debuffs": [], "correctOptionIds": ["m4s-1-ring-out-1", "m4s-1-ring-in-1", "m4s-1-ring-out-2", "m4s-1-ring-in-2"], "note": "環形是圓 → 甜甜圈 → 圓 → 甜甜圈，所以節奏是遠、近、遠、近。" },
-        "H2": { "debuffs": [], "correctOptionIds": ["m4s-1-ring-out-1", "m4s-1-ring-in-1", "m4s-1-ring-out-2", "m4s-1-ring-in-2"], "note": "環形是圓 → 甜甜圈 → 圓 → 甜甜圈，所以節奏是遠、近、遠、近。" },
-        "D1": { "debuffs": [], "correctOptionIds": ["m4s-1-ring-out-1", "m4s-1-ring-in-1", "m4s-1-ring-out-2", "m4s-1-ring-in-2"], "note": "環形是圓 → 甜甜圈 → 圓 → 甜甜圈，所以節奏是遠、近、遠、近。" },
-        "D2": { "debuffs": [], "correctOptionIds": ["m4s-1-ring-out-1", "m4s-1-ring-in-1", "m4s-1-ring-out-2", "m4s-1-ring-in-2"], "note": "環形是圓 → 甜甜圈 → 圓 → 甜甜圈，所以節奏是遠、近、遠、近。" },
-        "D3": { "debuffs": [], "correctOptionIds": ["m4s-1-ring-out-1", "m4s-1-ring-in-1", "m4s-1-ring-out-2", "m4s-1-ring-in-2"], "note": "環形是圓 → 甜甜圈 → 圓 → 甜甜圈，所以節奏是遠、近、遠、近。" },
-        "D4": { "debuffs": [], "correctOptionIds": ["m4s-1-ring-out-1", "m4s-1-ring-in-1", "m4s-1-ring-out-2", "m4s-1-ring-in-2"], "note": "環形是圓 → 甜甜圈 → 圓 → 甜甜圈，所以節奏是遠、近、遠、近。" }
+        "MT": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 235 }, "radius": 60 }, { "shape": "circle", "center": { "x": 500, "y": 360 }, "radius": 60 }, { "shape": "circle", "center": { "x": 500, "y": 235 }, "radius": 60 }, { "shape": "circle", "center": { "x": 500, "y": 360 }, "radius": 60 }], "note": "環形固定是遠、近、遠、近。MT 依圖例在北側外圈與北側內圈來回。" },
+        "ST": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 765 }, "radius": 60 }, { "shape": "circle", "center": { "x": 500, "y": 640 }, "radius": 60 }, { "shape": "circle", "center": { "x": 500, "y": 765 }, "radius": 60 }, { "shape": "circle", "center": { "x": 500, "y": 640 }, "radius": 60 }], "note": "環形固定是遠、近、遠、近。ST 依圖例在南側外圈與南側內圈來回。" },
+        "H1": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 315, "y": 685 }, "radius": 60 }, { "shape": "circle", "center": { "x": 395, "y": 605 }, "radius": 60 }, { "shape": "circle", "center": { "x": 315, "y": 685 }, "radius": 60 }, { "shape": "circle", "center": { "x": 395, "y": 605 }, "radius": 60 }], "note": "環形固定是遠、近、遠、近。H1 走左下外圈與左下內圈。" },
+        "H2": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 685, "y": 685 }, "radius": 60 }, { "shape": "circle", "center": { "x": 605, "y": 605 }, "radius": 60 }, { "shape": "circle", "center": { "x": 685, "y": 685 }, "radius": 60 }, { "shape": "circle", "center": { "x": 605, "y": 605 }, "radius": 60 }], "note": "環形固定是遠、近、遠、近。H2 走右下外圈與右下內圈。" },
+        "D1": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 235, "y": 500 }, "radius": 60 }, { "shape": "circle", "center": { "x": 360, "y": 500 }, "radius": 60 }, { "shape": "circle", "center": { "x": 235, "y": 500 }, "radius": 60 }, { "shape": "circle", "center": { "x": 360, "y": 500 }, "radius": 60 }], "note": "環形固定是遠、近、遠、近。D1 走左側外圈與左側內圈。" },
+        "D2": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 765, "y": 500 }, "radius": 60 }, { "shape": "circle", "center": { "x": 640, "y": 500 }, "radius": 60 }, { "shape": "circle", "center": { "x": 765, "y": 500 }, "radius": 60 }, { "shape": "circle", "center": { "x": 640, "y": 500 }, "radius": 60 }], "note": "環形固定是遠、近、遠、近。D2 走右側外圈與右側內圈。" },
+        "D3": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 315, "y": 315 }, "radius": 60 }, { "shape": "circle", "center": { "x": 395, "y": 395 }, "radius": 60 }, { "shape": "circle", "center": { "x": 315, "y": 315 }, "radius": 60 }, { "shape": "circle", "center": { "x": 395, "y": 395 }, "radius": 60 }], "note": "環形固定是遠、近、遠、近。D3 走左上外圈與左上內圈。" },
+        "D4": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 685, "y": 315 }, "radius": 60 }, { "shape": "circle", "center": { "x": 605, "y": 395 }, "radius": 60 }, { "shape": "circle", "center": { "x": 685, "y": 315 }, "radius": 60 }, { "shape": "circle", "center": { "x": 605, "y": 395 }, "radius": 60 }], "note": "環形固定是遠、近、遠、近。D4 走右上外圈與右上內圈。" }
       },
       "referenceImages": [
         {
@@ -153,30 +148,25 @@
       "id": "m4s-1-game8-q03",
       "instanceId": "m4s-1",
       "strategyId": "m4s-1-game8",
-      "name": "P1 - 雷轉質展開第 1 次（圖例最終安全側）",
+      "name": "P1 - 雷轉質展開第 1 次（圖例的最終安全區）",
       "phase": 2,
       "order": 3,
       "boss": {
-        "skillName": "雷轉質展開 第 1 次",
+        "skillName": "雷轉質展開第 1 次",
         "castTime": 8,
         "facing": 0
       },
-      "type": "single-choice",
-      "options": [
-        { "id": "m4s-1-expand-safe-12", "label": "1、2 號側安全" },
-        { "id": "m4s-1-expand-safe-23", "label": "2、3 號側安全" },
-        { "id": "m4s-1-expand-safe-34", "label": "3、4 號側安全" },
-        { "id": "m4s-1-expand-safe-41", "label": "4、1 號側安全" }
-      ],
+      "type": "map-click",
+      "clickCount": 1,
       "roleSolutions": {
-        "MT": { "debuffs": [], "correctOptionIds": ["m4s-1-expand-safe-23"], "note": "Game8 這個範例中 1、4 號各被打 2 次，最終留下 2、3 號側安全。" },
-        "ST": { "debuffs": [], "correctOptionIds": ["m4s-1-expand-safe-23"], "note": "Game8 這個範例中 1、4 號各被打 2 次，最終留下 2、3 號側安全。" },
-        "H1": { "debuffs": [], "correctOptionIds": ["m4s-1-expand-safe-23"], "note": "Game8 這個範例中 1、4 號各被打 2 次，最終留下 2、3 號側安全。" },
-        "H2": { "debuffs": [], "correctOptionIds": ["m4s-1-expand-safe-23"], "note": "Game8 這個範例中 1、4 號各被打 2 次，最終留下 2、3 號側安全。" },
-        "D1": { "debuffs": [], "correctOptionIds": ["m4s-1-expand-safe-23"], "note": "Game8 這個範例中 1、4 號各被打 2 次，最終留下 2、3 號側安全。" },
-        "D2": { "debuffs": [], "correctOptionIds": ["m4s-1-expand-safe-23"], "note": "Game8 這個範例中 1、4 號各被打 2 次，最終留下 2、3 號側安全。" },
-        "D3": { "debuffs": [], "correctOptionIds": ["m4s-1-expand-safe-23"], "note": "Game8 這個範例中 1、4 號各被打 2 次，最終留下 2、3 號側安全。" },
-        "D4": { "debuffs": [], "correctOptionIds": ["m4s-1-expand-safe-23"], "note": "Game8 這個範例中 1、4 號各被打 2 次，最終留下 2、3 號側安全。" }
+        "MT": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 250, "y": 470, "width": 500, "height": 280 }], "note": "這個 Game8 圖例是 1、4 號各被打 2 次，最後只剩 2、3 號側的下半中央安全區。" },
+        "ST": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 250, "y": 470, "width": 500, "height": 280 }], "note": "這個 Game8 圖例是 1、4 號各被打 2 次，最後只剩 2、3 號側的下半中央安全區。" },
+        "H1": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 250, "y": 470, "width": 500, "height": 280 }], "note": "這個 Game8 圖例是 1、4 號各被打 2 次，最後只剩 2、3 號側的下半中央安全區。" },
+        "H2": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 250, "y": 470, "width": 500, "height": 280 }], "note": "這個 Game8 圖例是 1、4 號各被打 2 次，最後只剩 2、3 號側的下半中央安全區。" },
+        "D1": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 250, "y": 470, "width": 500, "height": 280 }], "note": "這個 Game8 圖例是 1、4 號各被打 2 次，最後只剩 2、3 號側的下半中央安全區。" },
+        "D2": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 250, "y": 470, "width": 500, "height": 280 }], "note": "這個 Game8 圖例是 1、4 號各被打 2 次，最後只剩 2、3 號側的下半中央安全區。" },
+        "D3": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 250, "y": 470, "width": 500, "height": 280 }], "note": "這個 Game8 圖例是 1、4 號各被打 2 次，最後只剩 2、3 號側的下半中央安全區。" },
+        "D4": { "debuffs": [], "safeAreas": [{ "shape": "rect", "x": 250, "y": 470, "width": 500, "height": 280 }], "note": "這個 Game8 圖例是 1、4 號各被打 2 次，最後只剩 2、3 號側的下半中央安全區。" }
       },
       "referenceImages": [
         {
