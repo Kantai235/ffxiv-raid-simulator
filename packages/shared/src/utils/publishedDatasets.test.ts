@@ -24,6 +24,28 @@ function readJson(relativePath: string): unknown {
   return JSON.parse(readFileSync(absPath, 'utf8'));
 }
 
+interface QuestionAuditEntry {
+  questionId: string;
+  questionType: InstanceDataset['questions'][number]['type'];
+  status: 'verified' | 'corrected';
+  answerCheck: string;
+  rangeCheck?: string;
+}
+
+interface QuestionAuditDataset {
+  dataset: string;
+  instanceId: string;
+  strategyId: string;
+  sourceUrls: string[];
+  questions: QuestionAuditEntry[];
+}
+
+interface QuestionAuditLedger {
+  version: number;
+  updatedAt: string;
+  datasets: QuestionAuditDataset[];
+}
+
 describe('published datasets', () => {
   it('index.json 列出的每一份官方題庫都應可 parse 並通過 shared validator', () => {
     const index = readJson('../../../../apps/player/public/assets/data/index.json') as DatasetIndex;
@@ -52,5 +74,54 @@ describe('published datasets', () => {
 
     expect(dataset.strategies.some((strategy) => strategy.id === 'm1s-game8')).toBe(true);
     expect(game8QuestionCount).toBeGreaterThanOrEqual(8);
+  });
+
+  it('所有正式題目都應有逐題稽核紀錄與 HTTPS 網路來源', () => {
+    const index = readJson('../../../../apps/player/public/assets/data/index.json') as DatasetIndex;
+    const audit = readJson('../../../../docs/question-audit.json') as QuestionAuditLedger;
+    const allowedStatuses = new Set<QuestionAuditEntry['status']>(['verified', 'corrected']);
+    const auditByDataset = new Map(audit.datasets.map((entry) => [entry.dataset, entry]));
+
+    expect(audit.version).toBeGreaterThanOrEqual(1);
+    expect(audit.datasets.length).toBe(index.instances.length);
+
+    for (const indexEntry of index.instances) {
+      const datasetPath = indexEntry.dataPath.split('/').at(-1);
+
+      expect(datasetPath).toBeTruthy();
+
+      const datasetFile = datasetPath as string;
+      const dataset = readJson(`../../../../apps/player/public/${indexEntry.dataPath}`) as InstanceDataset;
+      const auditDataset = auditByDataset.get(datasetFile);
+
+      expect(auditDataset, `${datasetFile} 缺少逐題稽核資料`).toBeDefined();
+
+      expect(auditDataset?.instanceId).toBe(dataset.instance.id);
+      expect(auditDataset?.strategyId).toBe(dataset.strategies[0]?.id);
+      expect(auditDataset?.sourceUrls.length).toBeGreaterThan(0);
+
+      for (const sourceUrl of auditDataset?.sourceUrls ?? []) {
+        expect(sourceUrl.startsWith('https://')).toBe(true);
+      }
+
+      const questionAuditMap = new Map(
+        (auditDataset?.questions ?? []).map((question) => [question.questionId, question]),
+      );
+
+      expect(questionAuditMap.size).toBe(dataset.questions.length);
+
+      for (const question of dataset.questions) {
+        const auditEntry = questionAuditMap.get(question.id);
+
+        expect(auditEntry, `${question.id} 缺少逐題稽核紀錄`).toBeDefined();
+        expect(auditEntry?.questionType).toBe(question.type);
+        expect(allowedStatuses.has(auditEntry?.status as QuestionAuditEntry['status'])).toBe(true);
+        expect(auditEntry?.answerCheck.trim().length).toBeGreaterThan(0);
+
+        if (question.type === 'map-click') {
+          expect(auditEntry?.rangeCheck?.trim().length).toBeGreaterThan(0);
+        }
+      }
+    }
   });
 });

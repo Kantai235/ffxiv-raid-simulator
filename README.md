@@ -340,12 +340,12 @@ GitHub Actions workflow 位於 [`.github/workflows/deploy.yml`](./.github/workfl
 
 ```bash
 npm test                          # 全 workspace
-cd packages/shared && npm test    # shared 純函數（105 tests）
+cd packages/shared && npm test    # shared 純函數（107 tests）
 cd apps/player && npm test        # Player stores/views/components（237 tests）
 cd apps/editor && npm test        # Editor stores/services/utils（207 tests）
 ```
 
-總計 549 個單元測試，涵蓋：
+總計 551 個單元測試，涵蓋：
 
 - 幾何命中判定（圓/矩形/多邊形，含邊界情境）
 - Boss-relative 座標轉換
@@ -357,6 +357,12 @@ cd apps/editor && npm test        # Editor stores/services/utils（207 tests）
 - Schema 強制邊界（arenaMask 越界拒絕、tether color 5 色白名單）
 - 動態網格修改的全副本清掃（updateArenaGrid 縮小時清越界 index）
 - 實體 CRUD 連動（removeEnemy 自動清除引用該 enemy id 的 tethers）
+
+## 題目逐題稽核
+
+- `docs/question-audit.json` 逐題記錄正式題庫的網路來源、答案核對方式，以及地圖題的安全區範圍校正說明。
+- 正式題庫新增或修改題目時，必須同步更新這份稽核台帳，避免題面、圖說與正解漂移。
+- [`packages/shared/src/utils/publishedDatasets.test.ts`](./packages/shared/src/utils/publishedDatasets.test.ts) 會強制所有正式題目都要有稽核紀錄，且每組題庫都必須保留 HTTPS 來源。
 
 ---
 

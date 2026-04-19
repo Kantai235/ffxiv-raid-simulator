@@ -1,0 +1,362 @@
+{
+  "version": 1,
+  "updatedAt": "2026-04-19",
+  "datasets": [
+    {
+      "dataset": "m1s.json",
+      "instanceId": "m1s",
+      "strategyId": "m1s-game8",
+      "sourceUrls": [
+        "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m1s/",
+        "https://game8.jp/ff14/630292"
+      ],
+      "questions": [
+        {
+          "questionId": "m1s-game8-q01",
+          "questionType": "map-click",
+          "status": "verified",
+          "answerCheck": "依繁中攻略與 Game8 四連尖甲圖示確認 TH 第 1 擊近王十字、DPS 第 2 擊近王十字，第 3、4 擊回到各自的 X 字原位等待。",
+          "rangeCheck": "3 段安全區都壓在固定宏站位上；近王點只包住該職能承傷點，外圍點各自落在四個對角，不跨到鄰組 X 字。"
+        },
+        {
+          "questionId": "m1s-game8-q02",
+          "questionType": "map-click",
+          "status": "verified",
+          "answerCheck": "雙重利爪由 MT 組與 ST 組各吃一個頭割，攻略固定分成王左與王右兩邊承接。",
+          "rangeCheck": "兩個圓形安全區分別落在王左右，不覆蓋王腳下中心，避免誤判成兩組混站。"
+        },
+        {
+          "questionId": "m1s-game8-q03",
+          "questionType": "map-click",
+          "status": "verified",
+          "answerCheck": "四爪依固定十字配對 MT+D3、ST+D2、H1+D1、H2+D4，在王前後左右各自承接配對分攤。",
+          "rangeCheck": "四個站位圓直接貼在前後左右配對點，只容許同組兩人重疊，不與其他方位相接。"
+        },
+        {
+          "questionId": "m1s-game8-q04",
+          "questionType": "multi-choice",
+          "status": "verified",
+          "answerCheck": "單格角落法的核心是不用再額外判讀擊飛或暈眩分身，且十字範圍更好觀察，所以正解為這兩個優點。"
+        },
+        {
+          "questionId": "m1s-game8-q05",
+          "questionType": "ordering",
+          "status": "verified",
+          "answerCheck": "衝擊波的處理節奏是先找快恢復格，再站到會被擊退進安全格的位置，擊退後才在快恢復格內散開。"
+        },
+        {
+          "questionId": "m1s-game8-q06",
+          "questionType": "ordering",
+          "status": "verified",
+          "answerCheck": "貓跳二連尖甲先按本體二連半場處理：先去滑行終點安全半場，第 1 擊後進跡地，同時把靈魂之影保存的方向與順序記住帶進後續。"
+        },
+        {
+          "questionId": "m1s-game8-q07",
+          "questionType": "map-click",
+          "status": "corrected",
+          "answerCheck": "左半場先打的圖例安全半場在東側；MT 組站南東、ST 組站北東，處理完再依下一輪安全半場往對角移動。",
+          "rangeCheck": "兩顆圓形安全區對準東列上下兩個待命點，半徑只覆蓋該組堆疊位置；本輪一併把題目圖說從偏西修正為偏東。"
+        },
+        {
+          "questionId": "m1s-game8-q08",
+          "questionType": "map-click",
+          "status": "verified",
+          "answerCheck": "碎裂尖甲依攻略分成坦克左、補師右、DPS 中線三列集合，題庫答案與巨集一致。",
+          "rangeCheck": "坦補兩列分別貼王左右側，DPS 圓置中，三列之間保留明顯間距避免誤吃相鄰列。"
+        },
+        {
+          "questionId": "m1s-game8-q09",
+          "questionType": "map-click",
+          "status": "verified",
+          "answerCheck": "傾盆大貓開場由兩坦北側接線，H1/D1/D2 在南側目標圈內承接 3 人分攤，H2/D3/D4 在南側外圍承接另一組 3 人分攤。",
+          "rangeCheck": "安全區分成北側兩個單獨接線點與南側內外兩團，不讓南側兩組互相重疊。"
+        },
+        {
+          "questionId": "m1s-game8-q10",
+          "questionType": "single-choice",
+          "status": "verified",
+          "answerCheck": "第 3 次扇形後由 MT 交給 D1、ST 交給 D2，其餘職能都不需要參與第 4 次交換。"
+        }
+      ]
+    },
+    {
+      "dataset": "m2s.json",
+      "instanceId": "m2s",
+      "strategyId": "m2s-game8",
+      "sourceUrls": [
+        "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m2s/",
+        "https://game8.jp/ff14/630353"
+      ],
+      "questions": [
+        {
+          "questionId": "m2s-game8-q01",
+          "questionType": "ordering",
+          "status": "verified",
+          "answerCheck": "先確認甜心旋風或甜心烈風的起始安全點，再看後續留下的安全格，最後依毒液滴落或毒液雨做 2 人分攤或散開。"
+        },
+        {
+          "questionId": "m2s-game8-q02",
+          "questionType": "map-click",
+          "status": "verified",
+          "answerCheck": "殺人斬由兩坦維持前二仇恨站北側對角承接，其餘六人整體留在南側，避免吃到北側兩個 90 度扇形。",
+          "rangeCheck": "坦克安全區落在北西與北東兩個承接點，非坦克安全區則集中南半場，不讓一般職能誤進北側扇形。"
+        },
+        {
+          "questionId": "m2s-game8-q03",
+          "questionType": "ordering",
+          "status": "verified",
+          "answerCheck": "環環心連心的環環順序是內側斜角、數字標記、外側十字；圓圓才是完全反過來，本題答案符合圖解順序。"
+        },
+        {
+          "questionId": "m2s-game8-q04",
+          "questionType": "single-choice",
+          "status": "verified",
+          "answerCheck": "溫柔地愛我第一次 4 人分攤由近戰的 ♡2 組先處理，不是所有人一起進去。"
+        },
+        {
+          "questionId": "m2s-game8-q05",
+          "questionType": "map-click",
+          "status": "verified",
+          "answerCheck": "再演的 ♡1 組如果沒被點名，攻略固定由 TH 踩北或西、DPS 踩南或東；題目採北南塔圖例，因此 TH 北塔、DPS 南塔。",
+          "rangeCheck": "北南兩個圓直接落在塔心，TH 只給北塔、DPS 只給南塔，不把兩塔之間的模糊區納入。"
+        },
+        {
+          "questionId": "m2s-game8-q06",
+          "questionType": "map-click",
+          "status": "verified",
+          "answerCheck": "第 2 次警示費洛蒙開場先上下集合，TH 北、DPS 南，之後再繼續看後續範圍與走位。",
+          "rangeCheck": "兩個集合圈落在北側與南側中央，不跨進彼此半場，避免把中線當成安全偷吃。"
+        },
+        {
+          "questionId": "m2s-game8-q07",
+          "questionType": "single-choice",
+          "status": "verified",
+          "answerCheck": "三演第一輪出塔前，慢組先在中央待命，快組才去外圈邊緣先爆；本題依圖例讓 TH 屬於慢組。"
+        },
+        {
+          "questionId": "m2s-game8-q08",
+          "questionType": "map-click",
+          "status": "verified",
+          "answerCheck": "黑心輪到自己時，要在減益剩約 5 到 6 秒時回到場中央碰撞中和，不能太早也不能拖到爆炸。",
+          "rangeCheck": "安全區壓在場中央交會點，半徑只留給準備回中和的站位，不把外圍待命區納進來。"
+        }
+      ]
+    },
+    {
+      "dataset": "m3s.json",
+      "instanceId": "m3s",
+      "strategyId": "m3s-game8",
+      "sourceUrls": [
+        "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m3s/",
+        "https://game8.jp/ff14/630870"
+      ],
+      "questions": [
+        {
+          "questionId": "m3s-game8-q01",
+          "questionType": "map-click",
+          "status": "verified",
+          "answerCheck": "四分雙重金臂鉤按固定細扇配對分四角承接：MT+D3 左上、ST+D2 右上、H1+D1 左下、H2+D4 右下。",
+          "rangeCheck": "四個圓對準四角配對重疊點，半徑刻意縮小，避免吃到鄰組的細扇位置。"
+        },
+        {
+          "questionId": "m3s-game8-q02",
+          "questionType": "map-click",
+          "status": "verified",
+          "answerCheck": "四分強震衝在距離衰減後仍按固定配對分四角承接，題庫配對與攻略站位一致。",
+          "rangeCheck": "安全區沿四角外圈配置，要求玩家真的走到角落，而不是留在王附近吃模糊位。"
+        },
+        {
+          "questionId": "m3s-game8-q03",
+          "questionType": "map-click",
+          "status": "verified",
+          "answerCheck": "野蠻爆炸後先去北或南 4 人塔，再收尾到 BOSS 落點背面；本題採北南塔且 BOSS 落西北的圖例。",
+          "rangeCheck": "第一段安全區放在北側 4 人塔，第二段放在西北角 BOSS 背面，兩段完全分開。"
+        },
+        {
+          "questionId": "m3s-game8-q04",
+          "questionType": "ordering",
+          "status": "verified",
+          "answerCheck": "鎖鏈生死戰先看自己連到哪個分身，第 1 次故意吃被連線分身的金臂鉤，第 2 次再衝到第一次安全區對角。"
+        },
+        {
+          "questionId": "m3s-game8-q05",
+          "questionType": "map-click",
+          "status": "verified",
+          "answerCheck": "設置引信加野蠻旋火先回基本散開位，之後才依 25 秒與 44 秒導火線長短處理；本題只考初始散開點。",
+          "rangeCheck": "八人點位沿基本散開落在外環，不讓同側兩人共用同一圈，維持巨集站位辨識度。"
+        },
+        {
+          "questionId": "m3s-game8-q06",
+          "questionType": "single-choice",
+          "status": "verified",
+          "answerCheck": "引信區域固定是 25 秒踩短導火線、44 秒踩長導火線，不是誰近誰先踩。"
+        },
+        {
+          "questionId": "m3s-game8-q07",
+          "questionType": "map-click",
+          "status": "verified",
+          "answerCheck": "超豪華野蠻大亂擊後半的節奏是先遠離第 6 擊、再進甜甜圈、最後回 X 字位準備飛向四角。",
+          "rangeCheck": "三段點位依外圈、內圈、對角 X 字排列，路徑與攻略示意一致，不把中間過渡區當成答對。"
+        }
+      ]
+    },
+    {
+      "dataset": "m4s-1.json",
+      "instanceId": "m4s-1",
+      "strategyId": "m4s-1-game8",
+      "sourceUrls": [
+        "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m4s-1/",
+        "https://game8.jp/ff14/631136"
+      ],
+      "questions": [
+        {
+          "questionId": "m4s-1-game8-q01",
+          "questionType": "single-choice",
+          "status": "verified",
+          "answerCheck": "BOSS 菱形預兆中，紫色菱形代表遠 4 人引導，粉色菱形才是近 4 人引導。"
+        },
+        {
+          "questionId": "m4s-1-game8-q02",
+          "questionType": "map-click",
+          "status": "verified",
+          "answerCheck": "環形魔女狩獵固定是遠、近、遠、近，各職能沿自己的內外圈固定點往返；題目 4 段站位與圖例一致。",
+          "rangeCheck": "4 段圓點直接落在對應外圈與內圈固定角，不留跨圈模糊區，避免玩家用中間路徑取巧。"
+        },
+        {
+          "questionId": "m4s-1-game8-q03",
+          "questionType": "map-click",
+          "status": "verified",
+          "answerCheck": "展開第 1 次這張圖由 1、4 號各被打兩次，最後只剩 2、3 側下半中央安全區，題庫答案與圖例一致。",
+          "rangeCheck": "矩形安全區只覆蓋圖上殘留的下半中央藍區，不含上半場，避免把視覺上已經危險的區域算成可站。"
+        },
+        {
+          "questionId": "m4s-1-game8-q04",
+          "questionType": "single-choice",
+          "status": "verified",
+          "answerCheck": "BOSS 周圍只有 4 顆雷球時代表後續是配對分攤，不是 8 人散開。"
+        },
+        {
+          "questionId": "m4s-1-game8-q05",
+          "questionType": "single-choice",
+          "status": "verified",
+          "answerCheck": "雷轉質展開第 2 次中，命中多的一側去四角，TH 固定西側四角、DPS 固定東側四角。"
+        },
+        {
+          "questionId": "m4s-1-game8-q06",
+          "questionType": "map-click",
+          "status": "verified",
+          "answerCheck": "離子簇先看哪 3 列被劈掉，再立刻撤進唯一剩下的 1 列；本題圖例只剩東側單列安全。",
+          "rangeCheck": "安全區整條矩形覆蓋最東側單列，並用 arenaMask 明確把其餘 12 格視覺化為破格。"
+        },
+        {
+          "questionId": "m4s-1-game8-q07",
+          "questionType": "ordering",
+          "status": "verified",
+          "answerCheck": "電子流順序是先進唯一安全列，再看自己減益的反色方向，坦克站最前承傷，處理完再回新減益站位。"
+        },
+        {
+          "questionId": "m4s-1-game8-q08",
+          "questionType": "map-click",
+          "status": "verified",
+          "answerCheck": "雷轉質移植開場先按固定 pairs 站成 X 字：MT/D3 左上、ST/D2 右上、H1/D1 左下、H2/D4 右下。",
+          "rangeCheck": "四個圓落在 BOSS 四個對角的 X 字散開點，不與前後左右直卡位混淆。"
+        },
+        {
+          "questionId": "m4s-1-game8-q09",
+          "questionType": "ordering",
+          "status": "verified",
+          "answerCheck": "雷轉質移植整體節奏是 X 字開場，接著順時針、逆時針交錯橫跳，第 5 次定點，第 6 次由沒有定點的人上前接極粗光束。"
+        },
+        {
+          "questionId": "m4s-1-game8-q10",
+          "questionType": "single-choice",
+          "status": "verified",
+          "answerCheck": "展開第 2 次先看蓄雷秒數，22 秒快減益第一輪處理，42 秒慢減益第二輪處理。"
+        },
+        {
+          "questionId": "m4s-1-game8-q11",
+          "questionType": "single-choice",
+          "status": "verified",
+          "answerCheck": "電子流依正負電子去找反色砲身：負電子找黃色，正電子找白色。"
+        }
+      ]
+    },
+    {
+      "dataset": "m4s-2.json",
+      "instanceId": "m4s-2",
+      "strategyId": "m4s-2-game8",
+      "sourceUrls": [
+        "https://cycleapple.github.io/xiv-tc-battle-guide/savage/light/m4s-2/",
+        "https://game8.jp/ff14/631340"
+      ],
+      "questions": [
+        {
+          "questionId": "m4s-2-game8-q01",
+          "questionType": "single-choice",
+          "status": "verified",
+          "answerCheck": "狡詭特技是中央直線時外側安全，左右直線時反而要站內側，所以正解是中央直線圖例。"
+        },
+        {
+          "questionId": "m4s-2-game8-q02",
+          "questionType": "single-choice",
+          "status": "verified",
+          "answerCheck": "芥末炸彈必須由沒有被圓形範圍點名的 2 人去和坦克重疊接減益，不是固定職能。"
+        },
+        {
+          "questionId": "m4s-2-game8-q03",
+          "questionType": "single-choice",
+          "status": "verified",
+          "answerCheck": "水屬性尖尾刺的擊退起點要看場地左右的紅點標記，而不是只看 BOSS 腳邊或觸腕特效。"
+        },
+        {
+          "questionId": "m4s-2-game8-q04",
+          "questionType": "map-click",
+          "status": "verified",
+          "answerCheck": "日落先從中央移到第一組側電安全區，再在同一塊安全區內依狡詭特技判內外；本題採右側外安全圖例。",
+          "rangeCheck": "兩段安全區都壓在右側安全扇區內，第一段偏中、第二段再往外貼邊，不讓玩家跑到另一側安全區。"
+        },
+        {
+          "questionId": "m4s-2-game8-q05",
+          "questionType": "single-choice",
+          "status": "verified",
+          "answerCheck": "散集式衝擊砲就是先散開再 2 人分攤，集散式剛好相反。"
+        },
+        {
+          "questionId": "m4s-2-game8-q06",
+          "questionType": "map-click",
+          "status": "verified",
+          "answerCheck": "火焰斬後的劍雨塔位固定為左列 MT、D1、H1、D3；右列 ST、D2、H2、D4。",
+          "rangeCheck": "八個塔圈分成左右兩列自上而下對齊，半徑縮在各塔格內，不讓隔壁塔也被判中。"
+        },
+        {
+          "questionId": "m4s-2-game8-q06b",
+          "questionType": "map-click",
+          "status": "verified",
+          "answerCheck": "兩段走位先回 MT 組左半場、ST 組右半場待命，再進各自從上到下的固定塔位，完整節奏與攻略一致。",
+          "rangeCheck": "第一段安全區只標半場待命區，第二段再縮成各自塔心，強迫玩家照節奏而不是直接點終點。"
+        },
+        {
+          "questionId": "m4s-2-game8-q07",
+          "questionType": "map-click",
+          "status": "verified",
+          "answerCheck": "雷光鏈先看哪一座塔完全沒線，被連線的塔先炸，沒線塔橫向的位置才是第一個安全區。",
+          "rangeCheck": "安全區放在圖例無線塔右側的橫向帶，不把相鄰塔腳或另一列塔心納進來。"
+        },
+        {
+          "questionId": "m4s-2-game8-q08",
+          "questionType": "map-click",
+          "status": "verified",
+          "answerCheck": "日出第一輪由短減益引導光束、長減益踩塔；本題採北南塔圖例，TH 短減益在左側引導，DPS 短減益在右側引導。",
+          "rangeCheck": "短減益安全區落在四個固定引導點，長減益安全區則壓在北塔或南塔中心，不允許混站。"
+        },
+        {
+          "questionId": "m4s-2-game8-q09",
+          "questionType": "map-click",
+          "status": "verified",
+          "answerCheck": "劍舞固定 2 人分攤為 MT+D1、ST+D2、H1+D3、H2+D4，題庫站位依這四組配對劃分。",
+          "rangeCheck": "四個安全區各自貼在對應的 2 人分攤帶，彼此不重疊，避免不同 pair 站在同一塊區域也被判對。"
+        }
+      ]
+    }
+  ]
+}

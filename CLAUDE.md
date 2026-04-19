@@ -203,6 +203,7 @@ Editor EditableArenaMap：
   - 用 stub 元件攔截 props 驗證（例：ReviewView 測試用 ArenaMap stub 把 props 寫成 data-* 屬性）
   - 邊界情境必測：`bossFacing === 0` 合法值防 truthy 誤判、未作答防 crash
 - **Editor 互動測試**：避開 jsdom 不實作 CTM API 的限制，繪圖互動改用人工驗證；store 的資料路徑 100% 單元測試覆蓋
+- **正式題庫逐題稽核**：`docs/question-audit.json` 必須維護每一題對照的網路來源與驗證摘要；地圖題還要寫明 `rangeCheck`。`publishedDatasets.test.ts` 會強制所有正式題目都有稽核紀錄，且每組題庫都至少保留一個 HTTPS 來源。
 
 ### I. 語言與命名
 
