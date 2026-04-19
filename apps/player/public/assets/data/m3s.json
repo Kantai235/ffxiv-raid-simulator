@@ -47,7 +47,7 @@
       "id": "m3s-game8-q01",
       "instanceId": "m3s",
       "strategyId": "m3s-game8",
-      "name": "P1 - 四分雙重金臂鉤（你屬於哪一組配對）",
+      "name": "P1 - 四分雙重金臂鉤（你的配對承接站位）",
       "phase": 1,
       "order": 1,
       "boss": {
@@ -55,22 +55,17 @@
         "castTime": 8,
         "facing": 0
       },
-      "type": "single-choice",
-      "options": [
-        { "id": "m3s-pair-mt-d3", "label": "MT + D3" },
-        { "id": "m3s-pair-st-d2", "label": "ST + D2" },
-        { "id": "m3s-pair-h1-d1", "label": "H1 + D1" },
-        { "id": "m3s-pair-h2-d4", "label": "H2 + D4" }
-      ],
+      "type": "map-click",
+      "clickCount": 1,
       "roleSolutions": {
-        "MT": { "debuffs": [], "correctOptionIds": ["m3s-pair-mt-d3"], "note": "四分雙重金臂鉤依攻略固定配對：MT+D3、ST+D2、H1+D1、H2+D4。" },
-        "ST": { "debuffs": [], "correctOptionIds": ["m3s-pair-st-d2"], "note": "四分雙重金臂鉤依攻略固定配對：MT+D3、ST+D2、H1+D1、H2+D4。" },
-        "H1": { "debuffs": [], "correctOptionIds": ["m3s-pair-h1-d1"], "note": "四分雙重金臂鉤依攻略固定配對：MT+D3、ST+D2、H1+D1、H2+D4。" },
-        "H2": { "debuffs": [], "correctOptionIds": ["m3s-pair-h2-d4"], "note": "四分雙重金臂鉤依攻略固定配對：MT+D3、ST+D2、H1+D1、H2+D4。" },
-        "D1": { "debuffs": [], "correctOptionIds": ["m3s-pair-h1-d1"], "note": "四分雙重金臂鉤依攻略固定配對：MT+D3、ST+D2、H1+D1、H2+D4。" },
-        "D2": { "debuffs": [], "correctOptionIds": ["m3s-pair-st-d2"], "note": "四分雙重金臂鉤依攻略固定配對：MT+D3、ST+D2、H1+D1、H2+D4。" },
-        "D3": { "debuffs": [], "correctOptionIds": ["m3s-pair-mt-d3"], "note": "四分雙重金臂鉤依攻略固定配對：MT+D3、ST+D2、H1+D1、H2+D4。" },
-        "D4": { "debuffs": [], "correctOptionIds": ["m3s-pair-h2-d4"], "note": "四分雙重金臂鉤依攻略固定配對：MT+D3、ST+D2、H1+D1、H2+D4。" }
+        "MT": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 260, "y": 230 }, "radius": 85 }], "note": "四分雙重金臂鉤是細窄配對扇形。MT 與 D3 在左上完全重疊承接。" },
+        "ST": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 740, "y": 650 }, "radius": 85 }], "note": "四分雙重金臂鉤是細窄配對扇形。ST 與 D2 在右下完全重疊承接。" },
+        "H1": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 250, "y": 650 }, "radius": 85 }], "note": "四分雙重金臂鉤是細窄配對扇形。H1 與 D1 在左下完全重疊承接。" },
+        "H2": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 760, "y": 230 }, "radius": 85 }], "note": "四分雙重金臂鉤是細窄配對扇形。H2 與 D4 在右上完全重疊承接。" },
+        "D1": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 250, "y": 650 }, "radius": 85 }], "note": "四分雙重金臂鉤是細窄配對扇形。D1 與 H1 在左下完全重疊承接。" },
+        "D2": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 740, "y": 650 }, "radius": 85 }], "note": "四分雙重金臂鉤是細窄配對扇形。D2 與 ST 在右下完全重疊承接。" },
+        "D3": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 260, "y": 230 }, "radius": 85 }], "note": "四分雙重金臂鉤是細窄配對扇形。D3 與 MT 在左上完全重疊承接。" },
+        "D4": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 760, "y": 230 }, "radius": 85 }], "note": "四分雙重金臂鉤是細窄配對扇形。D4 與 H2 在右上完全重疊承接。" }
       },
       "referenceImages": [
         {
@@ -87,7 +82,7 @@
       "id": "m3s-game8-q02",
       "instanceId": "m3s",
       "strategyId": "m3s-game8",
-      "name": "P1 - 四分強震衝（你屬於哪一組配對）",
+      "name": "P1 - 四分強震衝（距離衰減後的配對站位）",
       "phase": 1,
       "order": 2,
       "boss": {
@@ -95,22 +90,17 @@
         "castTime": 8,
         "facing": 0
       },
-      "type": "single-choice",
-      "options": [
-        { "id": "m3s-impact-mt-d1", "label": "MT + D1" },
-        { "id": "m3s-impact-st-d2", "label": "ST + D2" },
-        { "id": "m3s-impact-h1-d3", "label": "H1 + D3" },
-        { "id": "m3s-impact-h2-d4", "label": "H2 + D4" }
-      ],
+      "type": "map-click",
+      "clickCount": 1,
       "roleSolutions": {
-        "MT": { "debuffs": [], "correctOptionIds": ["m3s-impact-mt-d1"], "note": "四分強震衝是 MTD1 / STD2 / H1D3 / H2D4 配對分攤。" },
-        "ST": { "debuffs": [], "correctOptionIds": ["m3s-impact-st-d2"], "note": "四分強震衝是 MTD1 / STD2 / H1D3 / H2D4 配對分攤。" },
-        "H1": { "debuffs": [], "correctOptionIds": ["m3s-impact-h1-d3"], "note": "四分強震衝是 MTD1 / STD2 / H1D3 / H2D4 配對分攤。" },
-        "H2": { "debuffs": [], "correctOptionIds": ["m3s-impact-h2-d4"], "note": "四分強震衝是 MTD1 / STD2 / H1D3 / H2D4 配對分攤。" },
-        "D1": { "debuffs": [], "correctOptionIds": ["m3s-impact-mt-d1"], "note": "四分強震衝是 MTD1 / STD2 / H1D3 / H2D4 配對分攤。" },
-        "D2": { "debuffs": [], "correctOptionIds": ["m3s-impact-st-d2"], "note": "四分強震衝是 MTD1 / STD2 / H1D3 / H2D4 配對分攤。" },
-        "D3": { "debuffs": [], "correctOptionIds": ["m3s-impact-h1-d3"], "note": "四分強震衝是 MTD1 / STD2 / H1D3 / H2D4 配對分攤。" },
-        "D4": { "debuffs": [], "correctOptionIds": ["m3s-impact-h2-d4"], "note": "四分強震衝是 MTD1 / STD2 / H1D3 / H2D4 配對分攤。" }
+        "MT": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 315, "y": 210 }, "radius": 85 }], "note": "四分強震衝距離衰減後，MT 與 D1 在左上配對分攤。" },
+        "ST": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 685, "y": 210 }, "radius": 85 }], "note": "四分強震衝距離衰減後，ST 與 D2 在右上配對分攤。" },
+        "H1": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 280, "y": 640 }, "radius": 85 }], "note": "四分強震衝距離衰減後，H1 與 D3 在左下配對分攤。" },
+        "H2": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 720, "y": 640 }, "radius": 85 }], "note": "四分強震衝距離衰減後，H2 與 D4 在右下配對分攤。" },
+        "D1": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 315, "y": 210 }, "radius": 85 }], "note": "四分強震衝距離衰減後，D1 與 MT 在左上配對分攤。" },
+        "D2": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 685, "y": 210 }, "radius": 85 }], "note": "四分強震衝距離衰減後，D2 與 ST 在右上配對分攤。" },
+        "D3": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 280, "y": 640 }, "radius": 85 }], "note": "四分強震衝距離衰減後，D3 與 H1 在左下配對分攤。" },
+        "D4": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 720, "y": 640 }, "radius": 85 }], "note": "四分強震衝距離衰減後，D4 與 H2 在右下配對分攤。" }
       },
       "referenceImages": [
         {
@@ -127,7 +117,7 @@
       "id": "m3s-game8-q03",
       "instanceId": "m3s",
       "strategyId": "m3s-game8",
-      "name": "P1 - 野蠻爆炸 → 致命毒霧（處理順序）",
+      "name": "P1 - 野蠻爆炸 → 致命毒霧（4 人塔後的兩段走位）",
       "phase": 1,
       "order": 3,
       "boss": {
@@ -135,22 +125,17 @@
         "castTime": 8,
         "facing": 0
       },
-      "type": "ordering",
-      "options": [
-        { "id": "m3s-tower-four", "label": "先依近戰 / 遠程分組處理 4 人塔" },
-        { "id": "m3s-tower-corner", "label": "面向中央被擊退到四角 2 人塔" },
-        { "id": "m3s-tower-center", "label": "再從中央塔朝 BOSS 方向被擊退" },
-        { "id": "m3s-behind-boss", "label": "最後到 BOSS 背面躲致命毒霧" }
-      ],
+      "type": "map-click",
+      "clickCount": 2,
       "roleSolutions": {
-        "MT": { "debuffs": [], "correctOptionIds": ["m3s-tower-four", "m3s-tower-corner", "m3s-tower-center", "m3s-behind-boss"], "note": "塔機制的收尾是站到 BOSS 背面躲 270 度毒霧。" },
-        "ST": { "debuffs": [], "correctOptionIds": ["m3s-tower-four", "m3s-tower-corner", "m3s-tower-center", "m3s-behind-boss"], "note": "塔機制的收尾是站到 BOSS 背面躲 270 度毒霧。" },
-        "H1": { "debuffs": [], "correctOptionIds": ["m3s-tower-four", "m3s-tower-corner", "m3s-tower-center", "m3s-behind-boss"], "note": "塔機制的收尾是站到 BOSS 背面躲 270 度毒霧。" },
-        "H2": { "debuffs": [], "correctOptionIds": ["m3s-tower-four", "m3s-tower-corner", "m3s-tower-center", "m3s-behind-boss"], "note": "塔機制的收尾是站到 BOSS 背面躲 270 度毒霧。" },
-        "D1": { "debuffs": [], "correctOptionIds": ["m3s-tower-four", "m3s-tower-corner", "m3s-tower-center", "m3s-behind-boss"], "note": "塔機制的收尾是站到 BOSS 背面躲 270 度毒霧。" },
-        "D2": { "debuffs": [], "correctOptionIds": ["m3s-tower-four", "m3s-tower-corner", "m3s-tower-center", "m3s-behind-boss"], "note": "塔機制的收尾是站到 BOSS 背面躲 270 度毒霧。" },
-        "D3": { "debuffs": [], "correctOptionIds": ["m3s-tower-four", "m3s-tower-corner", "m3s-tower-center", "m3s-behind-boss"], "note": "塔機制的收尾是站到 BOSS 背面躲 270 度毒霧。" },
-        "D4": { "debuffs": [], "correctOptionIds": ["m3s-tower-four", "m3s-tower-corner", "m3s-tower-center", "m3s-behind-boss"], "note": "塔機制的收尾是站到 BOSS 背面躲 270 度毒霧。" }
+        "MT": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 150 }, "radius": 95 }, { "shape": "rect", "x": 25, "y": 25, "width": 150, "height": 150 }], "note": "本題採北南 4 人塔、BOSS 落西北的圖例。第 1 步先去北側 4 人塔，第 2 步收尾到西北角 BOSS 背面。"},
+        "ST": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 150 }, "radius": 95 }, { "shape": "rect", "x": 25, "y": 25, "width": 150, "height": 150 }], "note": "本題採北南 4 人塔、BOSS 落西北的圖例。第 1 步先去北側 4 人塔，第 2 步收尾到西北角 BOSS 背面。"},
+        "H1": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 850 }, "radius": 95 }, { "shape": "rect", "x": 25, "y": 25, "width": 150, "height": 150 }], "note": "本題採北南 4 人塔、BOSS 落西北的圖例。第 1 步先去南側 4 人塔，第 2 步收尾到西北角 BOSS 背面。"},
+        "H2": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 850 }, "radius": 95 }, { "shape": "rect", "x": 25, "y": 25, "width": 150, "height": 150 }], "note": "本題採北南 4 人塔、BOSS 落西北的圖例。第 1 步先去南側 4 人塔，第 2 步收尾到西北角 BOSS 背面。"},
+        "D1": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 150 }, "radius": 95 }, { "shape": "rect", "x": 25, "y": 25, "width": 150, "height": 150 }], "note": "本題採北南 4 人塔、BOSS 落西北的圖例。第 1 步先去北側 4 人塔，第 2 步收尾到西北角 BOSS 背面。"},
+        "D2": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 150 }, "radius": 95 }, { "shape": "rect", "x": 25, "y": 25, "width": 150, "height": 150 }], "note": "本題採北南 4 人塔、BOSS 落西北的圖例。第 1 步先去北側 4 人塔，第 2 步收尾到西北角 BOSS 背面。"},
+        "D3": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 850 }, "radius": 95 }, { "shape": "rect", "x": 25, "y": 25, "width": 150, "height": 150 }], "note": "本題採北南 4 人塔、BOSS 落西北的圖例。第 1 步先去南側 4 人塔，第 2 步收尾到西北角 BOSS 背面。"},
+        "D4": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 850 }, "radius": 95 }, { "shape": "rect", "x": 25, "y": 25, "width": 150, "height": 150 }], "note": "本題採北南 4 人塔、BOSS 落西北的圖例。第 1 步先去南側 4 人塔，第 2 步收尾到西北角 BOSS 背面。"}
       },
       "referenceImages": [
         {
@@ -269,7 +254,7 @@
       "id": "m3s-game8-q07",
       "instanceId": "m3s",
       "strategyId": "m3s-game8",
-      "name": "P3 - 超豪華野蠻大亂擊（後半順序）",
+      "name": "P3 - 超豪華野蠻大亂擊（後半三段走位）",
       "phase": 3,
       "order": 7,
       "boss": {
@@ -277,22 +262,17 @@
         "castTime": 8,
         "facing": 0
       },
-      "type": "ordering",
-      "options": [
-        { "id": "m3s-special-out", "label": "第 6 擊圓形範圍時先遠離 BOSS" },
-        { "id": "m3s-special-in", "label": "第 7 擊甜甜圈時立刻進王腳下" },
-        { "id": "m3s-special-x", "label": "擊退預兆時到 X 字位等待，準備飛向四角" },
-        { "id": "m3s-special-impact", "label": "落地後處理最後的四分 / 八分衝擊" }
-      ],
+      "type": "map-click",
+      "clickCount": 3,
       "roleSolutions": {
-        "MT": { "debuffs": [], "correctOptionIds": ["m3s-special-out", "m3s-special-in", "m3s-special-x", "m3s-special-impact"], "note": "超豪華野蠻大亂擊的擊退一定要飛向四角，十字方向會直接出場。" },
-        "ST": { "debuffs": [], "correctOptionIds": ["m3s-special-out", "m3s-special-in", "m3s-special-x", "m3s-special-impact"], "note": "超豪華野蠻大亂擊的擊退一定要飛向四角，十字方向會直接出場。" },
-        "H1": { "debuffs": [], "correctOptionIds": ["m3s-special-out", "m3s-special-in", "m3s-special-x", "m3s-special-impact"], "note": "超豪華野蠻大亂擊的擊退一定要飛向四角，十字方向會直接出場。" },
-        "H2": { "debuffs": [], "correctOptionIds": ["m3s-special-out", "m3s-special-in", "m3s-special-x", "m3s-special-impact"], "note": "超豪華野蠻大亂擊的擊退一定要飛向四角，十字方向會直接出場。" },
-        "D1": { "debuffs": [], "correctOptionIds": ["m3s-special-out", "m3s-special-in", "m3s-special-x", "m3s-special-impact"], "note": "超豪華野蠻大亂擊的擊退一定要飛向四角，十字方向會直接出場。" },
-        "D2": { "debuffs": [], "correctOptionIds": ["m3s-special-out", "m3s-special-in", "m3s-special-x", "m3s-special-impact"], "note": "超豪華野蠻大亂擊的擊退一定要飛向四角，十字方向會直接出場。" },
-        "D3": { "debuffs": [], "correctOptionIds": ["m3s-special-out", "m3s-special-in", "m3s-special-x", "m3s-special-impact"], "note": "超豪華野蠻大亂擊的擊退一定要飛向四角，十字方向會直接出場。" },
-        "D4": { "debuffs": [], "correctOptionIds": ["m3s-special-out", "m3s-special-in", "m3s-special-x", "m3s-special-impact"], "note": "超豪華野蠻大亂擊的擊退一定要飛向四角，十字方向會直接出場。" }
+        "MT": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 300, "y": 270 }, "radius": 85 }, { "shape": "circle", "center": { "x": 500, "y": 500 }, "radius": 110 }, { "shape": "circle", "center": { "x": 220, "y": 220 }, "radius": 90 }], "note": "超豪華野蠻大亂擊後半是先遠離第 6 擊、再進甜甜圈、最後到 X 字位準備飛向四角。MT 在左上路線。"},
+        "ST": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 700, "y": 680 }, "radius": 85 }, { "shape": "circle", "center": { "x": 500, "y": 500 }, "radius": 110 }, { "shape": "circle", "center": { "x": 780, "y": 780 }, "radius": 90 }], "note": "超豪華野蠻大亂擊後半是先遠離第 6 擊、再進甜甜圈、最後到 X 字位準備飛向四角。ST 在右下路線。"},
+        "H1": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 280, "y": 700 }, "radius": 85 }, { "shape": "circle", "center": { "x": 500, "y": 500 }, "radius": 110 }, { "shape": "circle", "center": { "x": 220, "y": 780 }, "radius": 90 }], "note": "超豪華野蠻大亂擊後半是先遠離第 6 擊、再進甜甜圈、最後到 X 字位準備飛向四角。H1 在左下路線。"},
+        "H2": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 700, "y": 270 }, "radius": 85 }, { "shape": "circle", "center": { "x": 500, "y": 500 }, "radius": 110 }, { "shape": "circle", "center": { "x": 780, "y": 220 }, "radius": 90 }], "note": "超豪華野蠻大亂擊後半是先遠離第 6 擊、再進甜甜圈、最後到 X 字位準備飛向四角。H2 在右上路線。"},
+        "D1": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 280, "y": 700 }, "radius": 85 }, { "shape": "circle", "center": { "x": 500, "y": 500 }, "radius": 110 }, { "shape": "circle", "center": { "x": 220, "y": 780 }, "radius": 90 }], "note": "超豪華野蠻大亂擊後半是先遠離第 6 擊、再進甜甜圈、最後到 X 字位準備飛向四角。D1 在左下路線。"},
+        "D2": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 700, "y": 680 }, "radius": 85 }, { "shape": "circle", "center": { "x": 500, "y": 500 }, "radius": 110 }, { "shape": "circle", "center": { "x": 780, "y": 780 }, "radius": 90 }], "note": "超豪華野蠻大亂擊後半是先遠離第 6 擊、再進甜甜圈、最後到 X 字位準備飛向四角。D2 在右下路線。"},
+        "D3": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 300, "y": 270 }, "radius": 85 }, { "shape": "circle", "center": { "x": 500, "y": 500 }, "radius": 110 }, { "shape": "circle", "center": { "x": 220, "y": 220 }, "radius": 90 }], "note": "超豪華野蠻大亂擊後半是先遠離第 6 擊、再進甜甜圈、最後到 X 字位準備飛向四角。D3 在左上路線。"},
+        "D4": { "debuffs": [], "safeAreas": [{ "shape": "circle", "center": { "x": 700, "y": 270 }, "radius": 85 }, { "shape": "circle", "center": { "x": 500, "y": 500 }, "radius": 110 }, { "shape": "circle", "center": { "x": 780, "y": 220 }, "radius": 90 }], "note": "超豪華野蠻大亂擊後半是先遠離第 6 擊、再進甜甜圈、最後到 X 字位準備飛向四角。D4 在右上路線。"}
       },
       "referenceImages": [
         {

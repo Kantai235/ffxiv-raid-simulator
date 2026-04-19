@@ -135,7 +135,7 @@
       "id": "m2s-game8-q02",
       "instanceId": "m2s",
       "strategyId": "m2s-game8",
-      "name": "P1 - 殺人斬（你的職能該做什麼）",
+      "name": "P1 - 殺人斬（你的承接 / 迴避站位）",
       "phase": 1,
       "order": 2,
       "boss": {
@@ -143,65 +143,48 @@
         "castTime": 6,
         "facing": 0
       },
-      "type": "single-choice",
-      "options": [
-        {
-          "id": "m2s-tank-top-two",
-          "label": "坦克維持前二仇恨，站北側對角承接"
-        },
-        {
-          "id": "m2s-non-tank-south",
-          "label": "非坦克留在南側，避免吃到扇形"
-        },
-        {
-          "id": "m2s-all-center",
-          "label": "八人都先到王腳下集合"
-        },
-        {
-          "id": "m2s-eight-way",
-          "label": "全員八方向散開"
-        }
-      ],
+      "type": "map-click",
+      "clickCount": 1,
       "roleSolutions": {
         "MT": {
           "debuffs": [],
-          "correctOptionIds": ["m2s-tank-top-two"],
-          "note": "殺人斬時兩坦要維持前二仇恨並站在北側兩個對角承接。"
+          "safeAreas": [{ "shape": "circle", "center": { "x": 350, "y": 290 }, "radius": 85 }],
+          "note": "殺人斬時兩坦要維持前二仇恨並站北側對角承接。這題以圖例左上角當作 MT 站位。"
         },
         "ST": {
           "debuffs": [],
-          "correctOptionIds": ["m2s-tank-top-two"],
-          "note": "ST 必須先開姿態維持第 2 仇，才能正確承接殺人斬。"
+          "safeAreas": [{ "shape": "circle", "center": { "x": 650, "y": 290 }, "radius": 85 }],
+          "note": "ST 必須先開姿態維持第 2 仇，再站到北側另一個對角承接殺人斬。"
         },
         "H1": {
           "debuffs": [],
-          "correctOptionIds": ["m2s-non-tank-south"],
-          "note": "非坦克留在南側即可避開北側兩個 90 度扇形。"
+          "safeAreas": [{ "shape": "rect", "x": 250, "y": 620, "width": 500, "height": 170 }],
+          "note": "非坦克整體留在南側即可，避免吃到北側兩個 90 度扇形。"
         },
         "H2": {
           "debuffs": [],
-          "correctOptionIds": ["m2s-non-tank-south"],
-          "note": "非坦克留在南側即可避開北側兩個 90 度扇形。"
+          "safeAreas": [{ "shape": "rect", "x": 250, "y": 620, "width": 500, "height": 170 }],
+          "note": "非坦克整體留在南側即可，避免吃到北側兩個 90 度扇形。"
         },
         "D1": {
           "debuffs": [],
-          "correctOptionIds": ["m2s-non-tank-south"],
-          "note": "非坦克留在南側即可避開北側兩個 90 度扇形。"
+          "safeAreas": [{ "shape": "rect", "x": 250, "y": 620, "width": 500, "height": 170 }],
+          "note": "非坦克整體留在南側即可，避免吃到北側兩個 90 度扇形。"
         },
         "D2": {
           "debuffs": [],
-          "correctOptionIds": ["m2s-non-tank-south"],
-          "note": "非坦克留在南側即可避開北側兩個 90 度扇形。"
+          "safeAreas": [{ "shape": "rect", "x": 250, "y": 620, "width": 500, "height": 170 }],
+          "note": "非坦克整體留在南側即可，避免吃到北側兩個 90 度扇形。"
         },
         "D3": {
           "debuffs": [],
-          "correctOptionIds": ["m2s-non-tank-south"],
-          "note": "非坦克留在南側即可避開北側兩個 90 度扇形。"
+          "safeAreas": [{ "shape": "rect", "x": 250, "y": 620, "width": 500, "height": 170 }],
+          "note": "非坦克整體留在南側即可，避免吃到北側兩個 90 度扇形。"
         },
         "D4": {
           "debuffs": [],
-          "correctOptionIds": ["m2s-non-tank-south"],
-          "note": "非坦克留在南側即可避開北側兩個 90 度扇形。"
+          "safeAreas": [{ "shape": "rect", "x": 250, "y": 620, "width": 500, "height": 170 }],
+          "note": "非坦克整體留在南側即可，避免吃到北側兩個 90 度扇形。"
         }
       }
     },
@@ -381,7 +364,7 @@
       "id": "m2s-game8-q05",
       "instanceId": "m2s",
       "strategyId": "m2s-game8",
-      "name": "P2 - 蜂蜂演唱會再演（♡1 組沒被點名的人踩哪邊的塔）",
+      "name": "P2 - 蜂蜂演唱會再演（♡1 組沒被點名時的踩塔位置）",
       "phase": 2,
       "order": 5,
       "boss": {
@@ -389,65 +372,48 @@
         "castTime": 8,
         "facing": 0
       },
-      "type": "single-choice",
-      "options": [
-        {
-          "id": "m2s-reprise-th",
-          "label": "北 / 西的塔"
-        },
-        {
-          "id": "m2s-reprise-dps",
-          "label": "南 / 東的塔"
-        },
-        {
-          "id": "m2s-reprise-center",
-          "label": "留在中央，不踩塔"
-        },
-        {
-          "id": "m2s-reprise-opposite",
-          "label": "去對面的遠塔"
-        }
-      ],
+      "type": "map-click",
+      "clickCount": 1,
       "roleSolutions": {
         "MT": {
           "debuffs": [],
-          "correctOptionIds": ["m2s-reprise-th"],
-          "note": "再演中 ♡1 組沒被點名的人，TH 去踩北 / 西的塔。"
+          "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 205 }, "radius": 95 }],
+          "note": "再演圖例是北南塔配置。♡1 組沒被點名的人裡，TH 去踩北側塔。"
         },
         "ST": {
           "debuffs": [],
-          "correctOptionIds": ["m2s-reprise-th"],
-          "note": "再演中 ♡1 組沒被點名的人，TH 去踩北 / 西的塔。"
+          "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 205 }, "radius": 95 }],
+          "note": "再演圖例是北南塔配置。♡1 組沒被點名的人裡，TH 去踩北側塔。"
         },
         "H1": {
           "debuffs": [],
-          "correctOptionIds": ["m2s-reprise-th"],
-          "note": "再演中 ♡1 組沒被點名的人，TH 去踩北 / 西的塔。"
+          "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 205 }, "radius": 95 }],
+          "note": "再演圖例是北南塔配置。♡1 組沒被點名的人裡，TH 去踩北側塔。"
         },
         "H2": {
           "debuffs": [],
-          "correctOptionIds": ["m2s-reprise-th"],
-          "note": "再演中 ♡1 組沒被點名的人，TH 去踩北 / 西的塔。"
+          "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 205 }, "radius": 95 }],
+          "note": "再演圖例是北南塔配置。♡1 組沒被點名的人裡，TH 去踩北側塔。"
         },
         "D1": {
           "debuffs": [],
-          "correctOptionIds": ["m2s-reprise-dps"],
-          "note": "再演中 ♡1 組沒被點名的人，DPS 去踩南 / 東的塔。"
+          "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 795 }, "radius": 95 }],
+          "note": "再演圖例是北南塔配置。♡1 組沒被點名的人裡，DPS 去踩南側塔。"
         },
         "D2": {
           "debuffs": [],
-          "correctOptionIds": ["m2s-reprise-dps"],
-          "note": "再演中 ♡1 組沒被點名的人，DPS 去踩南 / 東的塔。"
+          "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 795 }, "radius": 95 }],
+          "note": "再演圖例是北南塔配置。♡1 組沒被點名的人裡，DPS 去踩南側塔。"
         },
         "D3": {
           "debuffs": [],
-          "correctOptionIds": ["m2s-reprise-dps"],
-          "note": "再演中 ♡1 組沒被點名的人，DPS 去踩南 / 東的塔。"
+          "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 795 }, "radius": 95 }],
+          "note": "再演圖例是北南塔配置。♡1 組沒被點名的人裡，DPS 去踩南側塔。"
         },
         "D4": {
           "debuffs": [],
-          "correctOptionIds": ["m2s-reprise-dps"],
-          "note": "再演中 ♡1 組沒被點名的人，DPS 去踩南 / 東的塔。"
+          "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 795 }, "radius": 95 }],
+          "note": "再演圖例是北南塔配置。♡1 組沒被點名的人裡，DPS 去踩南側塔。"
         }
       },
       "referenceImages": [
@@ -632,7 +598,7 @@
       "id": "m2s-game8-q08",
       "instanceId": "m2s",
       "strategyId": "m2s-game8",
-      "name": "P4 - 黑心（中和時機）",
+      "name": "P4 - 黑心（輪到你時的中和位置）",
       "phase": 4,
       "order": 8,
       "boss": {
@@ -640,65 +606,48 @@
         "castTime": 8,
         "facing": 0
       },
-      "type": "single-choice",
-      "options": [
-        {
-          "id": "m2s-black-heart-timing",
-          "label": "自己的減益剩 5～6 秒時進中央中和"
-        },
-        {
-          "id": "m2s-black-heart-immediate",
-          "label": "拿到減益後立刻進中央碰撞"
-        },
-        {
-          "id": "m2s-black-heart-aoe",
-          "label": "甜蜜應援全體攻擊途中去中和"
-        },
-        {
-          "id": "m2s-black-heart-last-second",
-          "label": "等到剩 1 秒才去撞，最大化輸出"
-        }
-      ],
+      "type": "map-click",
+      "clickCount": 1,
       "roleSolutions": {
         "MT": {
           "debuffs": [],
-          "correctOptionIds": ["m2s-black-heart-timing"],
-          "note": "黑心的原則是等自己的 α / β 減益剩 5～6 秒時再去中央中和。"
+          "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 500 }, "radius": 95 }],
+          "note": "黑心輪到你時，要在自己的減益剩 5～6 秒左右回到場中央碰撞中和。"
         },
         "ST": {
           "debuffs": [],
-          "correctOptionIds": ["m2s-black-heart-timing"],
-          "note": "黑心的原則是等自己的 α / β 減益剩 5～6 秒時再去中央中和。"
+          "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 500 }, "radius": 95 }],
+          "note": "黑心輪到你時，要在自己的減益剩 5～6 秒左右回到場中央碰撞中和。"
         },
         "H1": {
           "debuffs": [],
-          "correctOptionIds": ["m2s-black-heart-timing"],
-          "note": "黑心的原則是等自己的 α / β 減益剩 5～6 秒時再去中央中和。"
+          "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 500 }, "radius": 95 }],
+          "note": "黑心輪到你時，要在自己的減益剩 5～6 秒左右回到場中央碰撞中和。"
         },
         "H2": {
           "debuffs": [],
-          "correctOptionIds": ["m2s-black-heart-timing"],
-          "note": "黑心的原則是等自己的 α / β 減益剩 5～6 秒時再去中央中和。"
+          "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 500 }, "radius": 95 }],
+          "note": "黑心輪到你時，要在自己的減益剩 5～6 秒左右回到場中央碰撞中和。"
         },
         "D1": {
           "debuffs": [],
-          "correctOptionIds": ["m2s-black-heart-timing"],
-          "note": "黑心的原則是等自己的 α / β 減益剩 5～6 秒時再去中央中和。"
+          "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 500 }, "radius": 95 }],
+          "note": "黑心輪到你時，要在自己的減益剩 5～6 秒左右回到場中央碰撞中和。"
         },
         "D2": {
           "debuffs": [],
-          "correctOptionIds": ["m2s-black-heart-timing"],
-          "note": "黑心的原則是等自己的 α / β 減益剩 5～6 秒時再去中央中和。"
+          "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 500 }, "radius": 95 }],
+          "note": "黑心輪到你時，要在自己的減益剩 5～6 秒左右回到場中央碰撞中和。"
         },
         "D3": {
           "debuffs": [],
-          "correctOptionIds": ["m2s-black-heart-timing"],
-          "note": "黑心的原則是等自己的 α / β 減益剩 5～6 秒時再去中央中和。"
+          "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 500 }, "radius": 95 }],
+          "note": "黑心輪到你時，要在自己的減益剩 5～6 秒左右回到場中央碰撞中和。"
         },
         "D4": {
           "debuffs": [],
-          "correctOptionIds": ["m2s-black-heart-timing"],
-          "note": "黑心的原則是等自己的 α / β 減益剩 5～6 秒時再去中央中和。"
+          "safeAreas": [{ "shape": "circle", "center": { "x": 500, "y": 500 }, "radius": 95 }],
+          "note": "黑心輪到你時，要在自己的減益剩 5～6 秒左右回到場中央碰撞中和。"
         }
       },
       "referenceImages": [
