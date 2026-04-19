@@ -112,7 +112,7 @@
       "id": "m1s-game8-q01",
       "instanceId": "m1s",
       "strategyId": "m1s-game8",
-      "name": "P1 - 四連尖甲（處理順序）",
+      "name": "P1 - 四連尖甲（3 段站位）",
       "phase": 1,
       "order": 1,
       "boss": {
@@ -120,93 +120,80 @@
         "castTime": 8,
         "facing": 0
       },
-      "type": "ordering",
-      "options": [
-        {
-          "id": "fourfold-x-wait",
-          "label": "全員在 X 字安全區等待第 3、4 擊"
-        },
-        {
-          "id": "fourfold-dps-second",
-          "label": "DPS 靠近 BOSS 十字散開承接第 2 擊"
-        },
-        {
-          "id": "fourfold-th-first",
-          "label": "TH 先靠近 BOSS 十字散開承接第 1 擊"
-        }
-      ],
+      "type": "map-click",
+      "clickCount": 3,
       "roleSolutions": {
         "MT": {
           "debuffs": [],
-          "correctOptionIds": [
-            "fourfold-th-first",
-            "fourfold-dps-second",
-            "fourfold-x-wait"
+          "safeAreas": [
+            { "shape": "circle", "center": { "x": 500, "y": 390 }, "radius": 65 },
+            { "shape": "circle", "center": { "x": 400, "y": 400 }, "radius": 70 },
+            { "shape": "circle", "center": { "x": 400, "y": 400 }, "radius": 70 }
           ],
-          "note": "犬丸式的四連尖甲是 TH 先十字、DPS 後十字，第三與第四擊都回到 X 字安全區等待。"
+          "note": "犬丸式四連尖甲是 TH 先十字、DPS 後十字。MT 先站北側近王位，之後回到左上 X 字安全區等待第 3、4 擊。"
         },
         "ST": {
           "debuffs": [],
-          "correctOptionIds": [
-            "fourfold-th-first",
-            "fourfold-dps-second",
-            "fourfold-x-wait"
+          "safeAreas": [
+            { "shape": "circle", "center": { "x": 500, "y": 610 }, "radius": 65 },
+            { "shape": "circle", "center": { "x": 600, "y": 600 }, "radius": 70 },
+            { "shape": "circle", "center": { "x": 600, "y": 600 }, "radius": 70 }
           ],
-          "note": "犬丸式的四連尖甲是 TH 先十字、DPS 後十字，第三與第四擊都回到 X 字安全區等待。"
+          "note": "犬丸式四連尖甲是 TH 先十字、DPS 後十字。ST 先站南側近王位，之後回到右下 X 字安全區等待第 3、4 擊。"
         },
         "H1": {
           "debuffs": [],
-          "correctOptionIds": [
-            "fourfold-th-first",
-            "fourfold-dps-second",
-            "fourfold-x-wait"
+          "safeAreas": [
+            { "shape": "circle", "center": { "x": 390, "y": 500 }, "radius": 65 },
+            { "shape": "circle", "center": { "x": 400, "y": 600 }, "radius": 70 },
+            { "shape": "circle", "center": { "x": 400, "y": 600 }, "radius": 70 }
           ],
-          "note": "犬丸式的四連尖甲是 TH 先十字、DPS 後十字，第三與第四擊都回到 X 字安全區等待。"
+          "note": "犬丸式四連尖甲是 TH 先十字、DPS 後十字。H1 先站西側近王位，之後回到左下 X 字安全區等待第 3、4 擊。"
         },
         "H2": {
           "debuffs": [],
-          "correctOptionIds": [
-            "fourfold-th-first",
-            "fourfold-dps-second",
-            "fourfold-x-wait"
+          "safeAreas": [
+            { "shape": "circle", "center": { "x": 610, "y": 500 }, "radius": 65 },
+            { "shape": "circle", "center": { "x": 600, "y": 400 }, "radius": 70 },
+            { "shape": "circle", "center": { "x": 600, "y": 400 }, "radius": 70 }
           ],
-          "note": "犬丸式的四連尖甲是 TH 先十字、DPS 後十字，第三與第四擊都回到 X 字安全區等待。"
+          "note": "犬丸式四連尖甲是 TH 先十字、DPS 後十字。H2 先站東側近王位，之後回到右上 X 字安全區等待第 3、4 擊。"
         },
         "D1": {
           "debuffs": [],
-          "correctOptionIds": [
-            "fourfold-th-first",
-            "fourfold-dps-second",
-            "fourfold-x-wait"
+          "safeAreas": [
+            { "shape": "circle", "center": { "x": 400, "y": 600 }, "radius": 70 },
+            { "shape": "circle", "center": { "x": 390, "y": 500 }, "radius": 65 },
+            { "shape": "circle", "center": { "x": 400, "y": 600 }, "radius": 70 }
           ],
-          "note": "犬丸式的四連尖甲是 TH 先十字、DPS 後十字，第三與第四擊都回到 X 字安全區等待。"
+          "note": "犬丸式四連尖甲是 TH 先十字、DPS 後十字。D1 起手在左下 X 字，第二段進西側近王位，最後回左下等待。"
         },
         "D2": {
           "debuffs": [],
-          "correctOptionIds": [
-            "fourfold-th-first",
-            "fourfold-dps-second",
-            "fourfold-x-wait"
+          "safeAreas": [
+            { "shape": "circle", "center": { "x": 600, "y": 600 }, "radius": 70 },
+            { "shape": "circle", "center": { "x": 500, "y": 610 }, "radius": 65 },
+            { "shape": "circle", "center": { "x": 600, "y": 600 }, "radius": 70 }
           ],
-          "note": "犬丸式的四連尖甲是 TH 先十字、DPS 後十字，第三與第四擊都回到 X 字安全區等待。"
+          "note": "犬丸式四連尖甲是 TH 先十字、DPS 後十字。D2 起手在右下 X 字，第二段進南側近王位，最後回右下等待。"
         },
         "D3": {
           "debuffs": [],
-          "correctOptionIds": [
-            "fourfold-th-first",
-            "fourfold-dps-second",
-            "fourfold-x-wait"
+          "safeAreas": [
+            { "shape": "circle", "center": { "x": 400, "y": 400 }, "radius": 70 },
+            { "shape": "circle", "center": { "x": 500, "y": 390 }, "radius": 65 },
+            { "shape": "circle", "center": { "x": 400, "y": 400 }, "radius": 70 }
           ],
-          "note": "犬丸式的四連尖甲是 TH 先十字、DPS 後十字，第三與第四擊都回到 X 字安全區等待。"
+          "note": "犬丸式四連尖甲是 TH 先十字、DPS 後十字。D3 起手在左上 X 字，第二段進北側近王位，最後回左上等待。"
         },
         "D4": {
           "debuffs": [],
-          "correctOptionIds": [
-            "fourfold-th-first",
-            "fourfold-dps-second",
-            "fourfold-x-wait"
+          "safeAreas": [
+            { "shape": "circle", "center": { "x": 600, "y": 400 }, "radius": 70 },
+            { "shape": "circle", "center": { "x": 610, "y": 500 }, "radius": 65 },
+            { "shape": "circle", "center": { "x": 600, "y": 400 }, "radius": 70 }
           ],
-          "note": "犬丸式的四連尖甲是 TH 先十字、DPS 後十字，第三與第四擊都回到 X 字安全區等待。"
+          "note": "犬丸式四連尖甲是 TH 先十字、DPS 後十字。D4 起手在右上 X 字，第二段進東側近王位，最後回右上等待。"
         }
       },
       "referenceImages": [
@@ -361,7 +348,7 @@
       "id": "m1s-game8-q03",
       "instanceId": "m1s",
       "strategyId": "m1s-game8",
-      "name": "P1 - 四爪（你屬於哪一組配對）",
+      "name": "P1 - 四爪（你的配對承接站位）",
       "phase": 1,
       "order": 3,
       "boss": {
@@ -369,81 +356,64 @@
         "castTime": 8,
         "facing": 0
       },
-      "type": "single-choice",
-      "options": [
-        {
-          "id": "pair-mt-d3",
-          "label": "MT + D3"
-        },
-        {
-          "id": "pair-st-d2",
-          "label": "ST + D2"
-        },
-        {
-          "id": "pair-h1-d1",
-          "label": "H1 + D1"
-        },
-        {
-          "id": "pair-h2-d4",
-          "label": "H2 + D4"
-        }
-      ],
+      "type": "map-click",
+      "clickCount": 1,
       "roleSolutions": {
         "MT": {
           "debuffs": [],
-          "correctOptionIds": [
-            "pair-mt-d3"
+          "safeAreas": [
+            { "shape": "circle", "center": { "x": 500, "y": 370 }, "radius": 70 }
           ],
-          "note": "四爪依犬丸式固定配對：MT+D3、ST+D2、H1+D1、H2+D4。"
+          "note": "四爪依犬丸式固定配對：MT + D3。兩人站在王前方承接配對分攤。"
         },
         "ST": {
           "debuffs": [],
-          "correctOptionIds": [
-            "pair-st-d2"
+          "safeAreas": [
+            { "shape": "circle", "center": { "x": 500, "y": 630 }, "radius": 70 }
           ],
-          "note": "四爪依犬丸式固定配對：MT+D3、ST+D2、H1+D1、H2+D4。"
+          "note": "四爪依犬丸式固定配對：ST + D2。兩人站在王後方承接配對分攤。"
         },
         "H1": {
           "debuffs": [],
-          "correctOptionIds": [
-            "pair-h1-d1"
+          "safeAreas": [
+            { "shape": "circle", "center": { "x": 370, "y": 500 }, "radius": 70 }
           ],
-          "note": "四爪依犬丸式固定配對：MT+D3、ST+D2、H1+D1、H2+D4。"
+          "note": "四爪依犬丸式固定配對：H1 + D1。兩人站在王左側承接配對分攤。"
         },
         "H2": {
           "debuffs": [],
-          "correctOptionIds": [
-            "pair-h2-d4"
+          "safeAreas": [
+            { "shape": "circle", "center": { "x": 630, "y": 500 }, "radius": 70 }
           ],
-          "note": "四爪依犬丸式固定配對：MT+D3、ST+D2、H1+D1、H2+D4。"
+          "note": "四爪依犬丸式固定配對：H2 + D4。兩人站在王右側承接配對分攤。"
         },
         "D1": {
           "debuffs": [],
-          "correctOptionIds": [
-            "pair-h1-d1"
+          "safeAreas": [
+            { "shape": "circle", "center": { "x": 370, "y": 500 }, "radius": 70 }
           ],
-          "note": "四爪依犬丸式固定配對：MT+D3、ST+D2、H1+D1、H2+D4。"
+          "note": "四爪依犬丸式固定配對：H1 + D1。兩人站在王左側承接配對分攤。"
         },
         "D2": {
           "debuffs": [],
-          "correctOptionIds": [
-            "pair-st-d2"
+          "safeAreas": [
+            { "shape": "circle", "center": { "x": 500, "y": 630 }, "radius": 70 }
           ],
-          "note": "四爪依犬丸式固定配對：MT+D3、ST+D2、H1+D1、H2+D4。"
+          "note": "四爪依犬丸式固定配對：ST + D2。兩人站在王後方承接配對分攤。"
         },
         "D3": {
           "debuffs": [],
-          "correctOptionIds": [
-            "pair-mt-d3"
+          "safeAreas": [
+            { "shape": "circle", "center": { "x": 500, "y": 370 }, "radius": 70 }
           ],
-          "note": "四爪依犬丸式固定配對：MT+D3、ST+D2、H1+D1、H2+D4。"
+          "note": "四爪依犬丸式固定配對：MT + D3。兩人站在王前方承接配對分攤。"
         },
         "D4": {
           "debuffs": [],
-          "correctOptionIds": [
-            "pair-h2-d4"
+          "safeAreas": [
+            { "shape": "circle", "center": { "x": 630, "y": 500 }, "radius": 70 }
           ],
-          "note": "四爪依犬丸式固定配對：MT+D3、ST+D2、H1+D1、H2+D4。"
+          "note": "四爪依犬丸式固定配對：H2 + D4。兩人站在王右側承接配對分攤。"
         }
       }
     },
